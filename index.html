@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d1b3e" />
+  <meta name="description" content="Guía completa para estudiantes dominicanos del programa Summer Work and Travel / Visa J1. Preguntas consulares, visa, récord de notas y más." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="W&T Guide RD" />
+
+  <title>Work and Travel Guide RD</title>
+
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./images/logo.png" type="image/png" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════ PROGRESS BAR -->
+  <div id="progressBar" class="progress-bar"></div>
+
+  <!-- ═══════════════════════════════════════════ NAV -->
+  <nav class="nav" id="mainNav" role="navigation" aria-label="Navegación principal">
+    <a href="#inicio" class="nav-brand">
+      <img src="./images/logo.png" alt="Work and Travel Guide RD" />
+      <span>W&T Guide RD</span>
+    </a>
+
+    <ul class="nav-menu" role="list">
+      <li><a href="#inicio"    data-section="inicio"    class="active"><span class="nav-icon">🏠</span> Inicio</a></li>
+      <li><a href="#preguntas" data-section="preguntas"><span class="nav-icon">🎙️</span> Preguntas</a></li>
+      <li><a href="#visa"      data-section="visa"><span class="nav-icon">📋</span> Visa</a></li>
+      <li><a href="#record"    data-section="record"><span class="nav-icon">📄</span> Récord</a></li>
+      <li><a href="#internet"  data-section="internet"><span class="nav-icon">📱</span> Internet</a></li>
+      <li><a href="#whatsapp"  data-section="whatsapp"><span class="nav-icon">💬</span> WhatsApp</a></li>
+    </ul>
+
+    <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Nav Drawer -->
+  <div class="nav-mobile" id="mobileNav" role="dialog" aria-label="Menú móvil">
+    <a href="#inicio"><span class="nav-icon">🏠</span> Inicio</a>
+    <a href="#preguntas"><span class="nav-icon">🎙️</span> Preguntas Consulares y Pronunciación</a>
+    <a href="#visa"><span class="nav-icon">📋</span> Estado de la Visa</a>
+    <a href="#record"><span class="nav-icon">📄</span> Récord de Notas Legalizado</a>
+    <a href="#internet"><span class="nav-icon">📱</span> Internet y Número de USA</a>
+    <a href="#whatsapp"><span class="nav-icon">💬</span> Grupo de WhatsApp</a>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ HERO -->
+  <section class="hero" id="inicio">
+    <img src="./images/logo.png" alt="Work and Travel Guide RD" class="hero-logo" />
+
+    <h1 class="hero-title">
+      <span class="accent">Work &amp; Travel</span><br />
+      <span class="red-text">Guide</span> RD
+    </h1>
+    <p class="hero-subtitle">
+      Tu guía completa para el programa <strong>Summer Work and Travel / Visa J1</strong>.
+      Todo lo que necesitas saber, en un solo lugar.
+    </p>
+
+    <div class="hero-badges">
+      <span class="badge">✈️ Visa J1</span>
+      <span class="badge">🇩🇴 Para dominicanos</span>
+      <span class="badge">🎓 Estudiantes</span>
+      <span class="badge">🇺🇸 EE.UU.</span>
+    </div>
+
+    <div class="hero-sections">
+      <a class="hero-card" href="#preguntas">
+        <span class="hc-icon">🎙️</span>
+        <span>Preguntas Consulares</span>
+      </a>
+      <a class="hero-card" href="#visa">
+        <span class="hc-icon">📋</span>
+        <span>Estado de la Visa</span>
+      </a>
+      <a class="hero-card" href="#record">
+        <span class="hc-icon">📄</span>
+        <span>Récord de Notas</span>
+      </a>
+      <a class="hero-card" href="#internet">
+        <span class="hc-icon">📱</span>
+        <span>Internet en USA</span>
+      </a>
+      <a class="hero-card" href="#whatsapp">
+        <span class="hc-icon">💬</span>
+        <span>Grupo WhatsApp</span>
+      </a>
+      <a class="hero-card" href="#preguntas" style="border-color:rgba(245,166,35,0.35)">
+        <span class="hc-icon">📖</span>
+        <span>Glosario &amp; Wilberforce</span>
+      </a>
+    </div>
+
+    <div class="hero-flag-stripe"></div>
+  </section>
+
+  <!-- PWA Install Banner -->
+  <div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy-mid);color:var(--white);padding:12px 16px;z-index:1100;align-items:center;gap:12px;border-top:2px solid var(--gold);">
+    <span style="flex:1;font-size:0.9rem;font-weight:600;">📲 Añadir a tu pantalla de inicio para acceso rápido</span>
+    <button id="installBtn" style="padding:8px 18px;background:var(--gold);color:var(--navy);border:none;border-radius:100px;font-weight:800;font-size:0.85rem;cursor:pointer;">Instalar</button>
+    <button id="installDismiss" style="background:transparent;border:none;color:rgba(255,255,255,0.6);font-size:1.2rem;cursor:pointer;padding:4px 8px;">✕</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ PREGUNTAS CONSULARES -->
+  <section class="section section-white" id="preguntas">
+    <div class="section-inner">
+      <div class="section-header fade-in">
+        <span class="section-tag">🎙️ Entrevista</span>
+        <h2 class="section-title">Preguntas Consulares y Pronunciación</h2>
+        <div class="divider"></div>
+        <p class="section-desc">
+          Practica las 50 preguntas más comunes de la entrevista consular J1.
+          Usa los botones para escuchar la pronunciación en inglés.
+        </p>
+      </div>
+
+      <!-- Speech Controls -->
+      <div class="speech-toolbar fade-in">
+        <button class="btn btn-primary" id="btnSlow">
+          🔊 Pronunciación Lenta
+        </button>
+        <button class="btn btn-red" id="btnFast">
+          ⚡ Pronunciación Rápida
+        </button>
+        <button class="btn btn-gold" id="btnRandom">
+          🎲 Práctica Aleatoria
+        </button>
+        <button class="btn btn-outline" id="btnStop" disabled>
+          ⏹ Detener
+        </button>
+        <button class="btn btn-outline btn-sm" id="btnReset">
+          🔄 Reiniciar
+        </button>
+      </div>
+
+      <!-- Random Practice UI -->
+      <div class="random-practice" id="randomPractice">
+        <div style="font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.6);" id="randomNum">Pregunta aleatoria</div>
+        <div class="random-q-display" id="randomQuestion">Presiona "Siguiente" para comenzar</div>
+        <div class="random-controls">
+          <button class="btn btn-gold" id="btnListenRandom">🔊 Escuchar</button>
+          <button class="btn btn-primary" id="btnNextRandom">⏭ Siguiente</button>
+          <button class="btn btn-outline" id="btnCloseRandom" style="border-color:rgba(255,255,255,0.4);color:var(--white);">✕ Cerrar</button>
+        </div>
+      </div>
+
+      <div class="tab-wrapper fade-in">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="tab-preguntas">📝 Las 50 Preguntas</button>
+          <button class="tab-btn" data-tab="tab-wilberforce">⚖️ Wilberforce</button>
+          <button class="tab-btn" data-tab="tab-glosario">📖 Glosario</button>
+        </div>
+
+        <!-- Tab: Preguntas -->
+        <div class="tab-panel active" id="tab-preguntas">
+          <div id="questionsList">
+            <!-- Generated by JS below -->
+          </div>
+        </div>
+
+        <!-- Tab: Wilberforce -->
+        <div class="tab-panel" id="tab-wilberforce">
+          <div class="wilberforce-box">
+            <h3>⚖️ Tus Derechos — Wilberforce</h3>
+            <p style="color:rgba(255,255,255,0.72);font-size:0.9rem;margin-bottom:1rem;">
+              Estos son los derechos que tienes como participante del programa J1. Debes conocerlos porque el cónsul puede preguntarte sobre ellos.
+            </p>
+
+            <div style="margin-bottom:1.2rem;">
+              <div style="color:var(--gold);font-family:'Oswald',sans-serif;font-size:1.1rem;margin-bottom:0.6rem;">🇺🇸 En inglés</div>
+              <div class="rights-grid">
+                <div class="right-item"><div class="right-num">1</div><div>Be paid fairly</div></div>
+                <div class="right-item"><div class="right-num">2</div><div>Be free from discrimination</div></div>
+                <div class="right-item"><div class="right-num">3</div><div>Be free from sexual harassment and sexual exploitation</div></div>
+                <div class="right-item"><div class="right-num">4</div><div>Have a healthy and safe workplace</div></div>
+                <div class="right-item"><div class="right-num">5</div><div>Request help from union, immigrant, and labor rights groups</div></div>
+                <div class="right-item"><div class="right-num">6</div><div>Leave an abusive employment situation</div></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="color:var(--gold);font-family:'Oswald',sans-serif;font-size:1.1rem;margin-bottom:0.6rem;">🇩🇴 En español</div>
+              <div class="rights-grid">
+                <div class="right-item"><div class="right-num">1</div><div>Recibir una paga justa</div></div>
+                <div class="right-item"><div class="right-num">2</div><div>No sufrir discriminación</div></div>
+                <div class="right-item"><div class="right-num">3</div><div>No sufrir acoso sexual ni explotación sexual</div></div>
+                <div class="right-item"><div class="right-num">4</div><div>Trabajar en un lugar saludable y seguro</div></div>
+                <div class="right-item"><div class="right-num">5</div><div>Solicitar ayuda de grupos sindicales, de inmigrantes y de derechos laborales</div></div>
+                <div class="right-item"><div class="right-num">6</div><div>Abandonar una situación de empleo abusiva</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Glosario -->
+        <div class="tab-panel" id="tab-glosario">
+          <p style="color:var(--text-mid);margin-bottom:1rem;">Términos en inglés que debes conocer para tu entrevista consular y durante el programa:</p>
+          <div class="glossary-grid">
+            <div class="gloss-item">
+              <div class="gloss-term">GPA</div>
+              <div class="gloss-def">Índice académico</div>
+            </div>
+            <div class="gloss-item">
+              <div class="gloss-term">Letter Proof</div>
+              <div class="gloss-def">Constancia de estudio</div>
+            </div>
+            <div class="gloss-item">
+              <div class="gloss-term">Job Offer / Placement Agreement</div>
+              <div class="gloss-def">Contrato de trabajo</div>
+            </div>
+            <div class="gloss-item">
+              <div class="gloss-term">Wilberforce</div>
+              <div class="gloss-def">Tus derechos como trabajador J1</div>
+            </div>
+            <div class="gloss-item">
+              <div class="gloss-term">Schedule</div>
+              <div class="gloss-def">Horario</div>
+            </div>
+            <div class="gloss-item">
+              <div class="gloss-term">Economy Proof / Solvency</div>
+              <div class="gloss-def">Solvencia económica</div>
+            </div>
+            <div class="gloss-item">
+              <div class="gloss-term">Host Manager</div>
+              <div class="gloss-def">Supervisor en EE.UU.</div>
+            </div>
+            <div class="gloss-item">
+              <div class="gloss-term">Sponsor</div>
+              <div class="gloss-def">Organización que avala el programa</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ ESTADO DE LA VISA -->
+  <section class="section section-light" id="visa">
+    <div class="section-inner">
+      <div class="section-header fade-in">
+        <span class="section-tag">📋 Visa</span>
+        <h2 class="section-title">Estado de la Visa</h2>
+        <div class="divider"></div>
+        <p class="section-desc">
+          Consulta el estado de tu solicitud de visa en el sistema oficial del Consulado de los Estados Unidos.
+        </p>
+      </div>
+
+      <div class="ceac-wrapper fade-in">
+        <div class="ceac-image-box">
+          <img src="./images/ceac_status.png" alt="CEAC Visa Status Tracker — pantalla del sistema" loading="lazy" />
+        </div>
+
+        <div class="ceac-info">
+          <h3>¿Cómo revisar el estado?</h3>
+          <p>
+            Ingresa al sistema CEAC del Departamento de Estado de los EE.UU. con tu número de caso. El estado aparecerá en la página de resultados.
+          </p>
+
+          <p style="font-weight:700;color:var(--navy);margin-bottom:0.5rem;">Posibles estados:</p>
+          <div class="status-chips">
+            <span class="status-chip chip-approved">✓ Approved</span>
+            <span class="status-chip chip-issued">📧 Issued</span>
+            <span class="status-chip chip-pending">⏳ Administrative Processing</span>
+            <span class="status-chip chip-refused">✕ Refused</span>
+          </div>
+
+          <div class="info-box warning" style="margin-bottom:1.5rem;">
+            <span>⚠️</span>
+            <span>Si aparece <strong>Administrative Processing</strong>, paciencia — es el estado más común. No significa rechazo.</span>
+          </div>
+
+          <a href="https://ceac.state.gov/CEACStatTracker/Status.aspx?App=NIV"
+             target="_blank" rel="noopener noreferrer"
+             class="cta-link">
+            📋 Consultar Estado de la Visa
+            <span style="font-size:0.85rem;">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ RÉCORD DE NOTAS -->
+  <section class="section section-white" id="record">
+    <div class="section-inner">
+      <div class="section-header fade-in">
+        <span class="section-tag">📄 Documentos</span>
+        <h2 class="section-title">Récord de Notas Legalizado</h2>
+        <div class="divider"></div>
+        <p class="section-desc">
+          Guía paso a paso para solicitar y legalizar tu récord de notas en la UASD y el MESCyT, necesario para el programa Work and Travel.
+        </p>
+      </div>
+
+      <!-- Requisitos -->
+      <div class="card fade-in" style="padding:1.5rem;margin-bottom:2rem;">
+        <h3 style="font-family:'Oswald',sans-serif;font-size:1.3rem;color:var(--navy);margin-bottom:1rem;">📋 Requisitos</h3>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+          <div class="info-box info">
+            <span>📜</span>
+            <span><strong>Acta de nacimiento</strong> — debe ser reciente.</span>
+          </div>
+          <div class="info-box info">
+            <span>🪪</span>
+            <span><strong>Fotocopia de la cédula</strong> — ambos lados.</span>
+          </div>
+          <div class="info-box info">
+            <span>🎓</span>
+            <span><strong>Certificado de bachillerato.</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASO 0: Certificado de Bachiller -->
+      <button class="collapsible-btn fade-in">
+        🎓 Paso 0 — Solicitar el Certificado de Bachiller
+        <span class="arrow">▼</span>
+      </button>
+      <div class="collapsible-content" style="padding:0 0.5rem 1rem;">
+        <p style="color:var(--text-mid);margin-bottom:1rem;">
+          Si necesitas solicitar el certificado de bachiller, este trámite se realiza directamente en la página oficial del Ministerio de Educación.
+        </p>
+        <div class="step-image" style="max-width:480px;">
+          <img src="./images/mescyt_1.png" alt="Formulario de Certificado Nivel Medio/Secundario" loading="lazy" />
+        </div>
+        <div class="info-box warning" style="margin-top:1rem;">
+          <span>💡</span>
+          <span>Necesitas tu RNE (Registro Nacional de Estudiante) o número de registro. Si no lo tienes, haz clic en <strong>"Obtener mi RNE"</strong> en el formulario.</span>
+        </div>
+      </div>
+
+      <!-- PASO 1: Solicitar en UASD -->
+      <button class="collapsible-btn fade-in open">
+        📚 Paso 1 — Solicitar el Récord en Servicios en Línea UASD
+        <span class="arrow">▼</span>
+      </button>
+      <div class="collapsible-content open" style="padding:0 0.5rem 1rem;">
+        <p style="color:var(--text-mid);margin-bottom:1.2rem;">
+          Ingresa a la página de la UASD, dirígete al apartado de <strong>Estudiantes</strong> y selecciona <strong>Servicios en Línea</strong>. Luego busca la opción <strong>"Record de Notas Para No Graduados"</strong>.
+        </p>
+
+        <div class="steps">
+          <div class="step fade-in">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h4>Ingresar a Servicios en Línea</h4>
+              <p>Ve al portal de la UASD y selecciona la sección de <strong>Servicios en Línea</strong> (ícono con el documento y el check marcado en rojo).</p>
+              <div class="step-image">
+                <img src="./images/mescyt_2.png" alt="Menú de Servicios en Línea UASD" loading="lazy" />
+              </div>
+            </div>
+          </div>
+
+          <div class="step fade-in">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h4>Seleccionar "Envío al MESCyT"</h4>
+              <p>En el menú de método de entrega, selecciona <strong>"Envío al Mescyt"</strong>. El costo es de RD$200. Toma hasta 10 días hábiles.</p>
+              <div class="step-image">
+                <img src="./images/mescyt_3.png" alt="Opciones de entrega del récord de notas" loading="lazy" />
+              </div>
+            </div>
+          </div>
+
+          <div class="step fade-in">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h4>Solicitar el Servicio y Pagar</h4>
+              <p>Como último paso, haz clic en <strong>"Solicitar Servicio"</strong> y realiza el pago correspondiente para completar el proceso.</p>
+              <div class="step-image">
+                <img src="./images/mescyt_4.png" alt="Confirmación y solicitud del récord de notas" loading="lazy" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:1.5rem;text-align:center;">
+          <a href="https://app.uasd.edu.do/ServiciosEnLinea/"
+             target="_blank" rel="noopener noreferrer"
+             class="cta-link">
+            📚 Ir a Servicios en Línea UASD
+            <span style="font-size:0.85rem;">↗</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- PASO 2: Legalización MESCyT -->
+      <button class="collapsible-btn fade-in">
+        🏛️ Paso 2 — Legalización en el MESCyT
+        <span class="arrow">▼</span>
+      </button>
+      <div class="collapsible-content" style="padding:0 0.5rem 1rem;">
+        <p style="color:var(--text-mid);margin-bottom:1rem;">
+          Después de varias semanas, la UASD proporcionará un número de oficio. Con ese número podrás pagar la legalización en el MESCyT.
+        </p>
+
+        <div class="payment-grid">
+          <div class="payment-card vip">
+            <div style="font-size:1.8rem;margin-bottom:0.5rem;">⭐</div>
+            <h4>Pago VIP</h4>
+            <p>Entrega del récord legalizado <strong>el mismo día</strong>. Tiene un costo adicional que puede variar.</p>
+          </div>
+          <div class="payment-card">
+            <div style="font-size:1.8rem;margin-bottom:0.5rem;">🗓️</div>
+            <h4>Pago Normal</h4>
+            <p>En las oficinas del MESCyT o en línea. El proceso puede tomar <strong>hasta dos meses</strong>.</p>
+          </div>
+        </div>
+
+        <div class="info-box warning" style="margin-top:1rem;">
+          <span>⚠️</span>
+          <div>
+            <strong>Importante:</strong> El pago en línea solo está disponible de <strong>lunes a viernes</strong>, con un máximo de <strong>100 personas por día</strong>.
+            Se recomienda hacer este trámite lo antes posible.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ INTERNET EN USA -->
+  <section class="section section-dark" id="internet">
+    <div class="section-inner">
+      <div class="section-header fade-in">
+        <span class="section-tag" style="background:var(--gold);color:var(--navy);">📱 Internet</span>
+        <h2 class="section-title">Internet y Número de USA</h2>
+        <div class="divider"></div>
+        <p class="section-desc" style="color:rgba(255,255,255,0.75);">
+          La mejor opción para tener internet desde que llegas a Estados Unidos con el programa J1.
+        </p>
+      </div>
+
+      <!-- Intro -->
+      <div class="card fade-in" style="padding:1.5rem;margin-bottom:2rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--white);">
+        <p style="color:rgba(255,255,255,0.85);font-size:1rem;line-height:1.7;">
+          💬 <em>Usé la compañía <strong>US Mobile</strong> el verano pasado y me funcionó súper bien.
+          La recomiendo para quienes buscan algo económico, fácil de activar y sin complicaciones.</em>
+        </p>
+      </div>
+
+      <!-- Plan Card + Ref Code -->
+      <div style="display:grid;grid-template-columns:1fr;gap:1.5rem;margin-bottom:2rem;">
+
+        <div class="plan-card fade-in" style="background:var(--white);color:var(--text-dark);">
+          <div style="margin-bottom:0.6rem;color:var(--text-mid);font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Plan Recomendado · US Mobile</div>
+          <div class="plan-price">$45 <span>/ 3 meses</span></div>
+          <div style="color:var(--text-mid);font-size:0.85rem;margin-top:0.3rem;">$15/mes — ¡40% de descuento en líneas nuevas!</div>
+          <ul class="plan-features" style="margin-top:1.2rem;">
+            <li>Internet, llamadas y mensajes ilimitados</li>
+            <li>35 GB de datos Premium</li>
+            <li>10 GB de Hotspot</li>
+            <li>Cobertura 5G mmWave y C-Band</li>
+            <li>Compatible con eSIM o SIM física</li>
+            <li>Sin contrato ni tarifas ocultas</li>
+          </ul>
+        </div>
+
+        <div class="ref-code-box fade-in">
+          <div class="code-label">🎁 Código de Referencia — Beneficios para ambos</div>
+          <div class="ref-code" id="refCode" title="Clic para copiar">29C7035E</div>
+          <div class="copy-toast" id="copyToast" style="opacity:0;"></div>
+          <p style="font-size:0.85rem;color:rgba(255,255,255,0.7);">
+            Ingresa este código al momento de la compra para que ambos reciban beneficios.
+          </p>
+        </div>
+      </div>
+
+      <!-- Pasos de activación -->
+      <div class="fade-in" style="margin-bottom:2rem;">
+        <h3 style="color:var(--gold);font-family:'Oswald',sans-serif;font-size:1.4rem;margin-bottom:1.2rem;">📋 Pasos para Activarlo</h3>
+
+        <div class="img-steps">
+          <div class="img-step">
+            <div class="img-step-label"><div class="step-dot"></div> Paso 1 — Elegir el plan</div>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.88rem;margin-bottom:0.6rem;">
+              En la página de US Mobile, selecciona el plan <strong>"3 Months of Unlimited Starter"</strong> por $45 (NO la prueba gratuita de 30 días — esa es solo para quienes ya tienen línea activa en otra compañía).
+            </p>
+            <img src="./images/usmobile_1.png" alt="Página de US Mobile con el plan de 3 meses" class="step-screenshot" loading="lazy" />
+          </div>
+
+          <div class="img-step">
+            <div class="img-step-label"><div class="step-dot"></div> Paso 2 — Crear cuenta</div>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.88rem;margin-bottom:0.6rem;">
+              Crea tu cuenta con Apple, Google o llenando el formulario. No necesitas número de teléfono previo.
+            </p>
+            <img src="./images/usmobile_2.png" alt="Formulario de registro en US Mobile" class="step-screenshot" loading="lazy" />
+          </div>
+
+          <div class="img-step">
+            <div class="img-step-label"><div class="step-dot"></div> Paso 3 — eSIM o SIM física</div>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.88rem;margin-bottom:0.6rem;">
+              Si tu teléfono es compatible con eSIM, actívala al instante. Si no, selecciona el <strong>SIM Card Starter Kit</strong> para recibir una SIM física.
+            </p>
+            <img src="./images/usmobile_3.png" alt="Selección de add-ons: SIM Card Starter Kit" class="step-screenshot" loading="lazy" />
+          </div>
+
+          <div class="img-step">
+            <div class="img-step-label"><div class="step-dot"></div> Paso 4 — Pago con tarjeta</div>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.88rem;margin-bottom:0.6rem;">
+              Paga con tu tarjeta. En el campo de país, selecciona <strong>República Dominicana</strong>. Luego ingresa el código de referencia.
+            </p>
+            <img src="./images/usmobile_4.png" alt="Pantalla de checkout con información de pago" class="step-screenshot" loading="lazy" />
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-top:2rem;">
+          <a href="https://www.usmobile.com" target="_blank" rel="noopener noreferrer"
+             class="cta-link" style="background:var(--gold);color:var(--navy);box-shadow:0 4px 20px rgba(245,166,35,0.35);">
+            📱 Ir a US Mobile
+            <span style="font-size:0.85rem;">↗</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Teléfonos compatibles con eSIM -->
+      <div class="card fade-in" style="padding:1.5rem;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);">
+        <h3 style="color:var(--gold);font-family:'Oswald',sans-serif;font-size:1.2rem;margin-bottom:1rem;">📱 Teléfonos Compatibles con eSIM</h3>
+
+        <div class="phone-grid">
+          <div class="phone-item" style="background:rgba(255,255,255,0.08);color:var(--white);">iPhone XR, XS, 11 en adelante</div>
+          <div class="phone-item" style="background:rgba(255,255,255,0.08);color:var(--white);">Samsung Galaxy S20, S21, S22, S23</div>
+          <div class="phone-item" style="background:rgba(255,255,255,0.08);color:var(--white);">Samsung Z Flip, Z Fold</div>
+          <div class="phone-item" style="background:rgba(255,255,255,0.08);color:var(--white);">Google Pixel 4, 5, 6, 7, 8 y Pro</div>
+          <div class="phone-item" style="background:rgba(255,255,255,0.08);color:var(--white);">Motorola Razr (modelos recientes)</div>
+          <div class="phone-item" style="background:rgba(255,255,255,0.08);color:var(--white);">Muchos modelos nuevos de OnePlus</div>
+        </div>
+
+        <div class="info-box warning" style="margin-top:1.2rem;background:rgba(245,158,11,0.12);border-color:var(--gold);color:rgba(255,255,255,0.85);">
+          <span>📦</span>
+          <div>
+            <strong>¿Tu celular no es compatible con eSIM?</strong> Pide el SIM Card Starter Kit.
+            Te recomiendo usar un courier confiable para recibirlo en RD antes de viajar,
+            o enviarlo directamente a la dirección donde estarás en EE.UU.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ WHATSAPP -->
+  <section class="section section-light" id="whatsapp">
+    <div class="section-inner">
+      <div class="section-header fade-in">
+        <span class="section-tag">💬 Comunidad</span>
+        <h2 class="section-title">Grupo de WhatsApp</h2>
+        <div class="divider"></div>
+        <p class="section-desc">
+          Únete a la comunidad de estudiantes dominicanos del programa Work and Travel 2026.
+        </p>
+      </div>
+
+      <div class="wa-card fade-in">
+        <div class="wa-icon">💬</div>
+        <h3>Summer Work 2026</h3>
+        <p>
+          Conecta con otros participantes, resuelve dudas, comparte experiencias y mantente al día con toda la información del programa.
+        </p>
+        <a href="https://chat.whatsapp.com/summer-work-2026"
+           target="_blank" rel="noopener noreferrer"
+           class="wa-btn">
+          💬 Unirse al Grupo
+        </a>
+
+        <p style="margin-top:1.2rem;font-size:0.8rem;color:rgba(255,255,255,0.55);">
+          También puedes escanear el código QR de los documentos del grupo para unirte.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ FOOTER -->
+  <footer class="footer">
+    <img src="./images/logo.png" alt="Logo Work and Travel Guide RD" class="footer-logo" />
+    <p><strong>Work and Travel Guide RD</strong></p>
+    <p style="margin-top:0.4rem;">Guía para estudiantes dominicanos del programa <strong>Summer Work and Travel / Visa J1</strong></p>
+
+    <div class="footer-links">
+      <a href="#inicio">Inicio</a>
+      <a href="#preguntas">Preguntas</a>
+      <a href="#visa">Visa</a>
+      <a href="#record">Récord</a>
+      <a href="#internet">Internet</a>
+      <a href="#whatsapp">WhatsApp</a>
+    </div>
+
+    <p style="margin-top:1rem;font-size:0.78rem;">
+      © 2026 Work and Travel Guide RD · Hecho con ❤️ para la comunidad dominicana 🇩🇴
+    </p>
+  </footer>
+
+  <!-- Back to Top -->
+  <button class="back-top" id="backTop" aria-label="Volver al inicio">↑</button>
+
+  <script src="./js/main.js"></script>
+
+  <!-- Build question cards after DOM loaded -->
+  <script>
+    const QUESTIONS_DATA = [
+      "Is this your first time?",
+      "Where are you going?",
+      "What are you going to do there? What will you work on?",
+      "When did you start college?",
+      "When are you going to finish college?",
+      "What are you studying? What do you study?",
+      "Where do you study?",
+      "How many subjects or classes did you take last semester?",
+      "How many subjects are you taking?",
+      "Mention the subjects from last semester and this semester.",
+      "Can you talk about your last homework?",
+      "What is the most difficult and easiest subject you are taking, and why?",
+      "What are you going to do when you finish your career?",
+      "Does your college have summer break?",
+      "What motivated you to study this career?",
+      "Do you know your rights? Do you know Wilberforce?",
+      "How many semesters do you have approved?",
+      "What is your favorite movie and why?",
+      "Why are you applying for this program?",
+      "Who is paying for your program?",
+      "What is your GPA?",
+      "When does your next semester start?",
+      "When will you return?",
+      "For how long will you stay in the U.S.?",
+      "What is your favorite subject this semester, and why?",
+      "How many subjects will you take when you return?",
+      "How much will you be paid in your position?",
+      "How many hours a week are you going to work?",
+      "Do you have any relatives in the U.S.? Who?",
+      "Do your parents have a visa?",
+      "How many credits do you have this semester?",
+      "How many credits did you have last semester?",
+      "How many credits did you pass last semester?",
+      "How many days per week do you go to college? Which days?",
+      "How many subjects do you have left in your career?",
+      "How many credits do you have left in your career?",
+      "How many semesters do you have left in your career?",
+      "What are you going to do when you finish your program?",
+      "When are you going to return from the U.S.?",
+      "Why are you applying for this program?",
+      "Who is your manager?",
+      "Who is your host manager?",
+      "How much does your housing cost?",
+      "What is the address of your housing?",
+      "What is the zip code of your housing?",
+      "Mention a book from your career.",
+      "How many credits does your career have in total?",
+      "Who is your sponsor?",
+      "Who is your employer?",
+      "What do your parents do for a living?"
+    ];
+
+    const container = document.getElementById('questionsList');
+    QUESTIONS_DATA.forEach((q, i) => {
+      const div = document.createElement('div');
+      div.className = 'speech-card';
+      div.setAttribute('data-index', i);
+      div.innerHTML = `
+        <div class="q-num">${i + 1}</div>
+        <div class="q-text">${q}</div>
+      `;
+      // Click to speak individually
+      div.addEventListener('click', () => {
+        const synth = window.speechSynthesis;
+        synth.cancel();
+        const utter = new SpeechSynthesisUtterance(q);
+        utter.lang = 'en-US';
+        utter.rate = 0.75;
+        const voices = synth.getVoices();
+        const voice = voices.find(v => v.lang.startsWith('en') && v.localService) ||
+                      voices.find(v => v.lang.startsWith('en')) || voices[0];
+        if (voice) utter.voice = voice;
+        document.querySelectorAll('.speech-card').forEach(c => c.classList.remove('playing'));
+        div.classList.add('playing');
+        utter.onend = () => div.classList.replace('playing', 'completed');
+        synth.speak(utter);
+      });
+      container.appendChild(div);
+    });
+  </script>
+</body>
+</html>
