@@ -1916,3 +1916,20 @@ img { max-width: 100%; display: block; }
   margin: 0 auto 1rem;
   border: 2px solid var(--gold);
 }
+
+
+/* v44: mejor encaje de imágenes en popup/anuncios */
+#adPopupContent .ad-banner img {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 300px !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  background: #ffffff !important;
+}
+
+/* v45: posición manual para imágenes de anuncios/popup */
+.ad-banner img,
+#adPopupContent .ad-banner img {
+  object-position: center center;
+}

@@ -41,6 +41,18 @@
     return raw;
   }
 
+
+  function imagePosition(value) {
+    const map = {
+      top: 'center top',
+      bottom: 'center bottom',
+      left: 'left center',
+      right: 'right center',
+      center: 'center center'
+    };
+    return map[String(value || 'center').toLowerCase()] || 'center center';
+  }
+
   function courseImage(course) {
     return course.image_url || course.imagen_url || course.image || '';
   }
@@ -82,7 +94,7 @@
       return `
         <article class="course-card ${featured ? 'featured' : ''}">
           <div class="course-image">
-            ${img ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(title)}" loading="lazy">` : '<span>📚</span>'}
+            ${img ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(title)}" loading="lazy" style="object-position:${escapeHtml(imagePosition(c.image_position || c.posicion_imagen || c.imagePosition || 'center'))}">` : '<span>📚</span>'}
           </div>
           <div class="course-body">
             <div class="course-meta">

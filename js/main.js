@@ -401,6 +401,18 @@ if ('serviceWorker' in navigator) {
   const driveThumbUrl = fileId => fileId ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w400` : '';
   const userPhotoUrl = user => user?.photo_url || driveThumbUrl(user?.photo_file_id) || './images/logo.png';
 
+  function adImagePosition(value) {
+    const map = {
+      top: 'center top',
+      bottom: 'center bottom',
+      left: 'left center',
+      right: 'right center',
+      center: 'center center'
+    };
+    return map[String(value || 'center').toLowerCase()] || 'center center';
+  }
+
+
   function normalizeInternalLink(raw = '#') {
     const value = String(raw || '').trim();
     if (!value || value === '#') return '#comunidad';

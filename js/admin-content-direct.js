@@ -1,4 +1,4 @@
-/* === v42: Guardado directo independiente para Contenido === */
+/* === v45: Guardado directo independiente para Contenido === */
 (function(){
   const CONFIG = window.WT_CONFIG || {};
   const CONTENT_FORMS = new Set([
@@ -105,7 +105,9 @@
         orden: fd.orden ? Number(fd.orden) : 1,
         destacado: bool(fd.destacado),
         activo: bool(fd.activo),
-        delay_ms: fd.tipo === 'popup' ? Number(fd.delay_ms || 2500) : 0
+        image_position: fd.image_position || 'center',
+        delay_ms: fd.tipo === 'popup' ? Number(fd.delay_ms || 2500) : 0,
+        image_position: fd.image_position || 'center'
       };
       requireField(form, row.tipo, 'tipo', 'Debes seleccionar el tipo de anuncio.');
       requireField(form, row.posicion, 'posicion', 'Debes seleccionar la posición del anuncio.');
@@ -147,7 +149,8 @@
         cta: fd.cta || 'Solicitar información',
         orden: fd.orden ? Number(fd.orden) : 1,
         destacado: bool(fd.destacado),
-        activo: bool(fd.activo)
+        activo: bool(fd.activo),
+        image_position: fd.image_position || 'center'
       };
       requireField(form, row.titulo, 'titulo', 'El título del curso es obligatorio.');
       requireField(form, row.descripcion, 'descripcion', 'La descripción del curso es obligatoria.');
@@ -230,7 +233,7 @@
     const oldText = button?.textContent || '';
     try{
       if(button){ button.disabled = true; button.textContent = 'Guardando...'; }
-      msg('info','Validando campos con guardado directo v42...');
+      msg('info','Validando campos con guardado directo v45...');
       const built = buildPayload(formId, form);
       const action = built.file ? 'adminSaveRowWithImage' : 'adminSaveRow';
 
