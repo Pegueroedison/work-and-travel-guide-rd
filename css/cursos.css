@@ -172,3 +172,16 @@
   .courses-toolbar { grid-template-columns:1fr; }
   .courses-hero { min-height:auto; padding-top:92px; }
 }
+
+/* v37: mejor encaje de imágenes de cursos */
+.course-image {
+  background: linear-gradient(135deg, #07122b, #0d1b3e);
+}
+.course-image img {
+  object-fit: contain !important;
+  background: #07122b;
+  padding: 0;
+}
+.course-card {
+  overflow: hidden;
+}

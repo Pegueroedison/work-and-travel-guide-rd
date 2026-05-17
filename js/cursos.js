@@ -33,6 +33,15 @@
     return data.data || {};
   }
 
+
+  function displayTitle(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return 'Curso de inglés';
+    // Evita títulos accidentales compuestos solo por números o símbolos.
+    if (/^[\d\s.,$RDrd-]+$/.test(raw)) return 'Curso de inglés';
+    return raw;
+  }
+
   function courseImage(course) {
     return course.image_url || course.imagen_url || course.image || '';
   }
@@ -64,7 +73,7 @@
     status.textContent = `${list.length} curso${list.length === 1 ? '' : 's'} disponible${list.length === 1 ? '' : 's'}.`;
 
     grid.innerHTML = list.map(c => {
-      const title = c.titulo || c.title || 'Curso de inglés';
+      const title = displayTitle(c.titulo || c.title);
       const desc = c.descripcion || c.description || '';
       const price = c.precio || c.costo || '';
       const img = courseImage(c);

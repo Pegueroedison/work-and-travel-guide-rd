@@ -357,6 +357,130 @@
     return `<table class="admin-table"><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table>`;
   }
 
+
+  function getContentCollections(){
+    const c = state.content || {};
+    return [
+      ...((c.Anuncios?.rows || c.Anuncios || []).map(row => ({ kind:'Anuncio', sheet:'Anuncios', form:'adSimpleForm', mode:'ad', row }))),
+      ...((c.ServiciosJ1?.rows || c.ServiciosJ1 || []).map(row => ({ kind:'Servicio J1', sheet:'ServiciosJ1', form:'serviceSimpleForm', mode:'service', row }))),
+      ...((c.CursoIngles?.rows || c.CursoIngles || []).map(row => ({ kind:'Curso de inglés', sheet:'CursoIngles', form:'courseSimpleForm', mode:'course', row }))),
+      ...((c.GruposWhatsApp?.rows || c.GruposWhatsApp || []).map(row => ({ kind:'WhatsApp', sheet:'GruposWhatsApp', form:'whatsappSimpleForm', mode:'community', row }))),
+      ...((c.Instagram?.rows || c.Instagram || []).map(row => ({ kind:'Instagram', sheet:'Instagram', form:'instagramSimpleForm', mode:'community', row })))
+    ];
+  }
+
+  function isIncompleteContent(item){
+    const r = item.row || {};
+    const sheet = item.sheet;
+    const active = String(r.activo ?? r.active ?? '').toLowerCase();
+    if(sheet === 'Anuncios') return !r.titulo || !r.descripcion || (!r.enlace && !r.imagen_url && !r.image_file_id);
+    if(sheet === 'ServiciosJ1') return !r.nombre || !r.descripcion || (!r.enlace && !r.imagen_url && !r.image_file_id);
+    if(sheet === 'CursoIngles') return !r.titulo || !r.descripcion || (!r.precio && !r.costo);
+    if(sheet === 'GruposWhatsApp') return !r.nombre || !r.enlace;
+    if(sheet === 'Instagram') return (active === 'true' || active === 'sí' || active === 'si') && !r.url;
+    return false;
+  }
+
+  function contentTitle(item){
+    const r = item.row || {};
+    return r.titulo || r.nombre || r.texto_boton || r.id || r.clave || item.kind;
+  }
+
+  function renderContentCards(){
+    const wrap = $('#contentCards');
+    if(!wrap || !state.content) return;
+    const q = ($('#contentSearch')?.value || '').toLowerCase().trim();
+    const filter = $('#contentStatusFilter')?.value || 'all';
+    let items = getContentCollections();
+
+    items = items.filter(item => {
+      const r = item.row || {};
+      const text = JSON.stringify(r).toLowerCase() + ' ' + item.kind.toLowerCase();
+      const active = String(r.activo ?? r.active ?? '').toLowerCase();
+      const isActive = ['true','1','si','sí','activo','active'].includes(active);
+      const featured = ['true','1','si','sí','activo','active'].includes(String(r.destacado ?? r.featured ?? '').toLowerCase());
+      if(q && !text.includes(q)) return false;
+      if(filter === 'active' && !isActive) return false;
+      if(filter === 'inactive' && isActive) return false;
+      if(filter === 'featured' && !featured) return false;
+      if(filter === 'pending' && !isIncompleteContent(item)) return false;
+      return true;
+    });
+
+    if(!items.length){
+      wrap.innerHTML = '<div class="empty-state">No hay contenido con ese filtro.</div>';
+      return;
+    }
+
+    wrap.innerHTML = items.map(item => {
+      const r = item.row || {};
+      const img = normalizeImageUrl(r.imagen_url || r.image_url || '', r.image_file_id || '');
+      const activeVal = r.activo ?? r.active ?? '';
+      const featured = r.destacado ?? r.featured;
+      const desc = r.descripcion || r.description || r.estado || r.url || r.enlace || '';
+      return `
+        <article class="admin-content-item ${isIncompleteContent(item) ? 'is-incomplete' : ''}">
+          <div class="admin-content-preview">
+            ${img ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(contentTitle(item))}" loading="lazy">` : `<span>${item.sheet === 'Anuncios' ? '📢' : item.sheet === 'CursoIngles' ? '📚' : item.sheet === 'ServiciosJ1' ? '🧰' : '💬'}</span>`}
+          </div>
+          <div class="admin-content-body">
+            <div class="admin-content-meta">
+              <span>${escapeHtml(item.kind)}</span>
+              ${activeVal !== '' ? `<span class="status-pill ${escapeHtml(String(activeVal).toLowerCase())}">${escapeHtml(activeVal)}</span>` : ''}
+              ${featured !== undefined && featured !== '' ? `<span class="status-pill destacado">Destacado: ${escapeHtml(featured)}</span>` : ''}
+            </div>
+            <h4>${escapeHtml(short(contentTitle(item), 80))}</h4>
+            <p>${escapeHtml(short(desc, 120))}</p>
+            ${isIncompleteContent(item) ? '<small class="content-warning">Pendiente/incompleto: revisa campos obligatorios.</small>' : ''}
+            <div class="mini-actions">
+              <button type="button" class="mini-btn approve" data-content-edit="${escapeHtml(item.sheet)}" data-content-id="${escapeHtml(r.id || r.clave || '')}">Editar</button>
+              ${img ? `<a class="mini-btn" href="${escapeHtml(img)}" target="_blank" rel="noopener noreferrer">Vista previa</a>` : ''}
+            </div>
+          </div>
+        </article>
+      `;
+    }).join('');
+  }
+
+  function setContentMode(mode){
+    $$('.content-mode-btn').forEach(b=>b.classList.toggle('active', b.dataset.contentMode === mode));
+    $$('.content-editor-card').forEach(card=>card.classList.toggle('active', card.dataset.contentEditor === mode));
+    const card = document.querySelector(`.content-editor-card[data-content-editor="${mode}"]`);
+    if(card) card.scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  function fillForm(formId, row){
+    const form = formById(formId);
+    Object.entries(row || {}).forEach(([key, value]) => {
+      const field = form.elements[key];
+      if(!field || field.type === 'file') return;
+      if(field.tagName === 'SELECT') {
+        const val = String(value ?? '');
+        const match = Array.from(field.options).find(o => String(o.value).toLowerCase() === val.toLowerCase() || String(o.textContent).toLowerCase() === val.toLowerCase());
+        field.value = match ? match.value : val;
+      } else {
+        field.value = value ?? '';
+      }
+    });
+  }
+
+  function editContentRecord(sheet, id){
+    const item = getContentCollections().find(x => x.sheet === sheet && String(x.row.id || x.row.clave || '') === String(id));
+    if(!item) return setMsg('error','No se encontró el registro para editar.');
+    setContentMode(item.mode);
+    fillForm(item.form, item.row);
+    const img = normalizeImageUrl(item.row.imagen_url || item.row.image_url || '', item.row.image_file_id || '');
+    const form = formById(item.form);
+    const preview = form.querySelector('.admin-image-preview');
+    if(preview && img) {
+      const im = preview.querySelector('img');
+      if(im) im.src = img;
+      preview.hidden = false;
+    }
+    setMsg('info', `Editando ${item.kind}: ${contentTitle(item)}. Cuando termines, presiona guardar.`);
+  }
+
+
   async function loadContent(){
     try{
       const data = await contentAdmin({ action:'adminListAll', token:state.token });
@@ -372,6 +496,7 @@
       $('#tableServiciosJ1').innerHTML = tableHTML(servicios, { hide:['rowNumber'] });
       $('#tableCursoIngles').innerHTML = tableHTML(curso, { hide:['rowNumber'] });
       $('#tableComunidad').innerHTML = '<h4>WhatsApp</h4>' + tableHTML(grupos, { hide:['rowNumber'] }) + '<h4 style="margin-top:1rem">Instagram</h4>' + tableHTML(instagram, { hide:['rowNumber'] });
+      renderContentCards();
     }catch(err){ $('#tableAnuncios').innerHTML = `<div class="empty-state">${escapeHtml(err.message)}</div>`; }
   }
 
@@ -436,8 +561,10 @@
     }
     if(e.target?.classList?.contains('content-mode-btn')){
       const mode = e.target.dataset.contentMode;
-      $$('.content-mode-btn').forEach(b=>b.classList.toggle('active', b === e.target));
-      $$('.content-editor-card').forEach(card=>card.classList.toggle('active', card.dataset.contentEditor === mode));
+      setContentMode(mode);
+    }
+    if(e.target?.dataset?.contentEdit){
+      editContentRecord(e.target.dataset.contentEdit, e.target.dataset.contentId);
     }
     if(e.target?.classList?.contains('clear-image-btn')){
       const box = e.target.closest('.admin-image-preview');
@@ -463,7 +590,13 @@
   });
 
 
+  document.addEventListener('input', (e)=>{
+    if(e.target?.id === 'contentSearch') renderContentCards();
+  });
+
   document.addEventListener('change', (e)=>{
+    if(e.target?.id === 'contentStatusFilter') renderContentCards();
+
     if(e.target?.matches?.('.content-image-input, #contentImageFile')){
       const file = e.target.files && e.target.files[0];
       const previewId = e.target.dataset.preview || 'contentImagePreview';
@@ -691,15 +824,15 @@
       if(button){ button.disabled = true; if(button.tagName === 'BUTTON') button.textContent = 'Guardando...'; }
       setMsg('info','Validando campos...');
 
-      if(formId === 'adSimpleForm') await saveAdForm(form);
-      else if(formId === 'serviceSimpleForm') await saveServiceForm(form);
-      else if(formId === 'courseSimpleForm') await saveCourseForm(form);
-      else if(formId === 'instagramSimpleForm') await saveInstagramForm(form);
-      else if(formId === 'whatsappSimpleForm') await saveWhatsAppForm(form);
-      else if(formId === 'contentQuickForm') await saveAdvancedForm(form);
+      if(formId === 'adSimpleForm') { setMsg('info','Validando anuncio...'); await saveAdForm(form); }
+      else if(formId === 'serviceSimpleForm') { setMsg('info','Validando servicio J1...'); await saveServiceForm(form); }
+      else if(formId === 'courseSimpleForm') { setMsg('info','Validando curso de inglés...'); await saveCourseForm(form); }
+      else if(formId === 'instagramSimpleForm') { setMsg('info','Validando Instagram...'); await saveInstagramForm(form); }
+      else if(formId === 'whatsappSimpleForm') { setMsg('info','Validando grupo de WhatsApp...'); await saveWhatsAppForm(form); }
+      else if(formId === 'contentQuickForm') { setMsg('info','Validando registro avanzado...'); await saveAdvancedForm(form); }
       else if(formId === 'forumSettingsForm') await saveForumSettingsForm(form);
       else if(formId === 'userActionForm') await saveUserActionForm(form, button);
-      else throw new Error('Este formulario no existe en el panel admin actualizado.');
+      else throw new Error('Este formulario no existe en el panel admin actualizado: ' + formId + '.');
     }catch(err){
       setMsg('error', err.message || String(err));
     }finally{
@@ -726,9 +859,35 @@
     });
   }
 
+  function bindStableContentButtons(){
+    const pairs = [
+      ['saveAdDirectBtn','adSimpleForm'],
+      ['saveServiceDirectBtn','serviceSimpleForm'],
+      ['saveCourseDirectBtn','courseSimpleForm'],
+      ['saveInstagramDirectBtn','instagramSimpleForm'],
+      ['saveWhatsAppDirectBtn','whatsappSimpleForm'],
+      ['saveAdvancedDirectBtn','contentQuickForm']
+    ];
+    pairs.forEach(([btnId, formId]) => {
+      const btn = document.getElementById(btnId);
+      if(!btn) return;
+      btn.type = 'button';
+      btn.setAttribute('data-admin-save', formId);
+      btn.onclick = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if(event.stopImmediatePropagation) event.stopImmediatePropagation();
+        window.WTAdminSave(formId, btn, event);
+        return false;
+      };
+    });
+  }
+
+
   bindDirectAdminButtons();
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindDirectAdminButtons);
-  window.addEventListener('pageshow', bindDirectAdminButtons);
+  bindStableContentButtons();
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { bindDirectAdminButtons(); bindStableContentButtons(); });
+  window.addEventListener('pageshow', () => { bindDirectAdminButtons(); bindStableContentButtons(); });
 
   document.addEventListener('click', (e)=>{
     const btn = e.target?.closest?.('[data-admin-save]');
@@ -752,5 +911,5 @@
   }, true);
 
   window.addEventListener('scroll', () => { const p = $('#progressBar'); if(p) p.style.width = ((window.scrollY/(document.body.scrollHeight-innerHeight))*100) + '%'; });
-  checkAccess().then(ok => { if(ok) loadAll(); });
+  checkAccess().then(ok => { if(ok) { setMsg('success','Panel listo. Los botones de Contenido están conectados.'); loadAll(); } });
 })();

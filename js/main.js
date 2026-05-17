@@ -577,8 +577,8 @@ if ('serviceWorker' in navigator) {
       const courseCard = isActive(course.active ?? course.activo ?? true) ? `
         <article class="service-card featured" id="englishCourseCard">
           <div class="service-icon">📚</div>
-          <h3>${escapeHtml(course.title || course.titulo || 'Curso de inglés')}</h3>
-          <p id="englishCourseDesc">${escapeHtml(courseList.length > 1 ? `${courseList.length} cursos disponibles. Entra para ver fotos, costos y detalles.` : (course.description || course.descripcion || 'Contenido administrable desde Google Sheets.'))}</p>
+          <h3>Cursos de inglés</h3>
+          <p id="englishCourseDesc">${escapeHtml(courseList.length ? `${courseList.length} curso${courseList.length === 1 ? '' : 's'} disponible${courseList.length === 1 ? '' : 's'}. Entra para ver fotos, costos y detalles.` : 'Cursos disponibles para prepararte para tu entrevista J1.')}</p>
           <a id="englishCourseLink" href="./cursos.html">${escapeHtml('Ver cursos disponibles')}</a>
         </article>
       ` : '';

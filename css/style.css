@@ -1871,7 +1871,7 @@ img { max-width: 100%; display: block; }
 }
 
 
-/* v35: popup visible y seguro */
+/* v37: popup visible y seguro */
 .ad-popup-overlay {
   background: rgba(5,10,25,.78) !important;
 }
@@ -1896,4 +1896,11 @@ img { max-width: 100%; display: block; }
   max-height: 260px;
   object-fit: cover;
   border-radius: 14px;
+}
+
+/* v37: mejor encaje de imágenes en popup */
+#adPopupContent .ad-banner img {
+  object-fit: contain !important;
+  background: #0d1b3e;
+  max-height: 320px !important;
 }
