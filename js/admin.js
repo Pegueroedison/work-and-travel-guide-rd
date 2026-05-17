@@ -134,6 +134,54 @@
       reader.readAsDataURL(file);
     });
   }
+
+  function contentFormPost(payload={}, label='CONTENT_API_URL'){
+    if(!CONFIG.CONTENT_API_URL) return Promise.reject(new Error(`Falta configurar ${label} en js/config.js.`));
+    return new Promise((resolve, reject)=>{
+      const iframeName = 'wt_hidden_post_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+      const iframe = document.createElement('iframe');
+      iframe.name = iframeName;
+      iframe.style.display = 'none';
+      iframe.setAttribute('aria-hidden', 'true');
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = CONFIG.CONTENT_API_URL;
+      form.target = iframeName;
+      form.style.display = 'none';
+
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'payload';
+      input.value = JSON.stringify({ ...payload, usersApiUrl: CONFIG.USERS_API_URL || '' });
+      form.appendChild(input);
+
+      let loaded = false;
+      const timer = setTimeout(()=>{
+        cleanup();
+        reject(new Error(`${label} tardó demasiado. Revisa que la Web App de Contenido esté implementada como nueva versión y con acceso “Cualquiera”.`));
+      }, String(payload.action) === 'adminSaveRowWithImage' ? 90000 : 45000);
+
+      function cleanup(){
+        clearTimeout(timer);
+        setTimeout(()=>{
+          try { form.remove(); } catch(e) {}
+          try { iframe.remove(); } catch(e) {}
+        }, 300);
+      }
+
+      iframe.addEventListener('load', ()=>{
+        if(loaded) return;
+        loaded = true;
+        cleanup();
+        resolve({ ok:true });
+      });
+
+      document.body.appendChild(iframe);
+      document.body.appendChild(form);
+      form.submit();
+    });
+  }
   function imageFolderForSheet(sheetName){
     if(sheetName === 'Anuncios') return 'Anuncios';
     if(sheetName === 'ServiciosJ1') return 'Servicios';
@@ -145,35 +193,30 @@
   function autoId(prefix){ return `${prefix}-${Date.now().toString().slice(-8)}`; }
   function cleanRow(row){ Object.keys(row).forEach(k => (row[k] === undefined || row[k] === '') && delete row[k]); return row; }
 
-  async function uploadContentImageIfAny(form, sheetName, recordId, row){
-    const file = form.querySelector('input[type="file"]')?.files?.[0];
-    if(!file) return row;
-    setMsg('info','Subiendo imagen a Google Drive...');
-    const upload = await apiPost(CONFIG.CONTENT_API_URL, {
-      action:'adminUploadImage',
-      token:state.token,
-      sheetName,
-      recordId,
-      folder:imageFolderForSheet(sheetName),
-      file:{ name:file.name, mimeType:file.type, size:file.size, base64:await fileToBase64(file) }
-    }, 'CONTENT_API_URL');
-    const image = upload.image || upload.data?.image || upload;
-    row.imagen_url = image.image_url || image.url || row.imagen_url || '';
-    row.image_file_id = image.file_id || image.image_file_id || '';
-    row.image_name = image.name || file.name;
-    row.image_size = image.size || file.size;
-    row.image_type = image.mimeType || file.type;
-    return row;
-  }
-
   async function saveContentRow(sheetName, row, form){
     row = cleanRow(row);
-    await uploadContentImageIfAny(form, sheetName, row.id || row.clave || '', row);
-    await contentAdmin({ action:'adminSaveRow', token:state.token, sheetName, row });
-    setMsg('success','Guardado correctamente. Actualizando datos...');
+    const file = form.querySelector('input[type="file"]')?.files?.[0] || null;
+    let payload = { action:'adminSaveRow', token:state.token, sheetName, row };
+
+    if(file){
+      setMsg('info','Preparando imagen para subir a Google Drive...');
+      payload = {
+        action:'adminSaveRowWithImage',
+        token:state.token,
+        sheetName,
+        row,
+        recordId: row.id || row.clave || '',
+        folder:imageFolderForSheet(sheetName),
+        file:{ name:file.name, mimeType:file.type, size:file.size, base64:await fileToBase64(file) }
+      };
+    }
+
+    setMsg('info', file ? 'Subiendo imagen y guardando...' : 'Guardando en Google Sheets...');
+    await contentFormPost(payload, 'CONTENT_API_URL');
+    setMsg('success','Guardado enviado correctamente. Actualizando datos...');
     form.reset();
     form.querySelectorAll('.admin-image-preview').forEach(p => { p.hidden = true; const img = p.querySelector('img'); if(img) img.removeAttribute('src'); });
-    loadContent();
+    setTimeout(()=>loadContent(), 900);
   }
 
   async function checkAccess(){
@@ -266,10 +309,10 @@
       const reports = state.forum.reports?.rows || state.forum.reports || [];
       const queue = state.forum.queue?.rows || state.forum.queue || [];
       const configRows = state.forum.config?.rows || state.forum.config || [];
-      const commentsApprovalRow = configRows.find(r => String(r.clave || '').toLowerCase() === 'comments_require_approval');
-      const commentsApproval = ['true','1','si','sí','activo','active'].includes(String(commentsApprovalRow?.valor || '').toLowerCase().trim());
+      const moderationApprovalRow = configRows.find(r => String(r.clave || '').toLowerCase() === 'comments_require_approval');
+      const moderationApproval = ['true','1','si','sí','activo','active'].includes(String(moderationApprovalRow?.valor || '').toLowerCase().trim());
       const approvalSelect = $('#commentsRequireApproval');
-      if (approvalSelect) approvalSelect.value = commentsApproval ? 'TRUE' : 'FALSE';
+      if (approvalSelect) approvalSelect.value = moderationApproval ? 'TRUE' : 'FALSE';
       const pending = queue.filter(r => String(r.status || '').toLowerCase() === 'open').length + posts.filter(r => String(r.status || '').toLowerCase() === 'pending').length + comments.filter(r => String(r.status || '').toLowerCase() === 'pending').length;
       $('#countPendingForum').textContent = pending;
       $('#tableModerationQueue').innerHTML = tableHTML(queue, { hide:['rowNumber'], keys:['id','target_type','target_id','reason','status','created_at','reviewed_by','note'], actions:(row)=>moderateActions(row, row.target_type || 'post') });
@@ -466,41 +509,14 @@
           row.destacado = fd.destacado === 'TRUE';
         }
         Object.keys(row).forEach(k => row[k] === undefined && delete row[k]);
-        const file = $('#contentImageFile')?.files?.[0];
-        if(file && sheetName !== 'Config'){
-          setMsg('info','Subiendo imagen a Google Drive...');
-          const upload = await apiPost(CONFIG.CONTENT_API_URL, {
-            action:'adminUploadImage',
-            token:state.token,
-            sheetName,
-            recordId:row.id,
-            folder:imageFolderForSheet(sheetName),
-            file:{
-              name:file.name,
-              mimeType:file.type,
-              size:file.size,
-              base64:await fileToBase64(file)
-            }
-          }, 'CONTENT_API_URL');
-          const image = upload.image || upload.data?.image || upload;
-          row.imagen_url = image.image_url || image.url || row.imagen_url || '';
-          row.image_file_id = image.file_id || image.image_file_id || '';
-          row.image_name = image.name || file.name;
-          row.image_size = image.size || file.size;
-          row.image_type = image.mimeType || file.type;
-        }
-        await contentAdmin({ action:'adminSaveRow', token:state.token, sheetName, row });
-        setMsg('success','Registro guardado correctamente.');
-        form.reset();
-        const preview = $('#contentImagePreview'); if(preview) preview.hidden = true;
-        loadContent();
+        await saveContentRow(sheetName, row, form);
         return;
       }
 
       if(form.id === 'forumSettingsForm'){
         const fd = Object.fromEntries(new FormData(form).entries());
         await apiPost(CONFIG.FORUM_API_URL, { action:'adminUpdateConfig', token:state.token, key:'comments_require_approval', value:fd.comments_require_approval }, 'FORUM_API_URL');
-        setMsg('success','Ajuste del foro guardado.');
+        setMsg('success','Ajuste de moderación guardado.');
         loadForum();
         return;
       }

@@ -280,14 +280,14 @@
         <div class="admin-card">
           <h3>Ajustes de moderación</h3>
           <form id="forumSettingsForm" novalidate class="admin-form-grid forum-settings">
-            <label>Comentarios
+            <label>Publicaciones y comentarios
               <select name="comments_require_approval" id="commentsRequireApproval">
                 <option value="FALSE">Aprobar automáticamente si no tiene spam</option>
-                <option value="TRUE">Todos los comentarios requieren aprobación</option>
+                <option value="TRUE">Todo requiere aprobación</option>
               </select>
             </label>
             <button onclick="window.WTAdminSave && window.WTAdminSave('forumSettingsForm', this, event); return false;" class="btn btn-primary" type="button" data-admin-save="forumSettingsForm">Guardar ajuste</button>
-            <p class="admin-setting-help">Si activas esta opción, todo comentario nuevo quedará en estado <strong>pending</strong> hasta que un moderador, admin o superadmin lo apruebe.</p>
+            <p class="admin-setting-help">Si activas esta opción, toda publicación y todo comentario nuevo quedará en estado <strong>pending</strong> hasta que un moderador, admin o superadmin lo apruebe.</p>
           </form>
         </div>
 

@@ -1,1 +1,196 @@
 /* Estilos específicos del foro. La mayoría hereda de style.css. */
+
+
+/* === FIX v22: Foro responsive y textos ajustados ===
+   Evita que "Crear publicación" y "Publicaciones recientes" se salgan de la pantalla,
+   especialmente cuando hay textos largos en celular. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+#foro .section-inner {
+  width: min(100%, 1180px);
+  max-width: 1180px;
+  padding-left: clamp(0.85rem, 2vw, 1.25rem);
+  padding-right: clamp(0.85rem, 2vw, 1.25rem);
+}
+
+#foro .forum-layout {
+  width: 100%;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+#foro .forum-panel,
+#foro .forum-feed,
+#foro .forum-post,
+#foro .comment-item,
+#foro .forum-auth-bar {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+#foro .forum-panel {
+  position: sticky;
+  top: 82px;
+}
+
+#foro .forum-panel form,
+#foro .forum-panel label,
+#foro .forum-panel input,
+#foro .forum-panel select,
+#foro .forum-panel textarea,
+#foro .forum-panel button {
+  width: 100%;
+  max-width: 100%;
+}
+
+#foro .forum-feed {
+  overflow-x: hidden;
+}
+
+#foro .forum-post,
+#foro .comment-item {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+#foro .forum-post h4,
+#foro .forum-post p,
+#foro .comment-item p,
+#foro .forum-author-name,
+#foro .forum-author-meta {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+#foro .forum-post p {
+  max-width: 100%;
+  white-space: normal;
+}
+
+#foro .forum-actions {
+  max-width: 100%;
+}
+
+#foro .forum-actions button {
+  max-width: 100%;
+}
+
+@media (max-width: 980px) {
+  #foro .forum-layout {
+    grid-template-columns: 1fr;
+  }
+
+  #foro .forum-panel {
+    position: static;
+  }
+
+  #foro .forum-feed-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 560px) {
+  #foro.section {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  #foro .section-inner {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  #foro .forum-auth-bar,
+  #foro .forum-panel,
+  #foro .forum-feed {
+    border-radius: 18px;
+    padding: 1rem;
+    width: 100%;
+  }
+
+  #foro .forum-auth-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #foro .forum-auth-user {
+    width: 100%;
+  }
+
+  #foro .forum-entry-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  #foro .forum-entry-actions .btn,
+  #foro .forum-panel .btn,
+  #foro .forum-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  #foro .forum-post {
+    padding: 0.95rem;
+    border-radius: 18px;
+  }
+
+  #foro .forum-author {
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  #foro .forum-author img {
+    width: 44px;
+    height: 44px;
+  }
+
+  #foro .forum-author-name {
+    font-size: 0.96rem;
+  }
+
+  #foro .forum-author-meta {
+    font-size: 0.72rem;
+  }
+
+  #foro .forum-post h4 {
+    font-size: 1.05rem;
+    line-height: 1.25;
+  }
+
+  #foro .forum-post p {
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  #foro .comment-item {
+    padding: 0.8rem;
+  }
+
+  #foro .comment-item p,
+  #foro .comment-report-btn {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 380px) {
+  #foro .section-inner {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  #foro .forum-panel,
+  #foro .forum-feed,
+  #foro .forum-auth-bar {
+    padding: 0.85rem;
+  }
+}
