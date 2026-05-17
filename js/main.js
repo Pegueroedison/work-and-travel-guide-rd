@@ -621,8 +621,21 @@ if ('serviceWorker' in navigator) {
 
     const forumPromo = $('#heroForumPromo');
     if (forumPromo) forumPromo.classList.toggle('logged-in', logged);
+    const heroForumPhoto = $('#heroForumPhoto');
+    const heroForumIconFallback = $('#heroForumIconFallback');
+
     if (logged) {
-      $('#heroForumIcon') && ($('#heroForumIcon').textContent = '👋');
+      const heroPhoto = userPhotoUrl(state.currentUser);
+      if (heroForumPhoto) {
+        heroForumPhoto.src = heroPhoto;
+        heroForumPhoto.hidden = false;
+        heroForumPhoto.onerror = () => {
+          heroForumPhoto.hidden = true;
+          if (heroForumIconFallback) heroForumIconFallback.textContent = '👋';
+        };
+      }
+      if (heroForumIconFallback) heroForumIconFallback.textContent = '👋';
+      if (heroForumIconFallback) heroForumIconFallback.style.display = heroForumPhoto ? 'none' : 'inline-flex';
       $('#heroForumLabel') && ($('#heroForumLabel').textContent = `Bienvenido${adminAllowed ? ' · administrador' : ''}`);
       $('#heroForumTitle') && ($('#heroForumTitle').textContent = `Hola, ${state.currentUser.name || 'estudiante'}`);
       $('#heroForumDesc') && ($('#heroForumDesc').textContent = adminAllowed
@@ -632,7 +645,14 @@ if ('serviceWorker' in navigator) {
       $('#heroForumSecondaryBtn') && ($('#heroForumSecondaryBtn').textContent = adminAllowed ? 'Panel Admin' : 'Mi perfil');
       $('#heroForumSecondaryBtn') && ($('#heroForumSecondaryBtn').href = adminAllowed ? './admin.html' : './perfil.html');
     } else {
-      $('#heroForumIcon') && ($('#heroForumIcon').textContent = '🗣️');
+      if (heroForumPhoto) {
+        heroForumPhoto.hidden = true;
+        heroForumPhoto.removeAttribute('src');
+      }
+      if (heroForumIconFallback) {
+        heroForumIconFallback.style.display = 'inline-flex';
+        heroForumIconFallback.textContent = '🗣️';
+      }
       $('#heroForumLabel') && ($('#heroForumLabel').textContent = 'Comunidad activa');
       $('#heroForumTitle') && ($('#heroForumTitle').textContent = 'Foro de Estudiantes Work and Travel RD');
       $('#heroForumDesc') && ($('#heroForumDesc').textContent = 'Pregunta, responde y comparte experiencias sobre entrevista consular, visa, documentos, housing, taxes, viajes e internet en USA.');

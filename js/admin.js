@@ -100,10 +100,10 @@
       const queue = state.forum.queue?.rows || state.forum.queue || [];
       const pending = queue.filter(r => String(r.status || '').toLowerCase() === 'open').length + posts.filter(r => String(r.status || '').toLowerCase() === 'pending').length + comments.filter(r => String(r.status || '').toLowerCase() === 'pending').length;
       $('#countPendingForum').textContent = pending;
-      $('#tableModerationQueue').innerHTML = tableHTML(queue, { hide:['rowNumber'], actions:(row)=>moderateActions(row, row.target_type || 'post') });
-      $('#tableReports').innerHTML = tableHTML(reports, { hide:['rowNumber'] });
-      $('#tablePosts').innerHTML = tableHTML(posts, { hide:['rowNumber'], keys:['id','title','category','author_name','status','moderation_reason','created_at','reports_count'], actions:(row)=>moderateActions(row, 'post') });
-      $('#tableComments').innerHTML = tableHTML(comments, { hide:['rowNumber'], keys:['id','post_id','body','author_name','status','moderation_reason','created_at','reports_count'], actions:(row)=>moderateActions(row, 'comment') });
+      $('#tableModerationQueue').innerHTML = tableHTML(queue, { hide:['rowNumber'], keys:['id','target_type','target_id','reason','status','created_at','reviewed_by','note'], actions:(row)=>moderateActions(row, row.target_type || 'post') });
+      $('#tableReports').innerHTML = tableHTML(reports, { hide:['rowNumber'], keys:['id','target_type','target_id','reporter_email','reason','status','created_at','resolved_by'] });
+      $('#tablePosts').innerHTML = tableHTML(posts, { hide:['rowNumber'], keys:['id','title','category','author_name','author_role','status','moderation_reason','created_at','reports_count'], actions:(row)=>moderateActions(row, 'post') });
+      $('#tableComments').innerHTML = tableHTML(comments, { hide:['rowNumber'], keys:['id','post_id','body','author_name','author_role','status','moderation_reason','created_at','reports_count'], actions:(row)=>moderateActions(row, 'comment') });
     }catch(err){ $('#tableModerationQueue').innerHTML = `<div class="empty-state">${escapeHtml(err.message)}</div>`; }
   }
 

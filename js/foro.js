@@ -6,7 +6,15 @@
   const state = { token: localStorage.getItem('wt_session') || '', user: JSON.parse(localStorage.getItem('wt_user') || 'null') };
 
   const driveThumbUrl = fileId => fileId ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w400` : '';
-  const avatarUrl = obj => obj?.author_photo_url || driveThumbUrl(obj?.author_photo_file_id) || obj?.photo_url || driveThumbUrl(obj?.photo_file_id) || './images/logo.png';
+  const currentUserPhoto = () => state.user?.photo_url || driveThumbUrl(state.user?.photo_file_id) || '';
+  const sameAsCurrentUser = obj => {
+    if (!state.user || !obj) return false;
+    const itemUserId = String(obj.author_id || obj.user_id || '').trim();
+    const itemEmail = String(obj.author_email || obj.email || '').trim().toLowerCase();
+    return (itemUserId && itemUserId === String(state.user.id || '').trim()) ||
+           (itemEmail && itemEmail === String(state.user.email || '').trim().toLowerCase());
+  };
+  const avatarUrl = obj => obj?.author_photo_url || driveThumbUrl(obj?.author_photo_file_id) || obj?.photo_url || driveThumbUrl(obj?.photo_file_id) || (sameAsCurrentUser(obj) ? currentUserPhoto() : '') || './images/logo.png';
   const safeDate = value => {
     if (!value) return '';
     const d = new Date(value);
@@ -72,6 +80,7 @@
         const data = await apiGet(CONFIG.FORUM_API_URL, { action:'listComments', post_id:postEl.dataset.postId });
         const comments = data?.data?.comments || data?.comments || [];
         list.innerHTML = comments.length ? comments.map(renderComment).join('') : '';
+        list.querySelectorAll('img[data-fallback]').forEach(img => { img.onerror = () => { img.src = './images/logo.png'; }; });
       }catch(err){ list.innerHTML = ''; }
     }));
   }
@@ -81,7 +90,7 @@
     const category = item.category || item.categoria || 'General';
     const date = safeDate(item.created_at);
     return `<div class="forum-author ${type === 'comment' ? 'comment-author' : ''}">
-      <img src="${escapeHtml(avatarUrl(item))}" alt="Foto de ${escapeHtml(name)}" loading="lazy" data-fallback="1" />
+      <img src="${escapeHtml(avatarUrl(item))}" alt="Foto de ${escapeHtml(name)}" loading="lazy" data-fallback="1" data-author-id="${escapeHtml(item.author_id || '')}" data-author-email="${escapeHtml(item.author_email || '')}" />
       <div class="forum-author-info">
         <div class="forum-author-name">${escapeHtml(name)} ${roleBadge(item.author_role || item.role)}</div>
         <div class="forum-author-meta">
