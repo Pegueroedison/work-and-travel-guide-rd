@@ -14,6 +14,27 @@
   function isSuper(user){ return String(user?.role || '').toLowerCase() === 'superadmin'; }
   function short(v, n=80){ v = String(v ?? ''); return v.length > n ? v.slice(0,n) + '…' : v; }
 
+  function driveThumbUrl(fileId){ return fileId ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w600` : ''; }
+  function normalizeImageUrl(url, fileId){
+    const byId = driveThumbUrl(fileId);
+    if(byId) return byId;
+    return url || '';
+  }
+  function fileToBase64(file){
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result).split(',')[1] || '');
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  function imageFolderForSheet(sheetName){
+    if(sheetName === 'Anuncios') return 'Anuncios';
+    if(sheetName === 'ServiciosJ1') return 'Servicios';
+    if(sheetName === 'CursoIngles') return 'Curso de ingles';
+    return 'Contenido';
+  }
+
   async function checkAccess(){
     $('#cfgContent') && ($('#cfgContent').textContent = CONFIG.CONTENT_API_URL || 'No configurado');
     $('#cfgUsers') && ($('#cfgUsers').textContent = CONFIG.USERS_API_URL || 'No configurado');
@@ -44,6 +65,11 @@
         let val = row[k];
         const low = String(k).toLowerCase();
         if(['status','estado','role','active','activo'].includes(low)) val = `<span class="status-pill ${escapeHtml(String(val).toLowerCase())}">${escapeHtml(val)}</span>`;
+        else if(['imagen_url','image_url','photo_url'].includes(low)) {
+          const fileId = row.image_file_id || row.imagen_file_id || '';
+          const imgUrl = normalizeImageUrl(val, fileId);
+          val = imgUrl ? `<a class="admin-img-link" href="${escapeHtml(imgUrl)}" target="_blank" rel="noopener noreferrer"><img class="admin-img-thumb" src="${escapeHtml(imgUrl)}" alt="Imagen"><span>Ver imagen</span></a>` : '';
+        }
         else if(low.includes('url') || low === 'enlace') val = val ? `<a href="${escapeHtml(val)}" target="_blank" rel="noopener noreferrer">${escapeHtml(short(val,50))}</a>` : '';
         else if(low === 'id' || low.endsWith('_id') || low === 'target_id') val = `<code>${escapeHtml(val)}</code>`;
         else val = escapeHtml(short(val,120));
@@ -98,6 +124,11 @@
       const comments = state.forum.comments?.rows || state.forum.comments || [];
       const reports = state.forum.reports?.rows || state.forum.reports || [];
       const queue = state.forum.queue?.rows || state.forum.queue || [];
+      const configRows = state.forum.config?.rows || state.forum.config || [];
+      const commentsApprovalRow = configRows.find(r => String(r.clave || '').toLowerCase() === 'comments_require_approval');
+      const commentsApproval = ['true','1','si','sí','activo','active'].includes(String(commentsApprovalRow?.valor || '').toLowerCase().trim());
+      const approvalSelect = $('#commentsRequireApproval');
+      if (approvalSelect) approvalSelect.value = commentsApproval ? 'TRUE' : 'FALSE';
       const pending = queue.filter(r => String(r.status || '').toLowerCase() === 'open').length + posts.filter(r => String(r.status || '').toLowerCase() === 'pending').length + comments.filter(r => String(r.status || '').toLowerCase() === 'pending').length;
       $('#countPendingForum').textContent = pending;
       $('#tableModerationQueue').innerHTML = tableHTML(queue, { hide:['rowNumber'], keys:['id','target_type','target_id','reason','status','created_at','reviewed_by','note'], actions:(row)=>moderateActions(row, row.target_type || 'post') });
@@ -119,6 +150,12 @@
     if(e.target?.id === 'reloadContentBtn') loadContent();
     if(e.target?.id === 'reloadUsersBtn') loadUsers();
     if(e.target?.id === 'reloadForumBtn') loadForum();
+    if(e.target?.id === 'clearContentImageBtn'){
+      const input = $('#contentImageFile');
+      const preview = $('#contentImagePreview');
+      if(input) input.value = '';
+      if(preview){ preview.hidden = true; const img = preview.querySelector('img'); if(img) img.removeAttribute('src'); }
+    }
     if(e.target?.dataset?.moderate){
       const decision = e.target.dataset.moderate;
       const type = e.target.dataset.type;
@@ -129,11 +166,36 @@
     }
   });
 
+
+  document.addEventListener('change', (e)=>{
+    if(e.target?.id === 'contentImageFile'){
+      const file = e.target.files && e.target.files[0];
+      const preview = $('#contentImagePreview');
+      const img = preview?.querySelector('img');
+      if(!file || !preview || !img){ if(preview) preview.hidden = true; return; }
+      if(!/^image\/(png|jpe?g|webp)$/i.test(file.type)){
+        setMsg('error','Formato no permitido. Usa JPG, JPEG, PNG o WEBP.');
+        e.target.value = '';
+        preview.hidden = true;
+        return;
+      }
+      if(file.size > 3 * 1024 * 1024){
+        setMsg('error','La imagen no puede pasar de 3 MB.');
+        e.target.value = '';
+        preview.hidden = true;
+        return;
+      }
+      img.src = URL.createObjectURL(file);
+      preview.hidden = false;
+    }
+  });
+
   document.addEventListener('submit', async (e)=>{
     const form = e.target;
     if(form.id === 'contentQuickForm'){
       e.preventDefault();
-      const fd = Object.fromEntries(new FormData(form).entries());
+      const formData = new FormData(form);
+      const fd = Object.fromEntries(formData.entries());
       const row = {};
       const sheetName = fd.sheetName;
       if(sheetName === 'Config') { row.clave = fd.id; row.valor = fd.titulo; row.descripcion = fd.descripcion; }
@@ -142,15 +204,55 @@
         if(fd.titulo) { row.titulo = fd.titulo; row.nombre = fd.titulo; row.url = fd.titulo.startsWith('http') ? fd.titulo : undefined; }
         if(fd.descripcion) row.descripcion = fd.descripcion;
         if(fd.enlace) { row.enlace = fd.enlace; row.url = fd.enlace; }
+        if(fd.imagen_url) row.imagen_url = fd.imagen_url;
         if(fd.cta) { row.cta = fd.cta; row.texto_boton = fd.cta; }
         if(fd.orden) row.orden = Number(fd.orden);
         row.activo = fd.activo === 'TRUE';
         row.destacado = fd.destacado === 'TRUE';
       }
       Object.keys(row).forEach(k => row[k] === undefined && delete row[k]);
-      try{ await apiPost(CONFIG.CONTENT_API_URL, { action:'adminSaveRow', token:state.token, sheetName, row }, 'CONTENT_API_URL'); setMsg('success','Registro guardado.'); form.reset(); loadContent(); }
+      try{
+        const file = $('#contentImageFile')?.files?.[0];
+        if(file && sheetName !== 'Config'){
+          setMsg('info','Subiendo imagen a Google Drive...');
+          const upload = await apiPost(CONFIG.CONTENT_API_URL, {
+            action:'adminUploadImage',
+            token:state.token,
+            sheetName,
+            recordId:row.id,
+            folder:imageFolderForSheet(sheetName),
+            file:{
+              name:file.name,
+              mimeType:file.type,
+              size:file.size,
+              base64:await fileToBase64(file)
+            }
+          }, 'CONTENT_API_URL');
+          const image = upload.image || upload.data?.image || upload;
+          row.imagen_url = image.image_url || image.url || row.imagen_url || '';
+          row.image_file_id = image.file_id || image.image_file_id || '';
+          row.image_name = image.name || file.name;
+          row.image_size = image.size || file.size;
+          row.image_type = image.mimeType || file.type;
+        }
+        await apiPost(CONFIG.CONTENT_API_URL, { action:'adminSaveRow', token:state.token, sheetName, row }, 'CONTENT_API_URL');
+        setMsg('success','Registro guardado correctamente.');
+        form.reset();
+        const preview = $('#contentImagePreview'); if(preview) preview.hidden = true;
+        loadContent();
+      }
       catch(err){ setMsg('error', err.message); }
     }
+    if(form.id === 'forumSettingsForm'){
+      e.preventDefault();
+      const fd = Object.fromEntries(new FormData(form).entries());
+      try{
+        await apiPost(CONFIG.FORUM_API_URL, { action:'adminUpdateConfig', token:state.token, key:'comments_require_approval', value:fd.comments_require_approval }, 'FORUM_API_URL');
+        setMsg('success','Ajuste del foro guardado.');
+        loadForum();
+      }catch(err){ setMsg('error', err.message); }
+    }
+
     if(form.id === 'userActionForm'){
       e.preventDefault();
       const clicked = document.activeElement?.value;

@@ -109,6 +109,19 @@
             <label>Título / Nombre / Valor<input name="titulo" placeholder="Título, nombre o valor" /></label>
             <label>Descripción<textarea name="descripcion" rows="3" placeholder="Descripción del registro"></textarea></label>
             <label>Enlace / URL<input name="enlace" placeholder="https://..." /></label>
+            <div class="admin-image-uploader">
+              <label>Imagen del contenido
+                <input id="contentImageFile" name="image_file" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" />
+              </label>
+              <label>O pegar URL de imagen
+                <input name="imagen_url" placeholder="https://.../imagen.png" />
+              </label>
+              <div class="admin-image-preview" id="contentImagePreview" hidden>
+                <img src="" alt="Vista previa de la imagen" />
+                <button type="button" id="clearContentImageBtn">Quitar imagen</button>
+              </div>
+              <p class="admin-note small">Puedes subir una imagen desde tu celular/computadora o pegar un enlace manualmente. Máximo 3 MB. Formatos: JPG, JPEG, PNG o WEBP.</p>
+            </div>
             <label>CTA / Texto botón<input name="cta" placeholder="Ver más" /></label>
             <label>Orden<input name="orden" type="number" min="0" placeholder="1" /></label>
             <label>Activo<select name="activo"><option value="TRUE">TRUE</option><option value="FALSE">FALSE</option></select></label>
@@ -149,6 +162,20 @@
           <div><h2>Moderación del foro</h2><p>Revisa publicaciones, respuestas, reportes y elementos enviados a moderación.</p></div>
           <button class="btn btn-outline" type="button" id="reloadForumBtn">Actualizar</button>
         </div>
+        <div class="admin-card">
+          <h3>Ajustes de moderación</h3>
+          <form id="forumSettingsForm" class="admin-form-grid forum-settings">
+            <label>Comentarios
+              <select name="comments_require_approval" id="commentsRequireApproval">
+                <option value="FALSE">Aprobar automáticamente si no tiene spam</option>
+                <option value="TRUE">Todos los comentarios requieren aprobación</option>
+              </select>
+            </label>
+            <button class="btn btn-primary" type="submit">Guardar ajuste</button>
+            <p class="admin-setting-help">Si activas esta opción, todo comentario nuevo quedará en estado <strong>pending</strong> hasta que un moderador, admin o superadmin lo apruebe.</p>
+          </form>
+        </div>
+
         <div class="admin-grid-2">
           <div class="admin-card"><h3>Cola de moderación</h3><div id="tableModerationQueue" class="admin-table-wrap"></div></div>
           <div class="admin-card"><h3>Reportes</h3><div id="tableReports" class="admin-table-wrap"></div></div>
