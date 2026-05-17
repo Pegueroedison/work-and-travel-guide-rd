@@ -1,4 +1,4 @@
-/* === PANEL ADMIN WEB — GitHub Pages + Web Apps — v33 === */
+/* === PANEL ADMIN WEB — GitHub Pages + Web Apps — v34 === */
 (function(){
   const CONFIG = window.WT_CONFIG || {};
   const $ = (s,r=document)=>r.querySelector(s);

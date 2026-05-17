@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./images/logo.png" type="image/png" />
   <link rel="stylesheet" href="./css/style.css" />
-  <link rel="stylesheet" href="./css/admin.css?v=33?v=27" />
+  <link rel="stylesheet" href="./css/admin.css?v=34?v=27" />
 </head>
 <body>
   <div id="progressBar" class="progress-bar"></div>
@@ -143,7 +143,6 @@
             <label>Destacado <select name="destacado"><option value="FALSE">No</option><option value="TRUE">Sí</option></select></label>
             <div class="admin-image-uploader full-row">
               <label>Imagen del anuncio <input class="content-image-input" data-preview="adImagePreview" name="image_file" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" /></label>
-              <label>O pegar URL de imagen <input name="imagen_url" placeholder="https://.../imagen.png" /></label>
               <div class="admin-image-preview" id="adImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
               <p class="admin-note small">Máximo 3 MB. Formatos: JPG, JPEG, PNG o WEBP.</p>
             </div>
@@ -165,7 +164,6 @@
             <label>Destacado <select name="destacado"><option value="FALSE">No</option><option value="TRUE">Sí</option></select></label>
             <div class="admin-image-uploader full-row">
               <label>Imagen del servicio <input class="content-image-input" data-preview="serviceImagePreview" name="image_file" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" /></label>
-              <label>O pegar URL de imagen <input name="imagen_url" placeholder="https://.../imagen.png" /></label>
               <div class="admin-image-preview" id="serviceImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
             </div>
             <button onclick="window.WTAdminSave && window.WTAdminSave('serviceSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="serviceSimpleForm">Guardar servicio</button>
@@ -186,7 +184,6 @@
             <label>Destacado <select name="destacado"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
             <div class="admin-image-uploader full-row">
               <label>Imagen del curso <input class="content-image-input" data-preview="courseImagePreview" name="image_file" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" /></label>
-              <label>O pegar URL de imagen <input name="imagen_url" placeholder="https://.../imagen.png" /></label>
               <div class="admin-image-preview" id="courseImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
             </div>
             <button onclick="window.WTAdminSave && window.WTAdminSave('courseSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="courseSimpleForm">Guardar curso</button>
@@ -318,6 +315,6 @@
 
   <script src="./js/config.js"></script>
   <script src="./js/ui.js"></script>
-  <script src="./js/admin.js?v=33"></script>
+  <script src="./js/admin.js?v=34"></script>
 </body>
 </html>

@@ -468,12 +468,25 @@ if ('serviceWorker' in navigator) {
   }
 
   function renderAds(content) {
-    const ads = Array.isArray(content?.ads) ? content.ads : [];
-    const byType = type => ads.filter(a => isActive(a.active) && String(a.type || a.tipo || '').toLowerCase() === type);
-    const banner = byType('banner_principal')[0] || byType('banner')[0];
-    const popup = byType('popup')[0];
-    const between = byType('entre_secciones');
-    const featured = byType('destacado');
+    const rawAds = Array.isArray(content?.ads) ? content.ads : [];
+    const ads = rawAds
+      .filter(a => isActive(a.active ?? a.activo))
+      .sort((a, b) => Number(a.order ?? a.orden ?? 999) - Number(b.order ?? b.orden ?? 999));
+
+    const typeOf = a => String(a.type || a.tipo || '').toLowerCase().trim();
+    const posOf = a => String(a.position || a.posicion || '').toLowerCase().trim();
+    const byType = type => ads.filter(a => typeOf(a) === type);
+    const byPosition = pos => ads.filter(a => posOf(a) === pos);
+
+    const banner = byType('banner_principal')[0] || byType('banner')[0] || byPosition('inicio')[0];
+    const popup = byType('popup')[0] || byPosition('popup')[0];
+
+    // En el inicio/pantalla azul mostramos destacados y también anuncios marcados para inicio/hero.
+    const featured = ads.filter(a => {
+      const t = typeOf(a);
+      const p = posOf(a);
+      return t === 'destacado' || p === 'hero' || (p === 'inicio' && t !== 'banner_principal' && t !== 'banner');
+    });
 
     const bannerSlot = $('#adBannerPrincipal');
     if (bannerSlot) bannerSlot.innerHTML = banner ? adHtml(banner) : '';
@@ -481,12 +494,28 @@ if ('serviceWorker' in navigator) {
     const featuredSlot = $('#heroFeaturedAds');
     if (featuredSlot) featuredSlot.innerHTML = featured.slice(0, 3).map(a => adHtml(a, 'featured')).join('');
 
-    ['#adAfterServicios', '#adAfterComunidad', '#adAfterPreguntas', '#adAfterRecord', '#adAfterVisa', '#adAfterInternet'].forEach((sel, i) => {
-      const slot = $(sel);
-      if (slot && between[i]) slot.innerHTML = adHtml(between[i]);
+    const slotMap = {
+      despues_servicios: '#adAfterServicios',
+      despues_comunidad: '#adAfterComunidad',
+      despues_preguntas: '#adAfterPreguntas',
+      despues_record: '#adAfterRecord',
+      despues_visa: '#adAfterVisa',
+      despues_internet: '#adAfterInternet'
+    };
+
+    Object.entries(slotMap).forEach(([position, selector]) => {
+      const slot = $(selector);
+      if (!slot) return;
+      const ad = ads.find(a => posOf(a) === position) || byType('entre_secciones').find(a => !a.__usedBetween);
+      if (ad) {
+        ad.__usedBetween = true;
+        slot.innerHTML = adHtml(ad);
+      } else {
+        slot.innerHTML = '';
+      }
     });
 
-    const popupSeenKey = 'wt_popup_seen_' + (popup?.id || popup?.title || 'main');
+    const popupSeenKey = 'wt_popup_seen_' + (popup?.id || popup?.title || popup?.titulo || 'main');
     if (popup && !sessionStorage.getItem(popupSeenKey)) {
       const contentBox = $('#adPopupContent');
       const overlay = $('#adPopup');
