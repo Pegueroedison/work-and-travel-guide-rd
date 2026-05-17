@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./images/logo.png" type="image/png" />
   <link rel="stylesheet" href="./css/style.css" />
-  <link rel="stylesheet" href="./css/admin.css?v=16" />
+  <link rel="stylesheet" href="./css/admin.css?v=17" />
 </head>
 <body>
   <div id="progressBar" class="progress-bar"></div>
@@ -147,7 +147,7 @@
               <div class="admin-image-preview" id="adImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
               <p class="admin-note small">Máximo 3 MB. Formatos: JPG, JPEG, PNG o WEBP.</p>
             </div>
-            <button onclick="return window.WTAdminSave && window.WTAdminSave(\'adSimpleForm\', this, event)" class="btn btn-primary full-row" type="button" data-admin-save="adSimpleForm">Guardar anuncio</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('adSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="adSimpleForm">Guardar anuncio</button>
           </form>
         </div>
 
@@ -168,7 +168,7 @@
               <label>O pegar URL de imagen <input name="imagen_url" placeholder="https://.../imagen.png" /></label>
               <div class="admin-image-preview" id="serviceImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
             </div>
-            <button onclick="return window.WTAdminSave && window.WTAdminSave(\'serviceSimpleForm\', this, event)" class="btn btn-primary full-row" type="button" data-admin-save="serviceSimpleForm">Guardar servicio</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('serviceSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="serviceSimpleForm">Guardar servicio</button>
           </form>
         </div>
 
@@ -189,7 +189,7 @@
               <label>O pegar URL de imagen <input name="imagen_url" placeholder="https://.../imagen.png" /></label>
               <div class="admin-image-preview" id="courseImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
             </div>
-            <button onclick="return window.WTAdminSave && window.WTAdminSave(\'courseSimpleForm\', this, event)" class="btn btn-primary full-row" type="button" data-admin-save="courseSimpleForm">Guardar curso</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('courseSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="courseSimpleForm">Guardar curso</button>
           </form>
         </div>
 
@@ -202,7 +202,7 @@
             <label>Mostrar en footer <select name="mostrar_footer"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
             <label>Mostrar en comunidad <select name="mostrar_comunidad"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
             <label>Activo <select name="activo"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
-            <button onclick="return window.WTAdminSave && window.WTAdminSave(\'instagramSimpleForm\', this, event)" class="btn btn-primary full-row" type="button" data-admin-save="instagramSimpleForm">Guardar Instagram</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('instagramSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="instagramSimpleForm">Guardar Instagram</button>
           </form>
           <hr class="admin-soft-line">
           <form id="whatsappSimpleForm" novalidate class="admin-form-grid clean-form">
@@ -215,7 +215,7 @@
             <label>Principal <select name="principal"><option value="FALSE">No</option><option value="TRUE">Sí</option></select></label>
             <label>Destacado <select name="destacado"><option value="FALSE">No</option><option value="TRUE">Sí</option></select></label>
             <label>Activo <select name="activo"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
-            <button onclick="return window.WTAdminSave && window.WTAdminSave(\'whatsappSimpleForm\', this, event)" class="btn btn-primary full-row" type="button" data-admin-save="whatsappSimpleForm">Guardar grupo</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('whatsappSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="whatsappSimpleForm">Guardar grupo</button>
           </form>
         </div>
 
@@ -241,7 +241,7 @@
             <label>Orden<input name="orden" type="number" min="0" placeholder="1" /></label>
             <label>Activo<select name="activo"><option value="TRUE">TRUE</option><option value="FALSE">FALSE</option></select></label>
             <label>Destacado<select name="destacado"><option value="FALSE">FALSE</option><option value="TRUE">TRUE</option></select></label>
-            <button onclick="return window.WTAdminSave && window.WTAdminSave(\'contentQuickForm\', this, event)" class="btn btn-primary full-row" type="button" data-admin-save="contentQuickForm">Guardar registro avanzado</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('contentQuickForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="contentQuickForm">Guardar registro avanzado</button>
           </form>
         </div>
 
@@ -264,9 +264,9 @@
             <label>ID del usuario<input name="user_id" required placeholder="USR-..." /></label>
             <label>Rol<select name="role"><option value="user">user</option><option value="moderator">moderator</option><option value="admin">admin</option><option value="superadmin">superadmin</option></select></label>
             <label>Motivo de bloqueo<textarea name="reason" rows="2" placeholder="Ejemplo: spam, comportamiento indebido..."></textarea></label>
-            <button onclick="return window.WTAdminSave && window.WTAdminSave(\'userActionForm\', this, event)" class="btn btn-primary" name="actionType" value="setRole" type="button" data-admin-save="userActionForm">Cambiar rol</button>
-            <button onclick="return window.WTAdminSave && window.WTAdminSave(\'userActionForm\', this, event)" class="btn btn-red" name="actionType" value="block" type="button" data-admin-save="userActionForm">Bloquear</button>
-            <button onclick="return window.WTAdminSave && window.WTAdminSave(\'userActionForm\', this, event)" class="btn btn-outline" name="actionType" value="unblock" type="button" data-admin-save="userActionForm">Desbloquear</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('userActionForm', this, event); return false;" class="btn btn-primary" name="actionType" value="setRole" type="button" data-admin-save="userActionForm">Cambiar rol</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('userActionForm', this, event); return false;" class="btn btn-red" name="actionType" value="block" type="button" data-admin-save="userActionForm">Bloquear</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('userActionForm', this, event); return false;" class="btn btn-outline" name="actionType" value="unblock" type="button" data-admin-save="userActionForm">Desbloquear</button>
           </form>
         </div>
         <div class="admin-card"><h3>Lista de usuarios</h3><div id="tableUsers" class="admin-table-wrap"></div></div>
@@ -286,7 +286,7 @@
                 <option value="TRUE">Todos los comentarios requieren aprobación</option>
               </select>
             </label>
-            <button onclick="return window.WTAdminSave && window.WTAdminSave(\'forumSettingsForm\', this, event)" class="btn btn-primary" type="button" data-admin-save="forumSettingsForm">Guardar ajuste</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('forumSettingsForm', this, event); return false;" class="btn btn-primary" type="button" data-admin-save="forumSettingsForm">Guardar ajuste</button>
             <p class="admin-setting-help">Si activas esta opción, todo comentario nuevo quedará en estado <strong>pending</strong> hasta que un moderador, admin o superadmin lo apruebe.</p>
           </form>
         </div>
@@ -318,6 +318,6 @@
 
   <script src="./js/config.js"></script>
   <script src="./js/ui.js"></script>
-  <script src="./js/admin.js?v=16"></script>
+  <script src="./js/admin.js?v=17"></script>
 </body>
 </html>

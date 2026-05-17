@@ -12,7 +12,26 @@
     event.stopPropagation();
   }, true);
 
-  function setMsg(type, text){ const el=$('#adminMessage'); if(!el) return; el.className = 'admin-message ' + (type || 'info'); el.textContent = text; }
+  function setMsg(type, text){
+    const msg = String(text || '');
+    const el=$('#adminMessage');
+    if(el){
+      el.className = 'admin-message ' + (type || 'info');
+      el.textContent = msg;
+    }
+    let toast = $('#adminFloatingStatus');
+    if(!toast){
+      toast = document.createElement('div');
+      toast.id = 'adminFloatingStatus';
+      toast.className = 'admin-floating-status';
+      document.body.appendChild(toast);
+    }
+    toast.className = 'admin-floating-status show ' + (type || 'info');
+    toast.textContent = msg;
+    clearTimeout(window.__wtAdminStatusTimer);
+    window.__wtAdminStatusTimer = setTimeout(()=>toast.classList.remove('show'), type === 'error' ? 7000 : 3500);
+    if(type === 'error') console.error('[WT Admin]', msg); else console.log('[WT Admin]', msg);
+  }
   function apiUrl(baseUrl, params={}){ const u = new URL(baseUrl); Object.entries(params).forEach(([k,v])=>u.searchParams.set(k,v)); return u.toString(); }
   async function apiGet(baseUrl, params={}, label='API'){ if(!baseUrl) throw new Error(`Falta configurar ${label} en js/config.js.`); const res=await fetch(apiUrl(baseUrl, params)); const data=await res.json(); if(data.ok===false) throw new Error(data.message || 'Error'); return data; }
   async function apiPost(baseUrl, payload={}, label='API'){
@@ -438,6 +457,38 @@
     }
   }
 
+
+  function bindAdminSaveButtons(){
+    $$('[data-admin-save]').forEach(btn => {
+      btn.type = 'button';
+      btn.onclick = (event) => window.WTAdminSave(btn.dataset.adminSave, btn, event);
+    });
+  }
+
+  window.WTAdminSave = function(formId, button, event){
+    if(event){
+      event.preventDefault();
+      event.stopPropagation();
+      if(event.stopImmediatePropagation) event.stopImmediatePropagation();
+    }
+    const form = formId ? $('#' + formId) : button?.closest?.('form');
+    if(!form){
+      setMsg('error','No encontré el formulario para guardar. Actualiza admin.html y admin.js juntos.');
+      return false;
+    }
+    if(!ADMIN_FORMS.has(form.id)){
+      setMsg('error',`El formulario ${form.id || '(sin id)'} no está conectado al panel admin.`);
+      return false;
+    }
+    setMsg('info','Guardando, espera un momento...');
+    Promise.resolve(handleAdminForm(form, button)).catch(err => setMsg('error', err.message || String(err)));
+    return false;
+  };
+
+  bindAdminSaveButtons();
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindAdminSaveButtons);
+  window.addEventListener('pageshow', bindAdminSaveButtons);
+
   document.addEventListener('click', async (e)=>{
     const btn = e.target?.closest?.('[data-admin-save]');
     if(!btn) return;
@@ -445,6 +496,7 @@
     e.stopPropagation();
     const formId = btn.dataset.adminSave;
     const form = formId ? $('#' + formId) : btn.closest('form');
+    setMsg('info','Guardando, espera un momento...');
     await handleAdminForm(form, btn);
   }, true);
 

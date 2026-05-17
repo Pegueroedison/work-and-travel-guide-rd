@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./images/logo.png" type="image/png" />
   <link rel="stylesheet" href="./css/style.css" />
-  <link rel="stylesheet" href="./css/auth.css" />
+  <link rel="stylesheet" href="./css/auth.css?v=18" />
 </head>
 <body data-auth-page="registro">
   <nav class="nav" id="mainNav" role="navigation" aria-label="Navegación principal">
@@ -54,9 +54,14 @@
         <button class="btn btn-red" type="submit">Crear cuenta</button>
         <p class="mini-note">Recibirás un código de verificación por correo.</p>
       </form>
-      <form class="auth-panel active" id="verifyPageForm" style="margin-top:1rem;">
-        <label>Correo electrónico<input type="email" name="email" required /></label>
-        <label>Código de verificación<input type="text" name="code" required maxlength="10" /></label>
+      <form class="auth-panel auth-verify-box active" id="verifyPageForm" style="margin-top:1rem;">
+        <input type="hidden" name="email" id="verifyEmailHidden" />
+        <div class="verify-email-card" id="verifyEmailCard" hidden>
+          <span class="verify-email-label">Código enviado a</span>
+          <strong id="verifyEmailText"></strong>
+          <button type="button" class="verify-email-change" id="changeVerifyEmailBtn">Cambiar correo</button>
+        </div>
+        <label>Código de verificación<input type="text" name="code" required maxlength="10" autocomplete="one-time-code" inputmode="numeric" /></label>
         <button class="btn btn-gold" type="submit">Verificar cuenta</button>
       </form>
       <div class="auth-page-links"><a href="./login.html">Ya tengo cuenta</a><a href="./index.html#inicio">Volver al inicio</a></div>
@@ -74,7 +79,7 @@
   </div>
   <script src="./js/config.js"></script>
   <script src="./js/ui.js"></script>
-  <script src="./js/auth.js"></script>
+  <script src="./js/auth.js?v=18"></script>
 
   <script>
     document.addEventListener('click', (e) => {
