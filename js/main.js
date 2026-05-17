@@ -448,7 +448,7 @@ if ('serviceWorker' in navigator) {
   }
 
   function adHtml(ad, mode = 'banner') {
-    if (!ad || !isActive(ad.active)) return '';
+    if (!ad || !isActive(ad.active ?? ad.activo)) return '';
     const title = escapeHtml(ad.title || ad.titulo || 'Anuncio');
     const desc = escapeHtml(ad.description || ad.descripcion || '');
     const img = ad.image_url || ad.imagen_url || ad.image || '';
@@ -520,7 +520,9 @@ if ('serviceWorker' in navigator) {
       const contentBox = $('#adPopupContent');
       const overlay = $('#adPopup');
       if (contentBox && overlay) {
-        contentBox.innerHTML = adHtml(popup);
+        const popupHtml = adHtml(popup);
+        if (!popupHtml.trim()) return;
+        contentBox.innerHTML = popupHtml;
         setTimeout(() => {
           overlay.hidden = false;
           sessionStorage.setItem(popupSeenKey, '1');
@@ -555,6 +557,7 @@ if ('serviceWorker' in navigator) {
   function renderServices(content) {
     const grid = $('#servicesGrid');
     const course = content?.englishCourse || content?.cursoIngles || {};
+    const courseList = Array.isArray(content?.englishCourses) ? content.englishCourses.filter(c => isActive(c.active ?? c.activo)) : [];
     const services = Array.isArray(content?.services)
       ? content.services.filter(s => isActive(s.active ?? s.activo)).sort((a, b) => Number(a.order || a.orden || 999) - Number(b.order || b.orden || 999))
       : [];
@@ -575,8 +578,8 @@ if ('serviceWorker' in navigator) {
         <article class="service-card featured" id="englishCourseCard">
           <div class="service-icon">📚</div>
           <h3>${escapeHtml(course.title || course.titulo || 'Curso de inglés')}</h3>
-          <p id="englishCourseDesc">${escapeHtml(course.description || course.descripcion || 'Contenido administrable desde Google Sheets.')}</p>
-          <a id="englishCourseLink" href="${escapeHtml(normalizeInternalLink(course.link_url || course.enlace || '#comunidad'))}">${escapeHtml(course.cta || 'Ver detalles')}</a>
+          <p id="englishCourseDesc">${escapeHtml(courseList.length > 1 ? `${courseList.length} cursos disponibles. Entra para ver fotos, costos y detalles.` : (course.description || course.descripcion || 'Contenido administrable desde Google Sheets.'))}</p>
+          <a id="englishCourseLink" href="./cursos.html">${escapeHtml('Ver cursos disponibles')}</a>
         </article>
       ` : '';
       grid.innerHTML = serviceCards + courseCard;
@@ -793,7 +796,10 @@ if ('serviceWorker' in navigator) {
   }
 
   document.addEventListener('click', async (e) => {
-    if (e.target?.id === 'adPopupClose') $('#adPopup').hidden = true;
+    if (e.target?.id === 'adPopupClose' || e.target?.id === 'adPopup') {
+      const popup = $('#adPopup');
+      if (popup) popup.hidden = true;
+    }
     if (e.target?.classList?.contains('legal-open')) { e.preventDefault(); const m = $('#legalModal'); if (m) m.hidden = false; }
     if (e.target?.id === 'legalClose') { const m = $('#legalModal'); if (m) m.hidden = true; }
     if (e.target?.id === 'openLoginBtn') openAuth('login');

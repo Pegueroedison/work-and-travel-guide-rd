@@ -1,10 +1,11 @@
 /* === WORK AND TRAVEL GUIDE RD — SERVICE WORKER === */
 
-const CACHE_NAME = 'wt-guide-rd-v34';
+const CACHE_NAME = 'wt-guide-rd-v36';
 
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
+  './cursos.html',
   './foro.html',
   './post.html',
   './login.html',
@@ -17,12 +18,14 @@ const ASSETS_TO_CACHE = [
   './visa.html',
   './internet.html',
   './css/style.css',
+  './css/cursos.css',
   './css/foro.css',
   './css/auth.css',
   './css/admin.css',
   './js/config.js',
   './js/ui.js',
   './js/main.js',
+  './js/cursos.js',
   './js/foro.js',
   './js/auth.js',
   './js/admin.js',
