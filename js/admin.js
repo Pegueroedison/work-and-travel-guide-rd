@@ -33,19 +33,88 @@
     if(type === 'error') console.error('[WT Admin]', msg); else console.log('[WT Admin]', msg);
   }
   function apiUrl(baseUrl, params={}){ const u = new URL(baseUrl); Object.entries(params).forEach(([k,v])=>u.searchParams.set(k,v)); return u.toString(); }
-  async function apiGet(baseUrl, params={}, label='API'){ if(!baseUrl) throw new Error(`Falta configurar ${label} en js/config.js.`); const res=await fetch(apiUrl(baseUrl, params)); const data=await res.json(); if(data.ok===false) throw new Error(data.message || 'Error'); return data; }
+
+  function withTimeout(ms, label='La solicitud'){
+    const controller = new AbortController();
+    const timer = setTimeout(()=>controller.abort(), ms);
+    return { controller, timer, label };
+  }
+
+  async function apiGet(baseUrl, params={}, label='API'){
+    if(!baseUrl) throw new Error(`Falta configurar ${label} en js/config.js.`);
+    const t = withTimeout(25000, label);
+    try{
+      const res=await fetch(apiUrl(baseUrl, params), { signal:t.controller.signal });
+      const txt = await res.text();
+      let data;
+      try { data = JSON.parse(txt); } catch(e) { throw new Error(`${label} no devolvió JSON válido. Revisa la implementación de la Web App.`); }
+      if(data.ok===false) throw new Error(data.message || 'Error');
+      return data;
+    }catch(err){
+      if(err.name === 'AbortError') throw new Error(`${label} tardó demasiado en responder. Revisa la Web App o vuelve a implementarla.`);
+      throw err;
+    }finally{ clearTimeout(t.timer); }
+  }
+
   async function apiPost(baseUrl, payload={}, label='API'){
     if(!baseUrl) throw new Error(`Falta configurar ${label} en js/config.js.`);
     const finalPayload = { ...payload };
-    // La Web App de Contenido también necesita validar roles usando la Web App de Usuarios.
-    // Enviamos USERS_API_URL desde config.js para que no tengas que pegarlo manualmente en Sheets cada vez.
     if(baseUrl === CONFIG.CONTENT_API_URL && String(finalPayload.action || '').toLowerCase().startsWith('admin')) {
       finalPayload.usersApiUrl = CONFIG.USERS_API_URL || '';
     }
-    const res=await fetch(baseUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(finalPayload)});
-    const data=await res.json();
-    if(data.ok===false) throw new Error(data.message || 'Error');
-    return data;
+    const t = withTimeout(String(finalPayload.action) === 'adminUploadImage' ? 60000 : 30000, label);
+    try{
+      const res=await fetch(baseUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(finalPayload), signal:t.controller.signal});
+      const txt = await res.text();
+      let data;
+      try { data = JSON.parse(txt); } catch(e) { throw new Error(`${label} no devolvió JSON válido. Respuesta: ${txt.slice(0,120)}`); }
+      if(data.ok===false) throw new Error(data.message || 'Error');
+      return data;
+    }catch(err){
+      if(err.name === 'AbortError') throw new Error(`${label} tardó demasiado en responder. Si estabas subiendo una imagen, intenta con una más pequeña o revisa la Web App.`);
+      throw err;
+    }finally{ clearTimeout(t.timer); }
+  }
+
+  function apiJsonp(baseUrl, params={}, label='API'){
+    if(!baseUrl) return Promise.reject(new Error(`Falta configurar ${label} en js/config.js.`));
+    return new Promise((resolve, reject)=>{
+      const cb = '__wtjsonp_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+      const url = new URL(baseUrl);
+      Object.entries(params).forEach(([k,v])=>url.searchParams.set(k, v == null ? '' : String(v)));
+      url.searchParams.set('callback', cb);
+      const script = document.createElement('script');
+      const timer = setTimeout(()=>{
+        cleanup();
+        reject(new Error(`${label} tardó demasiado en responder. Revisa que la Web App esté implementada como “Cualquiera”.`));
+      }, 30000);
+      function cleanup(){
+        clearTimeout(timer);
+        try { delete window[cb]; } catch(e) { window[cb] = undefined; }
+        script.remove();
+      }
+      window[cb] = data => {
+        cleanup();
+        if(data && data.ok === false) reject(new Error(data.message || 'Error'));
+        else resolve(data || {});
+      };
+      script.onerror = () => {
+        cleanup();
+        reject(new Error(`${label} no pudo cargarse. Revisa el enlace de la Web App.`));
+      };
+      script.src = url.toString();
+      document.head.appendChild(script);
+    });
+  }
+
+  function contentAdmin(payload={}){
+    const finalPayload = { ...payload, usersApiUrl: CONFIG.USERS_API_URL || '' };
+    return apiJsonp(CONFIG.CONTENT_API_URL, {
+      action: finalPayload.action,
+      token: finalPayload.token || state.token,
+      usersApiUrl: finalPayload.usersApiUrl,
+      payload: JSON.stringify(finalPayload)
+    }, 'CONTENT_API_URL');
   }
   function isAdmin(user){ return ['admin','superadmin'].includes(String(user?.role || '').toLowerCase()); }
   function isSuper(user){ return String(user?.role || '').toLowerCase() === 'superadmin'; }
@@ -100,7 +169,7 @@
   async function saveContentRow(sheetName, row, form){
     row = cleanRow(row);
     await uploadContentImageIfAny(form, sheetName, row.id || row.clave || '', row);
-    await apiPost(CONFIG.CONTENT_API_URL, { action:'adminSaveRow', token:state.token, sheetName, row }, 'CONTENT_API_URL');
+    await contentAdmin({ action:'adminSaveRow', token:state.token, sheetName, row });
     setMsg('success','Guardado correctamente. Actualizando datos...');
     form.reset();
     form.querySelectorAll('.admin-image-preview').forEach(p => { p.hidden = true; const img = p.querySelector('img'); if(img) img.removeAttribute('src'); });
@@ -155,7 +224,7 @@
 
   async function loadContent(){
     try{
-      const data = await apiPost(CONFIG.CONTENT_API_URL, { action:'adminListAll', token:state.token }, 'CONTENT_API_URL');
+      const data = await contentAdmin({ action:'adminListAll', token:state.token });
       state.content = data.data || data;
       const anuncios = state.content.Anuncios?.rows || state.content.Anuncios || [];
       const servicios = state.content.ServiciosJ1?.rows || state.content.ServiciosJ1 || [];
@@ -225,7 +294,7 @@
     if(e.target?.id === 'prepareContentDriveBtn'){
       try{
         setMsg('info','Preparando carpeta de Drive para imágenes de contenido...');
-        const data = await apiPost(CONFIG.CONTENT_API_URL, { action:'adminPrepareContentStorage', token:state.token }, 'CONTENT_API_URL');
+        const data = await contentAdmin({ action:'adminPrepareContentStorage', token:state.token });
         setMsg('success', `Carpeta lista: ${data.folder?.name || 'WT Guide RD - Imagenes de Contenido'}. ID: ${data.folder?.id || ''}`);
         loadContent();
       }catch(err){ setMsg('error', err.message); }
@@ -420,7 +489,7 @@
           row.image_size = image.size || file.size;
           row.image_type = image.mimeType || file.type;
         }
-        await apiPost(CONFIG.CONTENT_API_URL, { action:'adminSaveRow', token:state.token, sheetName, row }, 'CONTENT_API_URL');
+        await contentAdmin({ action:'adminSaveRow', token:state.token, sheetName, row });
         setMsg('success','Registro guardado correctamente.');
         form.reset();
         const preview = $('#contentImagePreview'); if(preview) preview.hidden = true;
