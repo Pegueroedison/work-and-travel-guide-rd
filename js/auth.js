@@ -14,7 +14,32 @@
     const show = Boolean(state.token && ['admin','superadmin'].includes(role));
     ['#adminNavLink','#adminMobileLink'].forEach(sel => { const el = $(sel); if(el) el.style.display = show ? 'inline-flex' : 'none'; });
   }
-  function updateProfile(){ if(!state.user) { updateAdminLinks(); return; } $('#profilePageName') && ($('#profilePageName').textContent = state.user.name || 'Usuario'); $('#profilePageEmail') && ($('#profilePageEmail').textContent = state.user.email || ''); if(state.user.photo_url && $('#profilePagePhoto')) $('#profilePagePhoto').src = state.user.photo_url; updateAdminLinks(); }
+  function driveThumbUrl(fileId){ return fileId ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w400` : ''; }
+  function withCacheBust(url){ if(!url) return ''; return url + (url.includes('?') ? '&' : '?') + 'v=' + Date.now(); }
+  function updateProfile(){
+    if(!state.user) { updateAdminLinks(); return; }
+    $('#profilePageName') && ($('#profilePageName').textContent = state.user.name || 'Usuario');
+    $('#profilePageEmail') && ($('#profilePageEmail').textContent = state.user.email || '');
+    const photoEl = $('#profilePagePhoto');
+    const photoUrl = state.user.photo_url || driveThumbUrl(state.user.photo_file_id);
+    if(photoUrl && photoEl) {
+      photoEl.src = withCacheBust(photoUrl);
+      photoEl.onerror = () => { photoEl.src = './images/logo.png'; };
+    }
+    updateAdminLinks();
+  }
+  async function refreshSession(){
+    if(!state.token) { updateProfile(); return; }
+    try{
+      const r = await apiPost({ action:'checkSession', token:state.token });
+      const freshUser = r.user || r.data?.user;
+      if(freshUser){
+        state.user = { ...(state.user || {}), ...freshUser };
+        localStorage.setItem('wt_user', JSON.stringify(state.user));
+      }
+    }catch(err){ /* No cerramos sesión aquí para evitar sacar al usuario por fallos temporales. */ }
+    updateProfile();
+  }
 
   document.addEventListener('submit', async (e)=>{
     const form = e.target;
@@ -34,10 +59,10 @@
       e.preventDefault(); try{ await apiPost({ action:'resetPassword', ...data(form) }); msg('success','Contraseña actualizada. Ya puedes iniciar sesión.'); }catch(err){ msg('error', err.message); }
     }
     if(form.id === 'profilePageForm'){
-      e.preventDefault(); if(!state.token) return msg('error','Debes iniciar sesión primero.'); const file = form.photo.files[0]; if(!file) return msg('info','Selecciona una foto.'); if(file.size > (CONFIG.MAX_PROFILE_PHOTO_MB || 2)*1024*1024) return msg('error','La foto no puede pasar de 2 MB.'); if(!['image/jpeg','image/png','image/webp'].includes(file.type)) return msg('error','Solo se permite JPG, JPEG, PNG o WEBP.'); try{ const base64 = await fileToBase64(file); const r = await apiPost({ action:'uploadProfilePhoto', token:state.token, file_name:file.name, mime_type:file.type, size:file.size, base64 }); state.user.photo_url = r.photo_url || r.data?.photo_url; localStorage.setItem('wt_user', JSON.stringify(state.user)); updateProfile(); msg('success','Foto actualizada correctamente.'); }catch(err){ msg('error', err.message); }
+      e.preventDefault(); if(!state.token) return msg('error','Debes iniciar sesión primero.'); const file = form.photo.files[0]; if(!file) return msg('info','Selecciona una foto.'); if(file.size > (CONFIG.MAX_PROFILE_PHOTO_MB || 2)*1024*1024) return msg('error','La foto no puede pasar de 2 MB.'); if(!['image/jpeg','image/png','image/webp'].includes(file.type)) return msg('error','Solo se permite JPG, JPEG, PNG o WEBP.'); try{ const base64 = await fileToBase64(file); const r = await apiPost({ action:'uploadProfilePhoto', token:state.token, file_name:file.name, mime_type:file.type, size:file.size, base64 }); const newPhotoUrl = r.photo_url || r.data?.photo_url || driveThumbUrl(r.file_id || r.data?.file_id); state.user = { ...(state.user || {}), photo_url:newPhotoUrl, photo_file_id:r.file_id || r.data?.file_id || state.user?.photo_file_id }; localStorage.setItem('wt_user', JSON.stringify(state.user)); updateProfile(); form.reset(); msg('success','Foto actualizada correctamente.'); }catch(err){ msg('error', err.message); }
     }
   });
   document.addEventListener('click', (e)=>{ if(e.target?.id === 'logoutPageBtn'){ e.preventDefault(); localStorage.removeItem('wt_user'); localStorage.removeItem('wt_session'); location.href = './login.html'; } });
   if(document.body.dataset.authPage === 'perfil' && !state.token) msg('error','Debes iniciar sesión para editar tu perfil.');
-  updateProfile();
+  refreshSession();
 })();
