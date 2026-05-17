@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d1b3e" />
+  <title>Récord de Notas Legalizado | Work and Travel Guide RD</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./images/logo.png" type="image/png" />
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <div id="progressBar" class="progress-bar"></div>
+  <nav class="nav" id="mainNav" role="navigation" aria-label="Navegación principal">
+    <a href="./index.html#inicio" class="nav-brand">
+      <img src="./images/logo.png" alt="Work and Travel Guide RD" />
+      <span>W&T Guide RD</span>
+    </a>
+    <ul class="nav-menu" role="list">
+      <li><a href="./index.html#inicio"><span class="nav-icon">🏠</span> Inicio</a></li>
+      <li><a href="./index.html#servicios"><span class="nav-icon">🧰</span> Servicios J1</a></li>
+      <li><a href="./index.html#comunidad"><span class="nav-icon">💬</span> Comunidad</a></li>
+      <li><a href="./preguntas.html"><span class="nav-icon">🎙️</span> Preguntas</a></li>
+      <li><a href="./record.html" class="active"><span class="nav-icon">📄</span> Récord</a></li>
+      <li><a href="./visa.html"><span class="nav-icon">📋</span> Visa</a></li>
+      <li><a href="./internet.html"><span class="nav-icon">📱</span> Internet USA</a></li>
+      <li><a href="./foro.html"><span class="nav-icon">🗣️</span> Foro</a></li>
+      <li><a href="./admin.html" id="adminNavLink" class="admin-only" style="display:none;"><span class="nav-icon">⚙️</span> Panel Admin</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="nav-mobile" id="mobileNav" role="dialog" aria-label="Menú móvil">
+    <a href="./index.html#inicio"><span class="nav-icon">🏠</span> Inicio</a>
+    <a href="./index.html#servicios"><span class="nav-icon">🧰</span> Servicios J1</a>
+    <a href="./index.html#comunidad"><span class="nav-icon">💬</span> Comunidad</a>
+    <a href="./preguntas.html"><span class="nav-icon">🎙️</span> Preguntas</a>
+    <a href="./record.html"><span class="nav-icon">📄</span> Récord</a>
+    <a href="./visa.html"><span class="nav-icon">📋</span> Visa</a>
+    <a href="./internet.html"><span class="nav-icon">📱</span> Internet USA</a>
+    <a href="./foro.html"><span class="nav-icon">🗣️</span> Foro</a>
+    <a href="./admin.html" id="adminMobileLink" class="admin-only" style="display:none;"><span class="nav-icon">⚙️</span> Panel Admin</a>
+  </div>
+  <section class="hero page-hero" id="inicio">
+    <img src="./images/logo.png" alt="Work and Travel Guide RD" class="hero-logo" />
+    <h1 class="hero-title"><span class="accent">Récord de Notas</span><br /><span class="red-text">Legalizado</span></h1>
+    <p class="hero-subtitle">Guía interna para solicitar y legalizar tu récord de notas para el programa.</p>
+    <div class="hero-actions">
+      <a class="hero-social-btn" href="./index.html#inicio">← Volver al inicio</a>
+      <a class="hero-social-btn is-instagram" href="./foro.html">🗣️ Entrar al Foro</a>
+    </div>
+    <div class="hero-flag-stripe"></div>
+  </section>
+
+<!-- ═══════════════════════════════════════════ RÉCORD DE NOTAS -->
+  <section class="section section-white" id="record">
+    <div class="section-inner">
+<!-- Requisitos -->
+      <div class="card fade-in" style="padding:1.5rem;margin-bottom:2rem;">
+        <h3 style="font-family:'Oswald',sans-serif;font-size:1.3rem;color:var(--navy);margin-bottom:1rem;">📋 Requisitos</h3>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+          <div class="info-box info">
+            <span>📜</span>
+            <span><strong>Acta de nacimiento</strong> — debe ser reciente.</span>
+          </div>
+          <div class="info-box info">
+            <span>🪪</span>
+            <span><strong>Fotocopia de la cédula</strong> — ambos lados.</span>
+          </div>
+          <div class="info-box info">
+            <span>🎓</span>
+            <span><strong>Certificado de bachillerato.</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASO 0: Certificado de Bachiller -->
+      <button class="collapsible-btn fade-in">
+        🎓 Paso 0 — Solicitar el Certificado de Bachiller
+        <span class="arrow">▼</span>
+      </button>
+      <div class="collapsible-content" style="padding:0 0.5rem 1rem;">
+        <p style="color:var(--text-mid);margin-bottom:1rem;">
+          Si necesitas solicitar el certificado de bachiller, este trámite se realiza directamente en la página oficial del Ministerio de Educación.
+        </p>
+        <div class="step-image" style="max-width:480px;">
+          <img src="./images/mescyt_1.png" alt="Formulario de Certificado Nivel Medio/Secundario" loading="lazy" />
+        </div>
+        <div class="info-box warning" style="margin-top:1rem;">
+          <span>💡</span>
+          <span>Necesitas tu RNE (Registro Nacional de Estudiante) o número de registro. Si no lo tienes, haz clic en <strong>"Obtener mi RNE"</strong> en el formulario.</span>
+        </div>
+      </div>
+
+      <!-- PASO 1: Solicitar en UASD -->
+      <button class="collapsible-btn fade-in open">
+        📚 Paso 1 — Solicitar el Récord en Servicios en Línea UASD
+        <span class="arrow">▼</span>
+      </button>
+      <div class="collapsible-content open" style="padding:0 0.5rem 1rem;">
+        <p style="color:var(--text-mid);margin-bottom:1.2rem;">
+          Ingresa a la página de la UASD, dirígete al apartado de <strong>Estudiantes</strong> y selecciona <strong>Servicios en Línea</strong>. Luego busca la opción <strong>"Record de Notas Para No Graduados"</strong>.
+        </p>
+
+        <div class="steps">
+          <div class="step fade-in">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h4>Ingresar a Servicios en Línea</h4>
+              <p>Ve al portal de la UASD y selecciona la sección de <strong>Servicios en Línea</strong> (ícono con el documento y el check marcado en rojo).</p>
+              <div class="step-image">
+                <img src="./images/mescyt_2.png" alt="Menú de Servicios en Línea UASD" loading="lazy" />
+              </div>
+            </div>
+          </div>
+
+          <div class="step fade-in">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h4>Seleccionar "Envío al MESCyT"</h4>
+              <p>En el menú de método de entrega, selecciona <strong>"Envío al Mescyt"</strong>. El costo es de RD$200. Toma hasta 10 días hábiles.</p>
+              <div class="step-image">
+                <img src="./images/mescyt_3.png" alt="Opciones de entrega del récord de notas" loading="lazy" />
+              </div>
+            </div>
+          </div>
+
+          <div class="step fade-in">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h4>Solicitar el Servicio y Pagar</h4>
+              <p>Como último paso, haz clic en <strong>"Solicitar Servicio"</strong> y realiza el pago correspondiente para completar el proceso.</p>
+              <div class="step-image">
+                <img src="./images/mescyt_4.png" alt="Confirmación y solicitud del récord de notas" loading="lazy" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:1.5rem;text-align:center;">
+          <a href="https://app.uasd.edu.do/ServiciosEnLinea/"
+             target="_blank" rel="noopener noreferrer"
+             class="cta-link">
+            📚 Ir a Servicios en Línea UASD
+            <span style="font-size:0.85rem;">↗</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- PASO 2: Legalización MESCyT -->
+      <button class="collapsible-btn fade-in">
+        🏛️ Paso 2 — Legalización en el MESCyT
+        <span class="arrow">▼</span>
+      </button>
+      <div class="collapsible-content" style="padding:0 0.5rem 1rem;">
+        <p style="color:var(--text-mid);margin-bottom:1rem;">
+          Después de varias semanas, la UASD proporcionará un número de oficio. Con ese número podrás pagar la legalización en el MESCyT.
+        </p>
+
+        <div class="payment-grid">
+          <div class="payment-card vip">
+            <div style="font-size:1.8rem;margin-bottom:0.5rem;">⭐</div>
+            <h4>Pago VIP</h4>
+            <p>Entrega del récord legalizado <strong>el mismo día</strong>. Tiene un costo adicional que puede variar.</p>
+          </div>
+          <div class="payment-card">
+            <div style="font-size:1.8rem;margin-bottom:0.5rem;">🗓️</div>
+            <h4>Pago Normal</h4>
+            <p>En las oficinas del MESCyT o en línea. El proceso puede tomar <strong>hasta dos meses</strong>.</p>
+          </div>
+        </div>
+
+        <div class="info-box warning" style="margin-top:1rem;">
+          <span>⚠️</span>
+          <div>
+            <strong>Importante:</strong> El pago en línea solo está disponible de <strong>lunes a viernes</strong>, con un máximo de <strong>100 personas por día</strong>.
+            Se recomienda hacer este trámite lo antes posible.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <div id="adAfterRecord" class="ad-slot ad-slot-between section-white" aria-label="Anuncio entre secciones"></div>
+
+<!-- ═══════════════════════════════════════════ ACCESO AL FORO -->
+  <section class="section section-white" id="foro-acceso">
+    <div class="section-inner">
+      <div class="section-header fade-in">
+        <span class="section-tag">🗣️ Foro</span>
+        <h2 class="section-title">Foro de Estudiantes</h2>
+        <div class="divider"></div>
+        <p class="section-desc">
+          El foro funciona en una página interna separada para que la página principal siga limpia y rápida.
+          Puedes ver publicaciones públicas, pero para publicar, responder o reportar debes iniciar sesión.
+        </p>
+      </div>
+
+      <div class="forum-entry-card fade-in">
+        <div class="forum-entry-icon">🗣️</div>
+        <div class="forum-entry-content">
+          <h3>Entrar al Foro de Estudiantes</h3>
+          <p>Haz preguntas, comparte experiencias y recibe ayuda de otros estudiantes del programa Work and Travel.</p>
+          <div class="forum-entry-actions">
+            <a href="./foro.html" class="cta-link">Entrar al Foro <span>→</span></a>
+            <a href="./login.html?redirect=foro.html" class="btn btn-outline">Iniciar sesión</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <footer class="footer">
+    <img src="./images/logo.png" alt="Logo Work and Travel Guide RD" class="footer-logo" />
+    <p><strong>Work and Travel Guide RD</strong></p>
+    <div class="footer-links">
+      <a href="./index.html#inicio">Inicio</a>
+      <a href="./index.html#servicios">Servicios</a>
+      <a href="./index.html#comunidad">Comunidad</a>
+      <a href="./preguntas.html">Preguntas</a>
+      <a href="./record.html">Récord</a>
+      <a href="./visa.html">Visa</a>
+      <a href="./internet.html">Internet</a>
+      <a href="./foro.html">Foro</a>
+      <a href="#aviso-legal" class="legal-open">Aviso legal</a>
+    </div>
+  </footer>
+  <div class="legal-modal" id="legalModal" hidden>
+    <div class="legal-card" role="dialog" aria-modal="true" aria-labelledby="legalTitle">
+      <button class="legal-close" id="legalClose" type="button" aria-label="Cerrar aviso legal">×</button>
+      <h2 id="legalTitle">Aviso legal</h2>
+      <p><strong>Work and Travel Guide RD</strong> es una comunidad informativa para estudiantes interesados en el programa Summer Work and Travel / Visa J1.</p>
+      <p>No somos una entidad oficial del Gobierno de los Estados Unidos, la Embajada, sponsors ni agencias autorizadas.</p>
+      <p>La información publicada es orientativa y debe verificarse en fuentes oficiales. Los servicios, anuncios o recomendaciones no garantizan aprobación de visa ni resultados específicos.</p>
+    </div>
+  </div>
+  <button class="back-top" id="backTop" aria-label="Volver al inicio">↑</button>
+  <script src="./js/config.js"></script>
+  <script src="./js/main.js"></script>
+</body>
+</html>

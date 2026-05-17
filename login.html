@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d1b3e" />
+  <title>Iniciar sesión | Work and Travel Guide RD</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./images/logo.png" type="image/png" />
+  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="stylesheet" href="./css/auth.css" />
+</head>
+<body data-auth-page="login">
+  <nav class="nav" id="mainNav" role="navigation" aria-label="Navegación principal">
+    <a href="./index.html#inicio" class="nav-brand">
+      <img src="./images/logo.png" alt="Work and Travel Guide RD" />
+      <span>W&T Guide RD</span>
+    </a>
+    <ul class="nav-menu" role="list">
+      <li><a href="./index.html#inicio"><span class="nav-icon">🏠</span> Inicio</a></li>
+      <li><a href="./index.html#servicios"><span class="nav-icon">🧰</span> Servicios J1</a></li>
+      <li><a href="./index.html#comunidad"><span class="nav-icon">💬</span> Comunidad</a></li>
+      <li><a href="./preguntas.html"><span class="nav-icon">🎙️</span> Preguntas</a></li>
+      <li><a href="./record.html"><span class="nav-icon">📄</span> Récord</a></li>
+      <li><a href="./visa.html"><span class="nav-icon">📋</span> Visa</a></li>
+      <li><a href="./internet.html"><span class="nav-icon">📱</span> Internet USA</a></li>
+      <li><a href="./foro.html" class=""><span class="nav-icon">🗣️</span> Foro</a></li>
+      <li><a href="./admin.html" id="adminNavLink" class="admin-only" style="display:none;"><span class="nav-icon">⚙️</span> Panel Admin</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="nav-mobile" id="mobileNav" role="dialog" aria-label="Menú móvil">
+    <a href="./index.html#inicio"><span class="nav-icon">🏠</span> Inicio</a>
+    <a href="./index.html#servicios"><span class="nav-icon">🧰</span> Servicios J1</a>
+    <a href="./index.html#comunidad"><span class="nav-icon">💬</span> Comunidad</a>
+    <a href="./preguntas.html"><span class="nav-icon">🎙️</span> Preguntas</a>
+    <a href="./record.html"><span class="nav-icon">📄</span> Récord</a>
+    <a href="./visa.html"><span class="nav-icon">📋</span> Visa</a>
+    <a href="./internet.html"><span class="nav-icon">📱</span> Internet USA</a>
+    <a href="./foro.html"><span class="nav-icon">🗣️</span> Foro</a>
+    <a href="./admin.html" id="adminMobileLink" class="admin-only" style="display:none;"><span class="nav-icon">⚙️</span> Panel Admin</a>
+  </div>
+  <main class="auth-page">
+    <section class="auth-page-card">
+      <div class="auth-header">
+        <img src="./images/logo.png" alt="Work and Travel Guide RD" />
+        <div><h2>Iniciar sesión</h2><p>Work and Travel Guide RD</p></div>
+      </div>
+      <div class="auth-message" id="authPageMessage" aria-live="polite"></div>
+      <form class="auth-panel active" id="loginPageForm">
+        <label>Correo electrónico<input type="email" name="email" required autocomplete="email" /></label>
+        <label>Contraseña<input type="password" name="password" required autocomplete="current-password" /></label>
+        <button class="btn btn-primary" type="submit">Entrar</button>
+      </form>
+      <div class="auth-page-links"><a href="./registro.html">Crear cuenta</a><a href="./recuperar.html">Recuperar contraseña</a><a href="./index.html#inicio">Volver al inicio</a></div>
+
+    </section>
+  </main>
+  <div class="legal-modal" id="legalModal" hidden>
+    <div class="legal-card" role="dialog" aria-modal="true" aria-labelledby="legalTitle">
+      <button class="legal-close" id="legalClose" type="button" aria-label="Cerrar aviso legal">×</button>
+      <h2 id="legalTitle">Aviso legal</h2>
+      <p><strong>Work and Travel Guide RD</strong> es una comunidad informativa para estudiantes interesados en el programa Summer Work and Travel / Visa J1.</p>
+      <p>No somos una entidad oficial del Gobierno de los Estados Unidos, la Embajada, sponsors ni agencias autorizadas.</p>
+      <p>La información publicada es orientativa y debe verificarse en fuentes oficiales. Los servicios, anuncios o recomendaciones no garantizan aprobación de visa ni resultados específicos.</p>
+    </div>
+  </div>
+  <script src="./js/config.js"></script>
+  <script src="./js/auth.js"></script>
+
+  <script>
+    document.addEventListener('click', (e) => {
+      if (e.target?.classList?.contains('legal-open')) { e.preventDefault(); document.getElementById('legalModal').hidden = false; }
+      if (e.target?.id === 'legalClose') document.getElementById('legalModal').hidden = true;
+      if (e.target?.id === 'hamburger') {
+        document.getElementById('hamburger').classList.toggle('open');
+        document.getElementById('mobileNav').classList.toggle('open');
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d1b3e" />
+  <title>Internet y Número de USA | Work and Travel Guide RD</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./images/logo.png" type="image/png" />
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <div id="progressBar" class="progress-bar"></div>
+  <nav class="nav" id="mainNav" role="navigation" aria-label="Navegación principal">
+    <a href="./index.html#inicio" class="nav-brand">
+      <img src="./images/logo.png" alt="Work and Travel Guide RD" />
+      <span>W&T Guide RD</span>
+    </a>
+    <ul class="nav-menu" role="list">
+      <li><a href="./index.html#inicio"><span class="nav-icon">🏠</span> Inicio</a></li>
+      <li><a href="./index.html#servicios"><span class="nav-icon">🧰</span> Servicios J1</a></li>
+      <li><a href="./index.html#comunidad"><span class="nav-icon">💬</span> Comunidad</a></li>
+      <li><a href="./preguntas.html"><span class="nav-icon">🎙️</span> Preguntas</a></li>
+      <li><a href="./record.html"><span class="nav-icon">📄</span> Récord</a></li>
+      <li><a href="./visa.html"><span class="nav-icon">📋</span> Visa</a></li>
+      <li><a href="./internet.html" class="active"><span class="nav-icon">📱</span> Internet USA</a></li>
+      <li><a href="./foro.html"><span class="nav-icon">🗣️</span> Foro</a></li>
+      <li><a href="./admin.html" id="adminNavLink" class="admin-only" style="display:none;"><span class="nav-icon">⚙️</span> Panel Admin</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="nav-mobile" id="mobileNav" role="dialog" aria-label="Menú móvil">
+    <a href="./index.html#inicio"><span class="nav-icon">🏠</span> Inicio</a>
+    <a href="./index.html#servicios"><span class="nav-icon">🧰</span> Servicios J1</a>
+    <a href="./index.html#comunidad"><span class="nav-icon">💬</span> Comunidad</a>
+    <a href="./preguntas.html"><span class="nav-icon">🎙️</span> Preguntas</a>
+    <a href="./record.html"><span class="nav-icon">📄</span> Récord</a>
+    <a href="./visa.html"><span class="nav-icon">📋</span> Visa</a>
+    <a href="./internet.html"><span class="nav-icon">📱</span> Internet USA</a>
+    <a href="./foro.html"><span class="nav-icon">🗣️</span> Foro</a>
+    <a href="./admin.html" id="adminMobileLink" class="admin-only" style="display:none;"><span class="nav-icon">⚙️</span> Panel Admin</a>
+  </div>
+  <section class="hero page-hero" id="inicio">
+    <img src="./images/logo.png" alt="Work and Travel Guide RD" class="hero-logo" />
+    <h1 class="hero-title"><span class="accent">Internet y Número</span><br /><span class="red-text">de USA</span></h1>
+    <p class="hero-subtitle">Guía para activar internet y número americano durante tu Summer Work and Travel.</p>
+    <div class="hero-actions">
+      <a class="hero-social-btn" href="./index.html#inicio">← Volver al inicio</a>
+      <a class="hero-social-btn is-instagram" href="./foro.html">🗣️ Entrar al Foro</a>
+    </div>
+    <div class="hero-flag-stripe"></div>
+  </section>
+
+<!-- ═══════════════════════════════════════════ INTERNET EN USA -->
+  <section class="section section-dark" id="internet">
+    <div class="section-inner">
+<!-- Intro -->
+      <div class="card fade-in" style="padding:1.5rem;margin-bottom:2rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--white);">
+        <p style="color:rgba(255,255,255,0.85);font-size:1rem;line-height:1.7;">
+          💬 <em>Usé la compañía <strong>US Mobile</strong> el verano pasado y me funcionó súper bien.
+          La recomiendo para quienes buscan algo económico, fácil de activar y sin complicaciones.</em>
+        </p>
+      </div>
+
+      <!-- Plan Card + Ref Code -->
+      <div style="display:grid;grid-template-columns:1fr;gap:1.5rem;margin-bottom:2rem;">
+
+        <div class="plan-card fade-in" style="background:var(--white);color:var(--text-dark);">
+          <div style="margin-bottom:0.6rem;color:var(--text-mid);font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Plan Recomendado · US Mobile</div>
+          <div class="plan-price">$45 <span>/ 3 meses</span></div>
+          <div style="color:var(--text-mid);font-size:0.85rem;margin-top:0.3rem;">$15/mes — ¡40% de descuento en líneas nuevas!</div>
+          <ul class="plan-features" style="margin-top:1.2rem;">
+            <li>Internet, llamadas y mensajes ilimitados</li>
+            <li>35 GB de datos Premium</li>
+            <li>10 GB de Hotspot</li>
+            <li>Cobertura 5G mmWave y C-Band</li>
+            <li>Compatible con eSIM o SIM física</li>
+            <li>Sin contrato ni tarifas ocultas</li>
+          </ul>
+        </div>
+
+        <div class="ref-code-box fade-in">
+          <div class="code-label">🎁 Código de Referencia — Beneficios para ambos</div>
+          <div class="ref-code" id="refCode" title="Clic para copiar">29C7035E</div>
+          <div class="copy-toast" id="copyToast" style="opacity:0;"></div>
+          <p style="font-size:0.85rem;color:rgba(255,255,255,0.7);">
+            Ingresa este código al momento de la compra para que ambos reciban beneficios.
+          </p>
+        </div>
+      </div>
+
+      <!-- Pasos de activación -->
+      <div class="fade-in" style="margin-bottom:2rem;">
+        <h3 style="color:var(--gold);font-family:'Oswald',sans-serif;font-size:1.4rem;margin-bottom:1.2rem;">📋 Pasos para Activarlo</h3>
+
+        <div class="img-steps">
+          <div class="img-step">
+            <div class="img-step-label"><div class="step-dot"></div> Paso 1 — Elegir el plan</div>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.88rem;margin-bottom:0.6rem;">
+              En la página de US Mobile, selecciona el plan <strong>"3 Months of Unlimited Starter"</strong> por $45 (NO la prueba gratuita de 30 días — esa es solo para quienes ya tienen línea activa en otra compañía).
+            </p>
+            <img src="./images/usmobile_1.png" alt="Página de US Mobile con el plan de 3 meses" class="step-screenshot" loading="lazy" />
+          </div>
+
+          <div class="img-step">
+            <div class="img-step-label"><div class="step-dot"></div> Paso 2 — Crear cuenta</div>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.88rem;margin-bottom:0.6rem;">
+              Crea tu cuenta con Apple, Google o llenando el formulario. No necesitas número de teléfono previo.
+            </p>
+            <img src="./images/usmobile_2.png" alt="Formulario de registro en US Mobile" class="step-screenshot" loading="lazy" />
+          </div>
+
+          <div class="img-step">
+            <div class="img-step-label"><div class="step-dot"></div> Paso 3 — eSIM o SIM física</div>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.88rem;margin-bottom:0.6rem;">
+              Si tu teléfono es compatible con eSIM, actívala al instante. Si no, selecciona el <strong>SIM Card Starter Kit</strong> para recibir una SIM física.
+            </p>
+            <img src="./images/usmobile_3.png" alt="Selección de add-ons: SIM Card Starter Kit" class="step-screenshot" loading="lazy" />
+          </div>
+
+          <div class="img-step">
+            <div class="img-step-label"><div class="step-dot"></div> Paso 4 — Pago con tarjeta</div>
+            <p style="color:rgba(255,255,255,0.7);font-size:0.88rem;margin-bottom:0.6rem;">
+              Paga con tu tarjeta. En el campo de país, selecciona <strong>República Dominicana</strong>. Luego ingresa el código de referencia.
+            </p>
+            <img src="./images/usmobile_4.png" alt="Pantalla de checkout con información de pago" class="step-screenshot" loading="lazy" />
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-top:2rem;">
+          <a href="https://www.usmobile.com" target="_blank" rel="noopener noreferrer"
+             class="cta-link" style="background:var(--gold);color:var(--navy);box-shadow:0 4px 20px rgba(245,166,35,0.35);">
+            📱 Ir a US Mobile
+            <span style="font-size:0.85rem;">↗</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Teléfonos compatibles con eSIM -->
+      <div class="card fade-in" style="padding:1.5rem;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);">
+        <h3 style="color:var(--gold);font-family:'Oswald',sans-serif;font-size:1.2rem;margin-bottom:1rem;">📱 Teléfonos Compatibles con eSIM</h3>
+
+        <div class="phone-grid">
+          <div class="phone-item" style="background:rgba(255,255,255,0.08);color:var(--white);">iPhone XR, XS, 11 en adelante</div>
+          <div class="phone-item" style="background:rgba(255,255,255,0.08);color:var(--white);">Samsung Galaxy S20, S21, S22, S23</div>
+          <div class="phone-item" style="background:rgba(255,255,255,0.08);color:var(--white);">Samsung Z Flip, Z Fold</div>
+          <div class="phone-item" style="background:rgba(255,255,255,0.08);color:var(--white);">Google Pixel 4, 5, 6, 7, 8 y Pro</div>
+          <div class="phone-item" style="background:rgba(255,255,255,0.08);color:var(--white);">Motorola Razr (modelos recientes)</div>
+          <div class="phone-item" style="background:rgba(255,255,255,0.08);color:var(--white);">Muchos modelos nuevos de OnePlus</div>
+        </div>
+
+        <div class="info-box warning" style="margin-top:1.2rem;background:rgba(245,158,11,0.12);border-color:var(--gold);color:rgba(255,255,255,0.85);">
+          <span>📦</span>
+          <div>
+            <strong>¿Tu celular no es compatible con eSIM?</strong> Pide el SIM Card Starter Kit.
+            Te recomiendo usar un courier confiable para recibirlo en RD antes de viajar,
+            o enviarlo directamente a la dirección donde estarás en EE.UU.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <div id="adAfterInternet" class="ad-slot ad-slot-between section-dark" aria-label="Anuncio entre secciones"></div>
+
+<!-- ═══════════════════════════════════════════ ACCESO AL FORO -->
+  <section class="section section-white" id="foro-acceso">
+    <div class="section-inner">
+      <div class="section-header fade-in">
+        <span class="section-tag">🗣️ Foro</span>
+        <h2 class="section-title">Foro de Estudiantes</h2>
+        <div class="divider"></div>
+        <p class="section-desc">
+          El foro funciona en una página interna separada para que la página principal siga limpia y rápida.
+          Puedes ver publicaciones públicas, pero para publicar, responder o reportar debes iniciar sesión.
+        </p>
+      </div>
+
+      <div class="forum-entry-card fade-in">
+        <div class="forum-entry-icon">🗣️</div>
+        <div class="forum-entry-content">
+          <h3>Entrar al Foro de Estudiantes</h3>
+          <p>Haz preguntas, comparte experiencias y recibe ayuda de otros estudiantes del programa Work and Travel.</p>
+          <div class="forum-entry-actions">
+            <a href="./foro.html" class="cta-link">Entrar al Foro <span>→</span></a>
+            <a href="./login.html?redirect=foro.html" class="btn btn-outline">Iniciar sesión</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <footer class="footer">
+    <img src="./images/logo.png" alt="Logo Work and Travel Guide RD" class="footer-logo" />
+    <p><strong>Work and Travel Guide RD</strong></p>
+    <div class="footer-links">
+      <a href="./index.html#inicio">Inicio</a>
+      <a href="./index.html#servicios">Servicios</a>
+      <a href="./index.html#comunidad">Comunidad</a>
+      <a href="./preguntas.html">Preguntas</a>
+      <a href="./record.html">Récord</a>
+      <a href="./visa.html">Visa</a>
+      <a href="./internet.html">Internet</a>
+      <a href="./foro.html">Foro</a>
+      <a href="#aviso-legal" class="legal-open">Aviso legal</a>
+    </div>
+  </footer>
+  <div class="legal-modal" id="legalModal" hidden>
+    <div class="legal-card" role="dialog" aria-modal="true" aria-labelledby="legalTitle">
+      <button class="legal-close" id="legalClose" type="button" aria-label="Cerrar aviso legal">×</button>
+      <h2 id="legalTitle">Aviso legal</h2>
+      <p><strong>Work and Travel Guide RD</strong> es una comunidad informativa para estudiantes interesados en el programa Summer Work and Travel / Visa J1.</p>
+      <p>No somos una entidad oficial del Gobierno de los Estados Unidos, la Embajada, sponsors ni agencias autorizadas.</p>
+      <p>La información publicada es orientativa y debe verificarse en fuentes oficiales. Los servicios, anuncios o recomendaciones no garantizan aprobación de visa ni resultados específicos.</p>
+    </div>
+  </div>
+  <button class="back-top" id="backTop" aria-label="Volver al inicio">↑</button>
+  <script src="./js/config.js"></script>
+  <script src="./js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d1b3e" />
+  <title>Preguntas Consulares y Pronunciación | Work and Travel Guide RD</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./images/logo.png" type="image/png" />
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <div id="progressBar" class="progress-bar"></div>
+  <nav class="nav" id="mainNav" role="navigation" aria-label="Navegación principal">
+    <a href="./index.html#inicio" class="nav-brand">
+      <img src="./images/logo.png" alt="Work and Travel Guide RD" />
+      <span>W&T Guide RD</span>
+    </a>
+    <ul class="nav-menu" role="list">
+      <li><a href="./index.html#inicio"><span class="nav-icon">🏠</span> Inicio</a></li>
+      <li><a href="./index.html#servicios"><span class="nav-icon">🧰</span> Servicios J1</a></li>
+      <li><a href="./index.html#comunidad"><span class="nav-icon">💬</span> Comunidad</a></li>
+      <li><a href="./preguntas.html" class="active"><span class="nav-icon">🎙️</span> Preguntas</a></li>
+      <li><a href="./record.html"><span class="nav-icon">📄</span> Récord</a></li>
+      <li><a href="./visa.html"><span class="nav-icon">📋</span> Visa</a></li>
+      <li><a href="./internet.html"><span class="nav-icon">📱</span> Internet USA</a></li>
+      <li><a href="./foro.html"><span class="nav-icon">🗣️</span> Foro</a></li>
+      <li><a href="./admin.html" id="adminNavLink" class="admin-only" style="display:none;"><span class="nav-icon">⚙️</span> Panel Admin</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="nav-mobile" id="mobileNav" role="dialog" aria-label="Menú móvil">
+    <a href="./index.html#inicio"><span class="nav-icon">🏠</span> Inicio</a>
+    <a href="./index.html#servicios"><span class="nav-icon">🧰</span> Servicios J1</a>
+    <a href="./index.html#comunidad"><span class="nav-icon">💬</span> Comunidad</a>
+    <a href="./preguntas.html"><span class="nav-icon">🎙️</span> Preguntas</a>
+    <a href="./record.html"><span class="nav-icon">📄</span> Récord</a>
+    <a href="./visa.html"><span class="nav-icon">📋</span> Visa</a>
+    <a href="./internet.html"><span class="nav-icon">📱</span> Internet USA</a>
+    <a href="./foro.html"><span class="nav-icon">🗣️</span> Foro</a>
+    <a href="./admin.html" id="adminMobileLink" class="admin-only" style="display:none;"><span class="nav-icon">⚙️</span> Panel Admin</a>
+  </div>
+  <section class="hero page-hero" id="inicio">
+    <img src="./images/logo.png" alt="Work and Travel Guide RD" class="hero-logo" />
+    <h1 class="hero-title"><span class="accent">Preguntas Consulares</span><br /><span class="red-text">y Pronunciación</span></h1>
+    <p class="hero-subtitle">Practica preguntas de entrevista, escucha la pronunciación y repasa Wilberforce.</p>
+    <div class="hero-actions">
+      <a class="hero-social-btn" href="./index.html#inicio">← Volver al inicio</a>
+      <a class="hero-social-btn is-instagram" href="./foro.html">🗣️ Entrar al Foro</a>
+    </div>
+    <div class="hero-flag-stripe"></div>
+  </section>
+
+<!-- ═══════════════════════════════════════════ PREGUNTAS CONSULARES -->
+  <section class="section section-white" id="preguntas">
+    <div class="section-inner">
+<!-- Speech Controls -->
+      <div class="speech-toolbar fade-in">
+        <button class="btn btn-primary" id="btnSlow">
+          🔊 Pronunciación Lenta
+        </button>
+        <button class="btn btn-red" id="btnFast">
+          ⚡ Pronunciación Rápida
+        </button>
+        <button class="btn btn-gold" id="btnRandom">
+          🎲 Práctica Aleatoria
+        </button>
+        <button class="btn btn-outline" id="btnStop" disabled>
+          ⏹ Detener
+        </button>
+        <button class="btn btn-outline btn-sm" id="btnReset">
+          🔄 Reiniciar
+        </button>
+      </div>
+
+      <!-- Random Practice UI -->
+      <div class="random-practice" id="randomPractice">
+        <div style="font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.6);" id="randomNum">Pregunta aleatoria</div>
+        <div class="random-q-display" id="randomQuestion">Presiona "Siguiente" para comenzar</div>
+        <div class="random-controls">
+          <button class="btn btn-gold" id="btnListenRandom">🔊 Escuchar</button>
+          <button class="btn btn-primary" id="btnNextRandom">⏭ Siguiente</button>
+          <button class="btn btn-outline" id="btnCloseRandom" style="border-color:rgba(255,255,255,0.4);color:var(--white);">✕ Cerrar</button>
+        </div>
+      </div>
+
+      <div class="tab-wrapper fade-in">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="tab-preguntas">📝 Las 50 Preguntas</button>
+          <button class="tab-btn" data-tab="tab-wilberforce">⚖️ Wilberforce</button>
+          <button class="tab-btn" data-tab="tab-glosario">📖 Glosario</button>
+        </div>
+
+        <!-- Tab: Preguntas -->
+        <div class="tab-panel active" id="tab-preguntas">
+          <div id="questionsList">
+            <!-- Generated by JS below -->
+          </div>
+        </div>
+
+        <!-- Tab: Wilberforce -->
+        <div class="tab-panel" id="tab-wilberforce">
+          <div class="wilberforce-box">
+            <h3>⚖️ Tus Derechos — Wilberforce</h3>
+            <p style="color:rgba(255,255,255,0.72);font-size:0.9rem;margin-bottom:1rem;">
+              Estos son los derechos que tienes como participante del programa J1. Debes conocerlos porque el cónsul puede preguntarte sobre ellos.
+            </p>
+
+            <div style="margin-bottom:1.2rem;">
+              <div style="color:var(--gold);font-family:'Oswald',sans-serif;font-size:1.1rem;margin-bottom:0.6rem;">🇺🇸 En inglés</div>
+              <div class="rights-grid">
+                <div class="right-item"><div class="right-num">1</div><div>Be paid fairly</div></div>
+                <div class="right-item"><div class="right-num">2</div><div>Be free from discrimination</div></div>
+                <div class="right-item"><div class="right-num">3</div><div>Be free from sexual harassment and sexual exploitation</div></div>
+                <div class="right-item"><div class="right-num">4</div><div>Have a healthy and safe workplace</div></div>
+                <div class="right-item"><div class="right-num">5</div><div>Request help from union, immigrant, and labor rights groups</div></div>
+                <div class="right-item"><div class="right-num">6</div><div>Leave an abusive employment situation</div></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="color:var(--gold);font-family:'Oswald',sans-serif;font-size:1.1rem;margin-bottom:0.6rem;">🇩🇴 En español</div>
+              <div class="rights-grid">
+                <div class="right-item"><div class="right-num">1</div><div>Recibir una paga justa</div></div>
+                <div class="right-item"><div class="right-num">2</div><div>No sufrir discriminación</div></div>
+                <div class="right-item"><div class="right-num">3</div><div>No sufrir acoso sexual ni explotación sexual</div></div>
+                <div class="right-item"><div class="right-num">4</div><div>Trabajar en un lugar saludable y seguro</div></div>
+                <div class="right-item"><div class="right-num">5</div><div>Solicitar ayuda de grupos sindicales, de inmigrantes y de derechos laborales</div></div>
+                <div class="right-item"><div class="right-num">6</div><div>Abandonar una situación de empleo abusiva</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Glosario -->
+        <div class="tab-panel" id="tab-glosario">
+          <p style="color:var(--text-mid);margin-bottom:1rem;">Términos en inglés que debes conocer para tu entrevista consular y durante el programa:</p>
+          <div class="glossary-grid">
+            <div class="gloss-item">
+              <div class="gloss-term">GPA</div>
+              <div class="gloss-def">Índice académico</div>
+            </div>
+            <div class="gloss-item">
+              <div class="gloss-term">Letter Proof</div>
+              <div class="gloss-def">Constancia de estudio</div>
+            </div>
+            <div class="gloss-item">
+              <div class="gloss-term">Job Offer / Placement Agreement</div>
+              <div class="gloss-def">Contrato de trabajo</div>
+            </div>
+            <div class="gloss-item">
+              <div class="gloss-term">Wilberforce</div>
+              <div class="gloss-def">Tus derechos como trabajador J1</div>
+            </div>
+            <div class="gloss-item">
+              <div class="gloss-term">Schedule</div>
+              <div class="gloss-def">Horario</div>
+            </div>
+            <div class="gloss-item">
+              <div class="gloss-term">Economy Proof / Solvency</div>
+              <div class="gloss-def">Solvencia económica</div>
+            </div>
+            <div class="gloss-item">
+              <div class="gloss-term">Host Manager</div>
+              <div class="gloss-def">Supervisor en EE.UU.</div>
+            </div>
+            <div class="gloss-item">
+              <div class="gloss-term">Sponsor</div>
+              <div class="gloss-def">Organización que avala el programa</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <div id="adAfterPreguntas" class="ad-slot ad-slot-between section-white" aria-label="Anuncio entre secciones"></div>
+
+<!-- ═══════════════════════════════════════════ ACCESO AL FORO -->
+  <section class="section section-white" id="foro-acceso">
+    <div class="section-inner">
+      <div class="section-header fade-in">
+        <span class="section-tag">🗣️ Foro</span>
+        <h2 class="section-title">Foro de Estudiantes</h2>
+        <div class="divider"></div>
+        <p class="section-desc">
+          El foro funciona en una página interna separada para que la página principal siga limpia y rápida.
+          Puedes ver publicaciones públicas, pero para publicar, responder o reportar debes iniciar sesión.
+        </p>
+      </div>
+
+      <div class="forum-entry-card fade-in">
+        <div class="forum-entry-icon">🗣️</div>
+        <div class="forum-entry-content">
+          <h3>Entrar al Foro de Estudiantes</h3>
+          <p>Haz preguntas, comparte experiencias y recibe ayuda de otros estudiantes del programa Work and Travel.</p>
+          <div class="forum-entry-actions">
+            <a href="./foro.html" class="cta-link">Entrar al Foro <span>→</span></a>
+            <a href="./login.html?redirect=foro.html" class="btn btn-outline">Iniciar sesión</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <footer class="footer">
+    <img src="./images/logo.png" alt="Logo Work and Travel Guide RD" class="footer-logo" />
+    <p><strong>Work and Travel Guide RD</strong></p>
+    <div class="footer-links">
+      <a href="./index.html#inicio">Inicio</a>
+      <a href="./index.html#servicios">Servicios</a>
+      <a href="./index.html#comunidad">Comunidad</a>
+      <a href="./preguntas.html">Preguntas</a>
+      <a href="./record.html">Récord</a>
+      <a href="./visa.html">Visa</a>
+      <a href="./internet.html">Internet</a>
+      <a href="./foro.html">Foro</a>
+      <a href="#aviso-legal" class="legal-open">Aviso legal</a>
+    </div>
+  </footer>
+  <div class="legal-modal" id="legalModal" hidden>
+    <div class="legal-card" role="dialog" aria-modal="true" aria-labelledby="legalTitle">
+      <button class="legal-close" id="legalClose" type="button" aria-label="Cerrar aviso legal">×</button>
+      <h2 id="legalTitle">Aviso legal</h2>
+      <p><strong>Work and Travel Guide RD</strong> es una comunidad informativa para estudiantes interesados en el programa Summer Work and Travel / Visa J1.</p>
+      <p>No somos una entidad oficial del Gobierno de los Estados Unidos, la Embajada, sponsors ni agencias autorizadas.</p>
+      <p>La información publicada es orientativa y debe verificarse en fuentes oficiales. Los servicios, anuncios o recomendaciones no garantizan aprobación de visa ni resultados específicos.</p>
+    </div>
+  </div>
+  <button class="back-top" id="backTop" aria-label="Volver al inicio">↑</button>
+  <script src="./js/config.js"></script>
+  <script src="./js/main.js"></script>
+</body>
+</html>

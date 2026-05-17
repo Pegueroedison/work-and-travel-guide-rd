@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d1b3e" />
+  <title>Panel Admin | Work and Travel Guide RD</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./images/logo.png" type="image/png" />
+  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="stylesheet" href="./css/admin.css" />
+</head>
+<body>
+  <div id="progressBar" class="progress-bar"></div>
+  <nav class="nav" id="mainNav" role="navigation" aria-label="Navegación principal">
+    <a href="./index.html#inicio" class="nav-brand">
+      <img src="./images/logo.png" alt="Work and Travel Guide RD" />
+      <span>W&T Guide RD</span>
+    </a>
+    <ul class="nav-menu" role="list">
+      <li><a href="./index.html#inicio"><span class="nav-icon">🏠</span> Inicio</a></li>
+      <li><a href="./index.html#servicios"><span class="nav-icon">🧰</span> Servicios J1</a></li>
+      <li><a href="./index.html#comunidad"><span class="nav-icon">💬</span> Comunidad</a></li>
+      <li><a href="./preguntas.html"><span class="nav-icon">🎙️</span> Preguntas</a></li>
+      <li><a href="./record.html"><span class="nav-icon">📄</span> Récord</a></li>
+      <li><a href="./visa.html"><span class="nav-icon">📋</span> Visa</a></li>
+      <li><a href="./internet.html"><span class="nav-icon">📱</span> Internet USA</a></li>
+      <li><a href="./foro.html"><span class="nav-icon">🗣️</span> Foro</a></li>
+      <li><a href="./admin.html" class="active"><span class="nav-icon">⚙️</span> Panel Admin</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
+  </nav>
+
+  <div class="nav-mobile" id="mobileNav" role="dialog" aria-label="Menú móvil">
+    <a href="./index.html#inicio"><span class="nav-icon">🏠</span> Inicio</a>
+    <a href="./index.html#servicios"><span class="nav-icon">🧰</span> Servicios J1</a>
+    <a href="./index.html#comunidad"><span class="nav-icon">💬</span> Comunidad</a>
+    <a href="./preguntas.html"><span class="nav-icon">🎙️</span> Preguntas</a>
+    <a href="./record.html"><span class="nav-icon">📄</span> Récord</a>
+    <a href="./visa.html"><span class="nav-icon">📋</span> Visa</a>
+    <a href="./internet.html"><span class="nav-icon">📱</span> Internet USA</a>
+    <a href="./foro.html"><span class="nav-icon">🗣️</span> Foro</a>
+    <a href="./admin.html"><span class="nav-icon">⚙️</span> Panel Admin</a>
+  </div>
+
+  <main class="admin-page">
+    <section class="admin-hero">
+      <img src="./images/logo.png" alt="Work and Travel Guide RD" />
+      <div>
+        <span class="admin-kicker">Panel seguro</span>
+        <h1>Administración Work and Travel Guide RD</h1>
+        <p>Este panel solo funciona para usuarios con rol <strong>admin</strong> o <strong>superadmin</strong>. La seguridad real se valida en las Web Apps antes de guardar cambios.</p>
+      </div>
+    </section>
+
+    <div class="admin-message" id="adminMessage" aria-live="polite">Verificando sesión...</div>
+
+    <section class="admin-locked" id="adminLocked" hidden>
+      <div class="locked-card">
+        <div class="locked-icon">🔒</div>
+        <h2>No tienes permiso para acceder al panel administrativo.</h2>
+        <p>Inicia sesión con una cuenta admin o superadmin. Si tu cuenta fue bloqueada, se mostrará el motivo del bloqueo.</p>
+        <div class="admin-actions-row">
+          <a class="btn btn-primary" href="./login.html?redirect=admin.html">Iniciar sesión</a>
+          <a class="btn btn-outline" href="./index.html#inicio">Volver al inicio</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="admin-dashboard" id="adminDashboard" hidden>
+      <div class="admin-summary-grid">
+        <article class="admin-summary-card">
+          <span>👤</span>
+          <div><strong id="adminUserName">Admin</strong><small id="adminUserRole">Rol</small></div>
+        </article>
+        <article class="admin-summary-card"><span>📢</span><div><strong id="countAds">0</strong><small>Anuncios</small></div></article>
+        <article class="admin-summary-card"><span>🧰</span><div><strong id="countServices">0</strong><small>Servicios J1</small></div></article>
+        <article class="admin-summary-card"><span>🗣️</span><div><strong id="countPendingForum">0</strong><small>Pendientes foro</small></div></article>
+      </div>
+
+      <div class="admin-tabs" role="tablist" aria-label="Secciones del panel">
+        <button class="admin-tab active" data-admin-tab="contenido" type="button">Contenido</button>
+        <button class="admin-tab" data-admin-tab="usuarios" type="button">Usuarios</button>
+        <button class="admin-tab" data-admin-tab="foro" type="button">Foro</button>
+        <button class="admin-tab" data-admin-tab="config" type="button">Configuración</button>
+      </div>
+
+      <section class="admin-panel active" data-admin-panel="contenido">
+        <div class="admin-panel-header">
+          <div><h2>Contenido, publicidad, servicios y comunidad</h2><p>Edita datos administrables sin tocar GitHub. Se guardan en Google Sheets por medio de la Web App de Contenido.</p></div>
+          <button class="btn btn-outline" type="button" id="reloadContentBtn">Actualizar</button>
+        </div>
+
+        <div class="admin-card">
+          <h3>Guardar o actualizar registro</h3>
+          <p class="admin-note">Para editar un registro existente, usa el mismo <strong>id</strong> o <strong>clave</strong>. Para crear uno nuevo, escribe un id nuevo.</p>
+          <form id="contentQuickForm" class="admin-form-grid">
+            <label>Hoja
+              <select name="sheetName" required>
+                <option value="Anuncios">Anuncios</option>
+                <option value="ServiciosJ1">ServiciosJ1</option>
+                <option value="CursoIngles">CursoIngles</option>
+                <option value="GruposWhatsApp">GruposWhatsApp</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Config">Config</option>
+              </select>
+            </label>
+            <label>ID o clave<input name="id" placeholder="AD-001, SVC-001, IG-001 o clave" /></label>
+            <label>Título / Nombre / Valor<input name="titulo" placeholder="Título, nombre o valor" /></label>
+            <label>Descripción<textarea name="descripcion" rows="3" placeholder="Descripción del registro"></textarea></label>
+            <label>Enlace / URL<input name="enlace" placeholder="https://..." /></label>
+            <label>CTA / Texto botón<input name="cta" placeholder="Ver más" /></label>
+            <label>Orden<input name="orden" type="number" min="0" placeholder="1" /></label>
+            <label>Activo<select name="activo"><option value="TRUE">TRUE</option><option value="FALSE">FALSE</option></select></label>
+            <label>Destacado<select name="destacado"><option value="FALSE">FALSE</option><option value="TRUE">TRUE</option></select></label>
+            <button class="btn btn-primary" type="submit">Guardar registro</button>
+          </form>
+        </div>
+
+        <div class="admin-grid-2">
+          <div class="admin-card"><h3>Anuncios</h3><div id="tableAnuncios" class="admin-table-wrap"></div></div>
+          <div class="admin-card"><h3>Servicios J1</h3><div id="tableServiciosJ1" class="admin-table-wrap"></div></div>
+          <div class="admin-card"><h3>Curso de inglés</h3><div id="tableCursoIngles" class="admin-table-wrap"></div></div>
+          <div class="admin-card"><h3>Comunidad / WhatsApp / Instagram</h3><div id="tableComunidad" class="admin-table-wrap"></div></div>
+        </div>
+      </section>
+
+      <section class="admin-panel" data-admin-panel="usuarios">
+        <div class="admin-panel-header">
+          <div><h2>Usuarios y permisos</h2><p>Administra roles, bloqueos y motivos visibles para el usuario.</p></div>
+          <button class="btn btn-outline" type="button" id="reloadUsersBtn">Actualizar</button>
+        </div>
+        <div class="admin-card">
+          <h3>Acciones rápidas</h3>
+          <form id="userActionForm" class="admin-form-grid compact">
+            <label>ID del usuario<input name="user_id" required placeholder="USR-..." /></label>
+            <label>Rol<select name="role"><option value="user">user</option><option value="moderator">moderator</option><option value="admin">admin</option><option value="superadmin">superadmin</option></select></label>
+            <label>Motivo de bloqueo<textarea name="reason" rows="2" placeholder="Ejemplo: spam, comportamiento indebido..."></textarea></label>
+            <button class="btn btn-primary" name="actionType" value="setRole" type="submit">Cambiar rol</button>
+            <button class="btn btn-red" name="actionType" value="block" type="submit">Bloquear</button>
+            <button class="btn btn-outline" name="actionType" value="unblock" type="submit">Desbloquear</button>
+          </form>
+        </div>
+        <div class="admin-card"><h3>Lista de usuarios</h3><div id="tableUsers" class="admin-table-wrap"></div></div>
+      </section>
+
+      <section class="admin-panel" data-admin-panel="foro">
+        <div class="admin-panel-header">
+          <div><h2>Moderación del foro</h2><p>Revisa publicaciones, respuestas, reportes y elementos enviados a moderación.</p></div>
+          <button class="btn btn-outline" type="button" id="reloadForumBtn">Actualizar</button>
+        </div>
+        <div class="admin-grid-2">
+          <div class="admin-card"><h3>Cola de moderación</h3><div id="tableModerationQueue" class="admin-table-wrap"></div></div>
+          <div class="admin-card"><h3>Reportes</h3><div id="tableReports" class="admin-table-wrap"></div></div>
+          <div class="admin-card"><h3>Publicaciones</h3><div id="tablePosts" class="admin-table-wrap"></div></div>
+          <div class="admin-card"><h3>Comentarios</h3><div id="tableComments" class="admin-table-wrap"></div></div>
+        </div>
+      </section>
+
+      <section class="admin-panel" data-admin-panel="config">
+        <div class="admin-panel-header">
+          <div><h2>Configuración importante</h2><p>Datos que debes revisar después de desplegar las Web Apps.</p></div>
+        </div>
+        <div class="admin-card">
+          <h3>Estado de URLs</h3>
+          <div class="config-list">
+            <div><strong>CONTENT_API_URL:</strong> <span id="cfgContent"></span></div>
+            <div><strong>USERS_API_URL:</strong> <span id="cfgUsers"></span></div>
+            <div><strong>FORUM_API_URL:</strong> <span id="cfgForum"></span></div>
+          </div>
+          <p class="admin-note">Además, pega la URL de la Web App de Usuarios en la hoja <strong>Config</strong> de Contenido y en la hoja <strong>Config</strong> del Foro, clave <strong>users_api_url</strong>. Así cada Web App puede verificar si el token pertenece a un admin o superadmin.</p>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="./js/config.js"></script>
+  <script src="./js/admin.js"></script>
+</body>
+</html>

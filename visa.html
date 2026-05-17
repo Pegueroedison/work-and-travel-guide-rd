@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d1b3e" />
+  <title>Estado de la Visa | Work and Travel Guide RD</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./images/logo.png" type="image/png" />
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <div id="progressBar" class="progress-bar"></div>
+  <nav class="nav" id="mainNav" role="navigation" aria-label="Navegación principal">
+    <a href="./index.html#inicio" class="nav-brand">
+      <img src="./images/logo.png" alt="Work and Travel Guide RD" />
+      <span>W&T Guide RD</span>
+    </a>
+    <ul class="nav-menu" role="list">
+      <li><a href="./index.html#inicio"><span class="nav-icon">🏠</span> Inicio</a></li>
+      <li><a href="./index.html#servicios"><span class="nav-icon">🧰</span> Servicios J1</a></li>
+      <li><a href="./index.html#comunidad"><span class="nav-icon">💬</span> Comunidad</a></li>
+      <li><a href="./preguntas.html"><span class="nav-icon">🎙️</span> Preguntas</a></li>
+      <li><a href="./record.html"><span class="nav-icon">📄</span> Récord</a></li>
+      <li><a href="./visa.html" class="active"><span class="nav-icon">📋</span> Visa</a></li>
+      <li><a href="./internet.html"><span class="nav-icon">📱</span> Internet USA</a></li>
+      <li><a href="./foro.html"><span class="nav-icon">🗣️</span> Foro</a></li>
+      <li><a href="./admin.html" id="adminNavLink" class="admin-only" style="display:none;"><span class="nav-icon">⚙️</span> Panel Admin</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="nav-mobile" id="mobileNav" role="dialog" aria-label="Menú móvil">
+    <a href="./index.html#inicio"><span class="nav-icon">🏠</span> Inicio</a>
+    <a href="./index.html#servicios"><span class="nav-icon">🧰</span> Servicios J1</a>
+    <a href="./index.html#comunidad"><span class="nav-icon">💬</span> Comunidad</a>
+    <a href="./preguntas.html"><span class="nav-icon">🎙️</span> Preguntas</a>
+    <a href="./record.html"><span class="nav-icon">📄</span> Récord</a>
+    <a href="./visa.html"><span class="nav-icon">📋</span> Visa</a>
+    <a href="./internet.html"><span class="nav-icon">📱</span> Internet USA</a>
+    <a href="./foro.html"><span class="nav-icon">🗣️</span> Foro</a>
+    <a href="./admin.html" id="adminMobileLink" class="admin-only" style="display:none;"><span class="nav-icon">⚙️</span> Panel Admin</a>
+  </div>
+  <section class="hero page-hero" id="inicio">
+    <img src="./images/logo.png" alt="Work and Travel Guide RD" class="hero-logo" />
+    <h1 class="hero-title"><span class="accent">Estado de</span><br /><span class="red-text">la Visa</span></h1>
+    <p class="hero-subtitle">Consulta el estado de tu solicitud y entiende los estados más comunes en CEAC.</p>
+    <div class="hero-actions">
+      <a class="hero-social-btn" href="./index.html#inicio">← Volver al inicio</a>
+      <a class="hero-social-btn is-instagram" href="./foro.html">🗣️ Entrar al Foro</a>
+    </div>
+    <div class="hero-flag-stripe"></div>
+  </section>
+
+<!-- ═══════════════════════════════════════════ ESTADO DE LA VISA -->
+  <section class="section section-light" id="visa">
+    <div class="section-inner">
+<div class="ceac-wrapper fade-in">
+        <div class="ceac-image-box">
+          <img src="./images/ceac_status.png" alt="CEAC Visa Status Tracker — pantalla del sistema" loading="lazy" />
+        </div>
+
+        <div class="ceac-info">
+          <h3>¿Cómo revisar el estado?</h3>
+          <p>
+            Ingresa al sistema CEAC del Departamento de Estado de los EE.UU. con tu número de caso. El estado aparecerá en la página de resultados.
+          </p>
+
+          <p style="font-weight:700;color:var(--navy);margin-bottom:0.5rem;">Posibles estados:</p>
+          <div class="status-chips">
+            <span class="status-chip chip-approved">✓ Approved</span>
+            <span class="status-chip chip-issued">📧 Issued</span>
+            <span class="status-chip chip-pending">⏳ Administrative Processing</span>
+            <span class="status-chip chip-refused">✕ Refused</span>
+          </div>
+
+          <div class="info-box warning" style="margin-bottom:1.5rem;">
+            <span>⚠️</span>
+            <span>Si aparece <strong>Administrative Processing</strong>, paciencia — es el estado más común. No significa rechazo.</span>
+          </div>
+
+          <a href="https://ceac.state.gov/CEACStatTracker/Status.aspx?App=NIV"
+             target="_blank" rel="noopener noreferrer"
+             class="cta-link">
+            📋 Consultar Estado de la Visa
+            <span style="font-size:0.85rem;">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <div id="adAfterVisa" class="ad-slot ad-slot-between section-light" aria-label="Anuncio entre secciones"></div>
+
+<!-- ═══════════════════════════════════════════ ACCESO AL FORO -->
+  <section class="section section-white" id="foro-acceso">
+    <div class="section-inner">
+      <div class="section-header fade-in">
+        <span class="section-tag">🗣️ Foro</span>
+        <h2 class="section-title">Foro de Estudiantes</h2>
+        <div class="divider"></div>
+        <p class="section-desc">
+          El foro funciona en una página interna separada para que la página principal siga limpia y rápida.
+          Puedes ver publicaciones públicas, pero para publicar, responder o reportar debes iniciar sesión.
+        </p>
+      </div>
+
+      <div class="forum-entry-card fade-in">
+        <div class="forum-entry-icon">🗣️</div>
+        <div class="forum-entry-content">
+          <h3>Entrar al Foro de Estudiantes</h3>
+          <p>Haz preguntas, comparte experiencias y recibe ayuda de otros estudiantes del programa Work and Travel.</p>
+          <div class="forum-entry-actions">
+            <a href="./foro.html" class="cta-link">Entrar al Foro <span>→</span></a>
+            <a href="./login.html?redirect=foro.html" class="btn btn-outline">Iniciar sesión</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <footer class="footer">
+    <img src="./images/logo.png" alt="Logo Work and Travel Guide RD" class="footer-logo" />
+    <p><strong>Work and Travel Guide RD</strong></p>
+    <div class="footer-links">
+      <a href="./index.html#inicio">Inicio</a>
+      <a href="./index.html#servicios">Servicios</a>
+      <a href="./index.html#comunidad">Comunidad</a>
+      <a href="./preguntas.html">Preguntas</a>
+      <a href="./record.html">Récord</a>
+      <a href="./visa.html">Visa</a>
+      <a href="./internet.html">Internet</a>
+      <a href="./foro.html">Foro</a>
+      <a href="#aviso-legal" class="legal-open">Aviso legal</a>
+    </div>
+  </footer>
+  <div class="legal-modal" id="legalModal" hidden>
+    <div class="legal-card" role="dialog" aria-modal="true" aria-labelledby="legalTitle">
+      <button class="legal-close" id="legalClose" type="button" aria-label="Cerrar aviso legal">×</button>
+      <h2 id="legalTitle">Aviso legal</h2>
+      <p><strong>Work and Travel Guide RD</strong> es una comunidad informativa para estudiantes interesados en el programa Summer Work and Travel / Visa J1.</p>
+      <p>No somos una entidad oficial del Gobierno de los Estados Unidos, la Embajada, sponsors ni agencias autorizadas.</p>
+      <p>La información publicada es orientativa y debe verificarse en fuentes oficiales. Los servicios, anuncios o recomendaciones no garantizan aprobación de visa ni resultados específicos.</p>
+    </div>
+  </div>
+  <button class="back-top" id="backTop" aria-label="Volver al inicio">↑</button>
+  <script src="./js/config.js"></script>
+  <script src="./js/main.js"></script>
+</body>
+</html>

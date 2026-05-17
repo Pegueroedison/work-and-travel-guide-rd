@@ -22,5 +22,34 @@
     }
   ],
   "screenshots": [],
-  "categories": ["education", "travel"]
+  "categories": [
+    "education",
+    "travel"
+  ],
+  "shortcuts": [
+    {
+      "name": "Foro de Estudiantes",
+      "short_name": "Foro",
+      "url": "./foro.html",
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Servicios J1",
+      "short_name": "Servicios",
+      "url": "./index.html#servicios",
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
 }
