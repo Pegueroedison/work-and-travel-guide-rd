@@ -1,4 +1,4 @@
-/* === v41: Guardado directo independiente para Contenido === */
+/* === v42: Guardado directo independiente para Contenido === */
 (function(){
   const CONFIG = window.WT_CONFIG || {};
   const CONTENT_FORMS = new Set([
@@ -230,7 +230,7 @@
     const oldText = button?.textContent || '';
     try{
       if(button){ button.disabled = true; button.textContent = 'Guardando...'; }
-      msg('info','Validando campos...');
+      msg('info','Validando campos con guardado directo v42...');
       const built = buildPayload(formId, form);
       const action = built.file ? 'adminSaveRowWithImage' : 'adminSaveRow';
 

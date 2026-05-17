@@ -693,6 +693,8 @@
     'userActionForm'
   ]);
 
+  const CONTENT_DIRECT_FORMS = new Set(['adSimpleForm','serviceSimpleForm','courseSimpleForm','instagramSimpleForm','whatsappSimpleForm','contentQuickForm']);
+
   function formById(formId){
     const form = formId ? document.getElementById(formId) : null;
     if(!form){
@@ -927,10 +929,14 @@
   document.addEventListener('click', (e)=>{
     const btn = e.target?.closest?.('[data-admin-save]');
     if(!btn) return;
+    const formId = btn.dataset.adminSave || btn.closest('form')?.id || '';
+    // v42: los formularios de Contenido los maneja js/admin-content-direct.js.
+    // Si admin.js los intercepta primero, solo aparece adminListAll y no se envía adminSaveRow.
+    if(CONTENT_DIRECT_FORMS.has(formId)) return;
     e.preventDefault();
     e.stopPropagation();
     if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-    window.WTAdminSave(btn.dataset.adminSave || btn.closest('form')?.id, btn, e);
+    window.WTAdminSave(formId, btn, e);
   }, true);
 
   document.addEventListener('submit', (e)=>{
@@ -938,6 +944,11 @@
     e.preventDefault();
     e.stopPropagation();
     if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+    if(form && CONTENT_DIRECT_FORMS.has(form.id)) {
+      const btn = e.submitter || form.querySelector('[data-admin-save]');
+      if(window.WTContentDirectSave) window.WTContentDirectSave(form.id, btn);
+      return false;
+    }
     if(form && ADMIN_FORMS.has(form.id)){
       const btn = e.submitter || form.querySelector('[data-admin-save]');
       window.WTAdminSave(form.id, btn, e);
