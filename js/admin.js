@@ -1,4 +1,4 @@
-/* === PANEL ADMIN WEB — GitHub Pages + Web Apps === */
+/* === PANEL ADMIN WEB — GitHub Pages + Web Apps — v27 === */
 (function(){
   const CONFIG = window.WT_CONFIG || {};
   const $ = (s,r=document)=>r.querySelector(s);
@@ -87,7 +87,7 @@
       const timer = setTimeout(()=>{
         cleanup();
         reject(new Error(`${label} tardó demasiado en responder. Revisa que la Web App esté implementada como “Cualquiera”.`));
-      }, 30000);
+      }, 60000);
       function cleanup(){
         clearTimeout(timer);
         try { delete window[cb]; } catch(e) { window[cb] = undefined; }
@@ -169,8 +169,80 @@
   function autoId(prefix){ return `${prefix}-${Date.now().toString().slice(-8)}`; }
   function cleanRow(row){ Object.keys(row).forEach(k => (row[k] === undefined || row[k] === '') && delete row[k]); return row; }
 
+  function hasValue(obj, key){
+    return obj && obj[key] !== undefined && obj[key] !== null && String(obj[key]).trim() !== '';
+  }
+  function hasAnyValue(obj, keys){
+    return keys.some(k => hasValue(obj, k));
+  }
+  function contentRowHasMeaning(row){
+    return Object.entries(row || {}).some(([k,v]) => {
+      if(['id','clave','orden','activo','destacado','principal','mostrar_inicio','mostrar_footer','mostrar_comunidad','delay_ms'].includes(k)) return false;
+      return v !== undefined && v !== null && String(v).trim() !== '';
+    });
+  }
+  function validateContentRowClient(sheetName, row, form){
+    const file = form?.querySelector('input[type="file"]')?.files?.[0] || null;
+    const need = (key, label) => {
+      if(!hasValue(row, key)){
+        const field = form?.querySelector(`[name="${key}"]`);
+        if(field) field.focus();
+        throw new Error(`${label} es obligatorio.`);
+      }
+    };
+
+    if(!contentRowHasMeaning(row) && !file){
+      throw new Error('No puedes guardar una configuración vacía.');
+    }
+
+    if(sheetName === 'Anuncios'){
+      need('tipo', 'El tipo de anuncio');
+      need('posicion', 'La posición del anuncio');
+      need('titulo', 'El título del anuncio');
+      need('descripcion', 'La descripción del anuncio');
+      if(!file && !hasAnyValue(row, ['enlace','imagen_url','image_file_id'])){
+        throw new Error('El anuncio necesita un enlace o una imagen.');
+      }
+    }
+
+    if(sheetName === 'ServiciosJ1'){
+      need('nombre', 'El nombre del servicio');
+      need('descripcion', 'La descripción del servicio');
+      if(!file && !hasAnyValue(row, ['enlace','imagen_url','image_file_id'])){
+        throw new Error('El servicio necesita un enlace/contacto o una imagen.');
+      }
+    }
+
+    if(sheetName === 'CursoIngles'){
+      need('titulo', 'El título del curso');
+      need('descripcion', 'La descripción del curso');
+      if(!file && !hasAnyValue(row, ['enlace','imagen_url','image_file_id'])){
+        throw new Error('El curso necesita un enlace/contacto o una imagen.');
+      }
+    }
+
+    if(sheetName === 'Instagram'){
+      if(boolVal(row.activo) || boolVal(row.mostrar_inicio) || boolVal(row.mostrar_footer) || boolVal(row.mostrar_comunidad)){
+        need('url', 'El enlace de Instagram');
+      }
+    }
+
+    if(sheetName === 'GruposWhatsApp'){
+      need('nombre', 'El nombre del grupo');
+      need('enlace', 'El enlace del grupo');
+    }
+
+    if(sheetName === 'Config'){
+      need('clave', 'La clave de configuración');
+      need('valor', 'El valor de configuración');
+    }
+  }
+
   async function saveContentRow(sheetName, row, form){
+    validateContentRowClient(sheetName, row, form);
     row = cleanRow(row);
+    setMsg('info','Probando conexión con la Web App de Contenido...');
+    await contentAdmin({ action:'adminDiagnostic', token:state.token });
     const file = form.querySelector('input[type="file"]')?.files?.[0] || null;
     let payload = { action:'adminSaveRow', token:state.token, sheetName, row };
 

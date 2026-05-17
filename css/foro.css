@@ -308,3 +308,27 @@ body {
   .forum-actions { display: grid; grid-template-columns: 1fr; gap: .55rem; }
   .forum-actions .btn, .forum-actions button, .forum-actions a { width: 100%; }
 }
+
+
+/* === Paginación / Cargar más publicaciones === */
+.forum-load-more-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .55rem;
+  margin-top: 1.2rem;
+  padding: 1rem;
+}
+.forum-load-more-wrap[hidden] { display: none !important; }
+#loadMorePostsBtn {
+  min-width: min(100%, 260px);
+  justify-content: center;
+}
+#loadMorePostsBtn[disabled] {
+  opacity: .65;
+  cursor: wait;
+}
+#forumLoadMoreText {
+  margin: 0;
+  text-align: center;
+}

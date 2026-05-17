@@ -4,7 +4,7 @@
   const $ = (s, r=document) => r.querySelector(s);
   const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
   const escapeHtml = (v='') => String(v).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
-  const state = { token: localStorage.getItem('wt_session') || '', user: JSON.parse(localStorage.getItem('wt_user') || 'null'), notifications: [] };
+  const state = { token: localStorage.getItem('wt_session') || '', user: JSON.parse(localStorage.getItem('wt_user') || 'null'), notifications: [], postsLimit: 10, postsOffset: 0, postsHasMore: false, postsLoading: false };
   const rdDate = (value) => {
     if (!value) return '';
     const d = new Date(value);
@@ -82,16 +82,64 @@
       </div>
     </article>`;
   }
-  async function loadPosts(){
+  function updateLoadMoreUI(totalShown = 0, totalAvailable = null){
+    const wrap = $('#forumLoadMoreWrap');
+    const btn = $('#loadMorePostsBtn');
+    const text = $('#forumLoadMoreText');
+    if(!wrap || !btn) return;
+    wrap.hidden = totalShown === 0 && !state.postsHasMore;
+    btn.hidden = !state.postsHasMore;
+    btn.disabled = Boolean(state.postsLoading);
+    btn.textContent = state.postsLoading ? 'Cargando...' : 'Cargar más publicaciones';
+    if(text){
+      if(state.postsHasMore) text.textContent = totalAvailable ? `Mostrando ${totalShown} de ${totalAvailable} publicaciones.` : `Mostrando ${totalShown} publicaciones.`;
+      else text.textContent = totalShown ? 'No hay más publicaciones por mostrar.' : '';
+    }
+  }
+
+  async function loadPosts(reset = true){
     const wrap = $('#forumPosts'); if(!wrap) return;
-    wrap.innerHTML = '<div class="empty-state">Cargando publicaciones...</div>';
+    if(state.postsLoading) return;
+    if(reset){
+      state.postsOffset = 0;
+      state.postsHasMore = false;
+      wrap.innerHTML = '<div class="empty-state">Cargando publicaciones...</div>';
+      updateLoadMoreUI(0, null);
+    }
+    state.postsLoading = true;
+    updateLoadMoreUI($$('.post-card', wrap).length, null);
     try{
-      const params = { action:'listPosts', token:state.token || '', q:$('#forumSearch')?.value || '', category:$('#forumCategoryFilter')?.value || '', sort:$('#forumSort')?.value || 'recent' };
+      const params = {
+        action:'listPosts',
+        token:state.token || '',
+        q:$('#forumSearch')?.value || '',
+        category:$('#forumCategoryFilter')?.value || '',
+        sort:$('#forumSort')?.value || 'recent',
+        limit: state.postsLimit,
+        offset: state.postsOffset
+      };
       const data = await apiGet(CONFIG.FORUM_API_URL, params);
       const posts = data?.data?.posts || data?.posts || [];
-      wrap.innerHTML = posts.length ? posts.map(renderPostCard).join('') : '<div class="empty-state">No hay publicaciones aprobadas con ese filtro.</div>';
+      const page = data?.data || data || {};
+      state.postsHasMore = Boolean(page.hasMore || page.has_more);
+      state.postsOffset = Number(page.nextOffset ?? page.next_offset ?? (state.postsOffset + posts.length));
+
+      if(reset){
+        wrap.innerHTML = posts.length ? posts.map(renderPostCard).join('') : '<div class="empty-state">No hay publicaciones aprobadas con ese filtro.</div>';
+      } else if(posts.length) {
+        wrap.insertAdjacentHTML('beforeend', posts.map(renderPostCard).join(''));
+      }
       wrap.querySelectorAll('img[data-fallback]').forEach(img => { img.onerror = () => { img.src = './images/logo.png'; }; });
-    }catch(err){ wrap.innerHTML = `<div class="empty-state">${escapeHtml(err.message)}</div>`; }
+      updateLoadMoreUI($$('.post-card', wrap).length, Number(page.total || 0) || null);
+    }catch(err){
+      if(reset) wrap.innerHTML = `<div class="empty-state">${escapeHtml(err.message)}</div>`;
+      else toast(err.message,'error');
+      state.postsHasMore = false;
+      updateLoadMoreUI($$('.post-card', wrap).length, null);
+    } finally {
+      state.postsLoading = false;
+      updateLoadMoreUI($$('.post-card', wrap).length, null);
+    }
   }
   function renderComment(c){
     return `<article class="comment-item" data-comment-id="${escapeHtml(c.id||'')}">${authorLine(c,'comment')}<p>${escapeHtml(c.body||c.contenido||'')}</p><div class="comment-actions"><button type="button" class="comment-report-btn">Reportar respuesta</button></div></article>`;
@@ -138,7 +186,8 @@
     if(cat === 'Visa') $('#extraVisa') && ($('#extraVisa').hidden = false);
   }
   document.addEventListener('click', async e => {
-    if(e.target?.id === 'refreshForumBtn') loadPosts();
+    if(e.target?.id === 'refreshForumBtn') loadPosts(true);
+    if(e.target?.id === 'loadMorePostsBtn') { e.preventDefault(); loadPosts(false); }
     if(e.target?.id === 'notifBell') { e.preventDefault(); openNotifications(); }
     if(e.target?.id === 'forumLogoutBtn'){ localStorage.removeItem('wt_session'); localStorage.removeItem('wt_user'); state.token=''; state.user=null; updateAuthUI(); loadPosts(); }
     if(e.target?.classList?.contains('report-btn')){ if(!requireLogin()) return; const post=e.target.closest('.forum-post'); try{ await apiPost(CONFIG.FORUM_API_URL,{ action:'reportPost', token:state.token, post_id:post.dataset.postId, reason:'Reporte desde foro'}); toast('Reporte enviado a moderación.'); }catch(err){ toast(err.message,'error'); } }
@@ -149,7 +198,7 @@
     const form=e.target;
     if(form.id === 'forumPostForm'){
       e.preventDefault(); if(!requireLogin()) return;
-      try{ await apiPost(CONFIG.FORUM_API_URL,{ action:'createPost', token:state.token, ...formDataObj(form) }); form.reset(); toggleExtraFields(); toast('Publicación enviada. Si requiere aprobación, aparecerá después de moderarse.'); loadPosts(); }catch(err){ toast(err.message,'error'); }
+      try{ await apiPost(CONFIG.FORUM_API_URL,{ action:'createPost', token:state.token, ...formDataObj(form) }); form.reset(); toggleExtraFields(); toast('Publicación enviada. Si requiere aprobación, aparecerá después de moderarse.'); loadPosts(true); }catch(err){ toast(err.message,'error'); }
     }
     if(form.id === 'singleCommentForm'){
       e.preventDefault(); if(!requireLogin()) return;
@@ -158,8 +207,8 @@
     }
   });
   $('#postCategory')?.addEventListener('change', toggleExtraFields);
-  ['#forumSearch','#forumCategoryFilter','#forumSort'].forEach(sel => $(sel)?.addEventListener('change', loadPosts));
-  $('#forumSearch')?.addEventListener('input', () => { clearTimeout(window.__forumSearchTimer); window.__forumSearchTimer=setTimeout(loadPosts,350); });
+  ['#forumCategoryFilter','#forumSort'].forEach(sel => $(sel)?.addEventListener('change', () => loadPosts(true)));
+  $('#forumSearch')?.addEventListener('input', () => { clearTimeout(window.__forumSearchTimer); window.__forumSearchTimer=setTimeout(() => loadPosts(true),350); });
   window.addEventListener('scroll', () => { const p=$('#progressBar'); if(p) p.style.width=((window.scrollY/(document.body.scrollHeight-innerHeight))*100)+'%'; });
-  updateAuthUI(); toggleExtraFields(); loadNotifications(); loadPosts(); loadSinglePost();
+  updateAuthUI(); toggleExtraFields(); loadNotifications(); loadPosts(true); loadSinglePost();
 })();

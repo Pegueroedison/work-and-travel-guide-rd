@@ -116,6 +116,10 @@
             <select id="forumSort"><option value="recent">Más recientes</option><option value="commented">Más comentadas</option><option value="popular">Más populares</option><option value="unanswered">Pendientes de respuesta</option></select>
           </div>
           <div id="forumPosts" class="forum-posts"><div class="empty-state">Cargando foro...</div></div>
+          <div class="forum-load-more-wrap" id="forumLoadMoreWrap" hidden>
+            <button class="btn btn-primary" id="loadMorePostsBtn" type="button">Cargar más publicaciones</button>
+            <p class="mini-note" id="forumLoadMoreText">Mostrando publicaciones por partes para que el foro cargue más rápido.</p>
+          </div>
         </div>
       </div>
     </div>
