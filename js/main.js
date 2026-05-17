@@ -401,6 +401,25 @@ if ('serviceWorker' in navigator) {
   const driveThumbUrl = fileId => fileId ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w400` : '';
   const userPhotoUrl = user => user?.photo_url || driveThumbUrl(user?.photo_file_id) || './images/logo.png';
 
+  function normalizeInternalLink(raw = '#') {
+    const value = String(raw || '').trim();
+    if (!value || value === '#') return '#comunidad';
+
+    const map = {
+      '#preguntas': './preguntas.html',
+      '#record': './record.html',
+      '#records': './record.html',
+      '#visa': './visa.html',
+      '#internet': './internet.html',
+      '#foro': './foro.html',
+      '#perfil': './perfil.html',
+      '#login': './login.html'
+    };
+
+    if (map[value.toLowerCase()]) return map[value.toLowerCase()];
+    return value;
+  }
+
   function publicApiUrl(baseUrl, params = {}) {
     if (!baseUrl) return '';
     const url = new URL(baseUrl);
@@ -433,7 +452,7 @@ if ('serviceWorker' in navigator) {
     const title = escapeHtml(ad.title || ad.titulo || 'Anuncio');
     const desc = escapeHtml(ad.description || ad.descripcion || '');
     const img = ad.image_url || ad.imagen_url || ad.image || '';
-    const link = ad.link_url || ad.enlace || '#';
+    const link = normalizeInternalLink(ad.link_url || ad.enlace || '#');
     const cta = escapeHtml(ad.cta || 'Ver más');
     if (mode === 'featured') {
       return `<a class="featured-ad-card" href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">
@@ -493,6 +512,17 @@ if ('serviceWorker' in navigator) {
     });
   }
 
+
+  function inferServiceLink_(name = '', cta = '') {
+    const text = `${name} ${cta}`.toLowerCase();
+    if (text.includes('entrevista') || text.includes('pregunta') || text.includes('practicar')) return './preguntas.html';
+    if (text.includes('document') || text.includes('récord') || text.includes('record') || text.includes('mescyt') || text.includes('guía')) return './record.html';
+    if (text.includes('internet') || text.includes('usa') || text.includes('recomend')) return './internet.html';
+    if (text.includes('visa') || text.includes('ceac')) return './visa.html';
+    if (text.includes('foro')) return './foro.html';
+    return '#comunidad';
+  }
+
   function renderServices(content) {
     const grid = $('#servicesGrid');
     const course = content?.englishCourse || content?.cursoIngles || {};
@@ -501,20 +531,23 @@ if ('serviceWorker' in navigator) {
       : [];
 
     if (grid && services.length) {
-      const serviceCards = services.map(s => `
-        <article class="service-card ${isActive(s.featured ?? s.destacado) ? 'featured' : ''}">
-          <div class="service-icon">${escapeHtml(s.icon || s.icono || '🧰')}</div>
-          <h3>${escapeHtml(s.name || s.nombre || 'Servicio J1')}</h3>
-          <p>${escapeHtml(s.description || s.descripcion || '')}</p>
-          <a href="${escapeHtml(s.link_url || s.enlace || '#comunidad')}">${escapeHtml(s.cta || 'Ver más')}</a>
-        </article>
-      `).join('');
+      const serviceCards = services.map(s => {
+        const link = normalizeInternalLink(s.link_url || s.enlace || inferServiceLink_(s.name || s.nombre || '', s.cta || ''));
+        return `
+          <article class="service-card ${isActive(s.featured ?? s.destacado) ? 'featured' : ''}" data-card-link="${escapeHtml(link)}">
+            <div class="service-icon">${escapeHtml(s.icon || s.icono || '🧰')}</div>
+            <h3>${escapeHtml(s.name || s.nombre || 'Servicio J1')}</h3>
+            <p>${escapeHtml(s.description || s.descripcion || '')}</p>
+            <a class="service-action" href="${escapeHtml(link)}">${escapeHtml(s.cta || 'Ver más')}</a>
+          </article>
+        `;
+      }).join('');
       const courseCard = isActive(course.active ?? course.activo ?? true) ? `
         <article class="service-card featured" id="englishCourseCard">
           <div class="service-icon">📚</div>
           <h3>${escapeHtml(course.title || course.titulo || 'Curso de inglés')}</h3>
           <p id="englishCourseDesc">${escapeHtml(course.description || course.descripcion || 'Contenido administrable desde Google Sheets.')}</p>
-          <a id="englishCourseLink" href="${escapeHtml(course.link_url || course.enlace || '#comunidad')}">${escapeHtml(course.cta || 'Ver detalles')}</a>
+          <a id="englishCourseLink" href="${escapeHtml(normalizeInternalLink(course.link_url || course.enlace || '#comunidad'))}">${escapeHtml(course.cta || 'Ver detalles')}</a>
         </article>
       ` : '';
       grid.innerHTML = serviceCards + courseCard;
@@ -837,4 +870,11 @@ if ('serviceWorker' in navigator) {
   loadDynamicContent();
   loadForum();
   updateAuthUi();
+  document.addEventListener('click', event => {
+    const card = event.target.closest && event.target.closest('.service-card[data-card-link]');
+    if (!card || event.target.closest('a, button, input, textarea, select')) return;
+    const link = card.dataset.cardLink;
+    if (link) window.location.href = link;
+  });
+
 })();

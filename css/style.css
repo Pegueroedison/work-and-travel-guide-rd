@@ -1818,3 +1818,54 @@ img { max-width: 100%; display: block; }
   .forum-author img { width:44px; height:44px; }
   .comment-author img { width:36px; height:36px; }
 }
+
+
+/* === Ajustes v30: foto de perfil en bienvenida y enlaces de servicios === */
+.hero-forum-icon {
+  width: 78px !important;
+  height: 78px !important;
+  min-width: 78px !important;
+  min-height: 78px !important;
+  overflow: hidden !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+}
+.hero-forum-photo {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  display: block !important;
+}
+.hero-forum-icon span {
+  border-radius: 50%;
+}
+.service-card {
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.service-card p,
+.service-card h3 {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.service-card .service-action,
+.service-card a {
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+@media (max-width: 760px) {
+  .hero-forum-icon {
+    width: 88px !important;
+    height: 88px !important;
+    min-width: 88px !important;
+    min-height: 88px !important;
+  }
+  .hero-forum-promo {
+    max-width: calc(100vw - 2rem);
+  }
+}

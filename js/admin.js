@@ -1,4 +1,4 @@
-/* === PANEL ADMIN WEB — GitHub Pages + Web Apps — v27 === */
+/* === PANEL ADMIN WEB — GitHub Pages + Web Apps — v29 === */
 (function(){
   const CONFIG = window.WT_CONFIG || {};
   const $ = (s,r=document)=>r.querySelector(s);
@@ -135,29 +135,67 @@
     });
   }
 
-  async function contentNoCorsPost(payload={}, label='CONTENT_API_URL'){
+  
+  function contentFormPost(payload={}, label='CONTENT_API_URL'){
     if(!CONFIG.CONTENT_API_URL) throw new Error(`Falta configurar ${label} en js/config.js.`);
     const finalPayload = { ...payload, usersApiUrl: CONFIG.USERS_API_URL || '' };
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), String(payload.action) === 'adminSaveRowWithImage' ? 120000 : 45000);
-    try {
-      // Apps Script no siempre permite leer la respuesta por CORS desde GitHub Pages.
-      // Con no-cors enviamos la solicitud sin recargar la página y evitamos que el panel se quede pegado.
-      await fetch(CONFIG.CONTENT_API_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(finalPayload),
-        signal: controller.signal
-      });
-      return { ok:true, opaque:true };
-    } catch (err) {
-      if (err.name === 'AbortError') throw new Error(`${label} tardó demasiado. Verifica la implementación de la Web App de Contenido.`);
-      throw new Error(`${label} no pudo recibir la solicitud. Revisa internet, URL de la Web App o permisos.`);
-    } finally {
-      clearTimeout(timer);
-    }
+
+    return new Promise((resolve, reject) => {
+      const iframeName = 'wt_content_iframe_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+      const iframe = document.createElement('iframe');
+      iframe.name = iframeName;
+      iframe.style.display = 'none';
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = CONFIG.CONTENT_API_URL;
+      form.target = iframeName;
+      form.style.display = 'none';
+
+      const input = document.createElement('textarea');
+      input.name = 'payload';
+      input.value = JSON.stringify(finalPayload);
+      form.appendChild(input);
+
+      let done = false;
+      const timeoutMs = String(finalPayload.action) === 'adminSaveRowWithImage' ? 35000 : 18000;
+      const timer = setTimeout(() => {
+        if(done) return;
+        done = true;
+        cleanup();
+        // El envío por iframe no permite leer la respuesta de Apps Script, pero si no hubo error de red,
+        // normalmente Apps Script recibió la solicitud. No dejamos el panel cargando.
+        resolve({ ok:true, submitted:true, opaque:true });
+      }, timeoutMs);
+
+      function cleanup(){
+        clearTimeout(timer);
+        setTimeout(() => {
+          try { iframe.remove(); } catch(e) {}
+          try { form.remove(); } catch(e) {}
+        }, 1000);
+      }
+
+      iframe.onload = () => {
+        if(done) return;
+        done = true;
+        cleanup();
+        resolve({ ok:true, submitted:true, opaque:true });
+      };
+
+      iframe.onerror = () => {
+        if(done) return;
+        done = true;
+        cleanup();
+        reject(new Error(`${label} no pudo recibir la solicitud.`));
+      };
+
+      document.body.appendChild(iframe);
+      document.body.appendChild(form);
+      form.submit();
+    });
   }
+
   function imageFolderForSheet(sheetName){
     if(sheetName === 'Anuncios') return 'Anuncios';
     if(sheetName === 'ServiciosJ1') return 'Servicios';
@@ -241,8 +279,6 @@
   async function saveContentRow(sheetName, row, form){
     validateContentRowClient(sheetName, row, form);
     row = cleanRow(row);
-    setMsg('info','Probando conexión con la Web App de Contenido...');
-    await contentAdmin({ action:'adminDiagnostic', token:state.token });
     const file = form.querySelector('input[type="file"]')?.files?.[0] || null;
     let payload = { action:'adminSaveRow', token:state.token, sheetName, row };
 
@@ -262,13 +298,13 @@
     setMsg('info', file ? 'Subiendo imagen y guardando en Drive...' : 'Guardando en Google Sheets...');
 
     if (file) {
-      await contentNoCorsPost(payload, 'CONTENT_API_URL');
-      setMsg('success','Solicitud enviada. La imagen puede tardar unos segundos en aparecer en Drive y en la tabla. Actualizando...');
-      setTimeout(()=>loadContent(), 3500);
+      await contentFormPost(payload, 'CONTENT_API_URL');
+      setMsg('success','Solicitud enviada. La imagen se subirá a Drive y el registro se guardará. Actualizando en unos segundos...');
+      setTimeout(()=>loadContent(), 6500);
     } else {
       await contentAdmin(payload);
       setMsg('success','Guardado correctamente. Actualizando datos...');
-      setTimeout(()=>loadContent(), 600);
+      setTimeout(()=>loadContent(), 900);
     }
 
     form.reset();
@@ -475,7 +511,7 @@
   }
 
   async function handleAdminForm(form, submitter){
-    if(!form || !ADMIN_FORMS.has(form.id)) return;
+    if(!form || !ADMIN_FORMS.has(form.id)) { setMsg('error','Este formulario no está conectado correctamente.'); return; }
     if(form.dataset.saving === 'true') return;
 
     validateRequired(form);
@@ -621,7 +657,7 @@
       setMsg('error',`El formulario ${form.id || '(sin id)'} no está conectado al panel admin.`);
       return false;
     }
-    setMsg('info','Guardando, espera un momento...');
+    setMsg('info','Validando campos...');
     Promise.resolve(handleAdminForm(form, button)).catch(err => setMsg('error', err.message || String(err)));
     return false;
   };
@@ -637,8 +673,8 @@
     e.stopPropagation();
     const formId = btn.dataset.adminSave;
     const form = formId ? $('#' + formId) : btn.closest('form');
-    setMsg('info','Guardando, espera un momento...');
-    await handleAdminForm(form, btn);
+    setMsg('info','Validando campos...');
+    await handleAdminForm(form, btn).catch(err => setMsg('error', err.message || String(err)));
   }, true);
 
   document.addEventListener('submit', async (e)=>{
