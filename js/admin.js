@@ -357,130 +357,6 @@
     return `<table class="admin-table"><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table>`;
   }
 
-
-  function getContentCollections(){
-    const c = state.content || {};
-    return [
-      ...((c.Anuncios?.rows || c.Anuncios || []).map(row => ({ kind:'Anuncio', sheet:'Anuncios', form:'adSimpleForm', mode:'ad', row }))),
-      ...((c.ServiciosJ1?.rows || c.ServiciosJ1 || []).map(row => ({ kind:'Servicio J1', sheet:'ServiciosJ1', form:'serviceSimpleForm', mode:'service', row }))),
-      ...((c.CursoIngles?.rows || c.CursoIngles || []).map(row => ({ kind:'Curso de inglés', sheet:'CursoIngles', form:'courseSimpleForm', mode:'course', row }))),
-      ...((c.GruposWhatsApp?.rows || c.GruposWhatsApp || []).map(row => ({ kind:'WhatsApp', sheet:'GruposWhatsApp', form:'whatsappSimpleForm', mode:'community', row }))),
-      ...((c.Instagram?.rows || c.Instagram || []).map(row => ({ kind:'Instagram', sheet:'Instagram', form:'instagramSimpleForm', mode:'community', row })))
-    ];
-  }
-
-  function isIncompleteContent(item){
-    const r = item.row || {};
-    const sheet = item.sheet;
-    const active = String(r.activo ?? r.active ?? '').toLowerCase();
-    if(sheet === 'Anuncios') return !r.titulo || !r.descripcion || (!r.enlace && !r.imagen_url && !r.image_file_id);
-    if(sheet === 'ServiciosJ1') return !r.nombre || !r.descripcion || (!r.enlace && !r.imagen_url && !r.image_file_id);
-    if(sheet === 'CursoIngles') return !r.titulo || !r.descripcion || (!r.precio && !r.costo);
-    if(sheet === 'GruposWhatsApp') return !r.nombre || !r.enlace;
-    if(sheet === 'Instagram') return (active === 'true' || active === 'sí' || active === 'si') && !r.url;
-    return false;
-  }
-
-  function contentTitle(item){
-    const r = item.row || {};
-    return r.titulo || r.nombre || r.texto_boton || r.id || r.clave || item.kind;
-  }
-
-  function renderContentCards(){
-    const wrap = $('#contentCards');
-    if(!wrap || !state.content) return;
-    const q = ($('#contentSearch')?.value || '').toLowerCase().trim();
-    const filter = $('#contentStatusFilter')?.value || 'all';
-    let items = getContentCollections();
-
-    items = items.filter(item => {
-      const r = item.row || {};
-      const text = JSON.stringify(r).toLowerCase() + ' ' + item.kind.toLowerCase();
-      const active = String(r.activo ?? r.active ?? '').toLowerCase();
-      const isActive = ['true','1','si','sí','activo','active'].includes(active);
-      const featured = ['true','1','si','sí','activo','active'].includes(String(r.destacado ?? r.featured ?? '').toLowerCase());
-      if(q && !text.includes(q)) return false;
-      if(filter === 'active' && !isActive) return false;
-      if(filter === 'inactive' && isActive) return false;
-      if(filter === 'featured' && !featured) return false;
-      if(filter === 'pending' && !isIncompleteContent(item)) return false;
-      return true;
-    });
-
-    if(!items.length){
-      wrap.innerHTML = '<div class="empty-state">No hay contenido con ese filtro.</div>';
-      return;
-    }
-
-    wrap.innerHTML = items.map(item => {
-      const r = item.row || {};
-      const img = normalizeImageUrl(r.imagen_url || r.image_url || '', r.image_file_id || '');
-      const activeVal = r.activo ?? r.active ?? '';
-      const featured = r.destacado ?? r.featured;
-      const desc = r.descripcion || r.description || r.estado || r.url || r.enlace || '';
-      return `
-        <article class="admin-content-item ${isIncompleteContent(item) ? 'is-incomplete' : ''}">
-          <div class="admin-content-preview">
-            ${img ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(contentTitle(item))}" loading="lazy">` : `<span>${item.sheet === 'Anuncios' ? '📢' : item.sheet === 'CursoIngles' ? '📚' : item.sheet === 'ServiciosJ1' ? '🧰' : '💬'}</span>`}
-          </div>
-          <div class="admin-content-body">
-            <div class="admin-content-meta">
-              <span>${escapeHtml(item.kind)}</span>
-              ${activeVal !== '' ? `<span class="status-pill ${escapeHtml(String(activeVal).toLowerCase())}">${escapeHtml(activeVal)}</span>` : ''}
-              ${featured !== undefined && featured !== '' ? `<span class="status-pill destacado">Destacado: ${escapeHtml(featured)}</span>` : ''}
-            </div>
-            <h4>${escapeHtml(short(contentTitle(item), 80))}</h4>
-            <p>${escapeHtml(short(desc, 120))}</p>
-            ${isIncompleteContent(item) ? '<small class="content-warning">Pendiente/incompleto: revisa campos obligatorios.</small>' : ''}
-            <div class="mini-actions">
-              <button type="button" class="mini-btn approve" data-content-edit="${escapeHtml(item.sheet)}" data-content-id="${escapeHtml(r.id || r.clave || '')}">Editar</button>
-              ${img ? `<a class="mini-btn" href="${escapeHtml(img)}" target="_blank" rel="noopener noreferrer">Vista previa</a>` : ''}
-            </div>
-          </div>
-        </article>
-      `;
-    }).join('');
-  }
-
-  function setContentMode(mode){
-    $$('.content-mode-btn').forEach(b=>b.classList.toggle('active', b.dataset.contentMode === mode));
-    $$('.content-editor-card').forEach(card=>card.classList.toggle('active', card.dataset.contentEditor === mode));
-    const card = document.querySelector(`.content-editor-card[data-content-editor="${mode}"]`);
-    if(card) card.scrollIntoView({ behavior:'smooth', block:'start' });
-  }
-
-  function fillForm(formId, row){
-    const form = formById(formId);
-    Object.entries(row || {}).forEach(([key, value]) => {
-      const field = form.elements[key];
-      if(!field || field.type === 'file') return;
-      if(field.tagName === 'SELECT') {
-        const val = String(value ?? '');
-        const match = Array.from(field.options).find(o => String(o.value).toLowerCase() === val.toLowerCase() || String(o.textContent).toLowerCase() === val.toLowerCase());
-        field.value = match ? match.value : val;
-      } else {
-        field.value = value ?? '';
-      }
-    });
-  }
-
-  function editContentRecord(sheet, id){
-    const item = getContentCollections().find(x => x.sheet === sheet && String(x.row.id || x.row.clave || '') === String(id));
-    if(!item) return setMsg('error','No se encontró el registro para editar.');
-    setContentMode(item.mode);
-    fillForm(item.form, item.row);
-    const img = normalizeImageUrl(item.row.imagen_url || item.row.image_url || '', item.row.image_file_id || '');
-    const form = formById(item.form);
-    const preview = form.querySelector('.admin-image-preview');
-    if(preview && img) {
-      const im = preview.querySelector('img');
-      if(im) im.src = img;
-      preview.hidden = false;
-    }
-    setMsg('info', `Editando ${item.kind}: ${contentTitle(item)}. Cuando termines, presiona guardar.`);
-  }
-
-
   async function loadContent(){
     try{
       const data = await contentAdmin({ action:'adminListAll', token:state.token });
@@ -496,7 +372,6 @@
       $('#tableServiciosJ1').innerHTML = tableHTML(servicios, { hide:['rowNumber'] });
       $('#tableCursoIngles').innerHTML = tableHTML(curso, { hide:['rowNumber'] });
       $('#tableComunidad').innerHTML = '<h4>WhatsApp</h4>' + tableHTML(grupos, { hide:['rowNumber'] }) + '<h4 style="margin-top:1rem">Instagram</h4>' + tableHTML(instagram, { hide:['rowNumber'] });
-      renderContentCards();
     }catch(err){ $('#tableAnuncios').innerHTML = `<div class="empty-state">${escapeHtml(err.message)}</div>`; }
   }
 
@@ -517,6 +392,193 @@
     </div>`;
   }
 
+
+  function dateValue_(row){
+    const raw = row.created_at || row.createdAt || row.fecha || row.updated_at || '';
+    const d = raw ? new Date(raw) : new Date(0);
+    return isNaN(d.getTime()) ? 0 : d.getTime();
+  }
+
+  function buildForumReviewItems(){
+    const f = state.forum || {};
+    const posts = f.posts?.rows || f.posts || [];
+    const comments = f.comments?.rows || f.comments || [];
+    const reports = f.reports?.rows || f.reports || [];
+    const queue = f.queue?.rows || f.queue || [];
+
+    const postById = new Map(posts.map(p => [String(p.id || ''), p]));
+    const commentById = new Map(comments.map(c => [String(c.id || ''), c]));
+
+    const reportCounts = {};
+    reports.forEach(r => {
+      const key = `${r.target_type || 'post'}:${r.target_id || ''}`;
+      reportCounts[key] = (reportCounts[key] || 0) + 1;
+    });
+
+    const queueOpen = new Set(queue
+      .filter(q => String(q.status || '').toLowerCase() === 'open')
+      .map(q => `${q.target_type || 'post'}:${q.target_id || ''}`));
+
+    const items = [];
+
+    posts.forEach(p => {
+      const key = `post:${p.id}`;
+      items.push({
+        type:'post',
+        id:p.id,
+        status:String(p.status || '').toLowerCase(),
+        title:p.title || 'Publicación sin título',
+        body:p.body || p.content || p.descripcion || '',
+        author:p.author_name || p.author_email || '',
+        role:p.author_role || '',
+        category:p.category || '',
+        date:p.created_at || '',
+        moderation:p.moderation_reason || '',
+        reports:Number(p.reports_count || reportCounts[key] || 0),
+        queueOpen:queueOpen.has(key),
+        source:p
+      });
+    });
+
+    comments.forEach(c => {
+      const parent = postById.get(String(c.post_id || '')) || {};
+      const key = `comment:${c.id}`;
+      items.push({
+        type:'comment',
+        id:c.id,
+        postId:c.post_id || '',
+        status:String(c.status || '').toLowerCase(),
+        title:`Respuesta en: ${parent.title || c.post_id || 'publicación'}`,
+        body:c.body || c.comment || '',
+        author:c.author_name || c.author_email || '',
+        role:c.author_role || '',
+        category:parent.category || '',
+        date:c.created_at || '',
+        moderation:c.moderation_reason || '',
+        reports:Number(c.reports_count || reportCounts[key] || 0),
+        queueOpen:queueOpen.has(key),
+        source:c
+      });
+    });
+
+    // Incluye elementos reportados o en cola aunque el contenido base no esté cargado.
+    reports.forEach(r => {
+      const type = String(r.target_type || 'post').toLowerCase();
+      const existing = items.find(i => i.type === type && String(i.id) === String(r.target_id));
+      if (existing) return;
+      items.push({
+        type,
+        id:r.target_id,
+        status:String(r.status || 'reported').toLowerCase(),
+        title:`Reporte sobre ${type}: ${r.target_id}`,
+        body:r.reason || '',
+        author:r.reporter_email || '',
+        role:'',
+        category:'',
+        date:r.created_at || '',
+        moderation:r.reason || '',
+        reports:1,
+        queueOpen:false,
+        source:r
+      });
+    });
+
+    queue.forEach(q => {
+      const type = String(q.target_type || 'post').toLowerCase();
+      const existing = items.find(i => i.type === type && String(i.id) === String(q.target_id));
+      if (existing) {
+        existing.queueOpen = String(q.status || '').toLowerCase() === 'open';
+        if (!existing.moderation) existing.moderation = q.reason || q.note || '';
+        return;
+      }
+      items.push({
+        type,
+        id:q.target_id,
+        status:String(q.status || 'open').toLowerCase(),
+        title:`Cola de moderación: ${type} ${q.target_id}`,
+        body:q.reason || q.note || '',
+        author:'',
+        role:'',
+        category:'',
+        date:q.created_at || '',
+        moderation:q.reason || q.note || '',
+        reports:0,
+        queueOpen:String(q.status || '').toLowerCase() === 'open',
+        source:q
+      });
+    });
+
+    return items;
+  }
+
+  function renderForumReviewCards(){
+    const wrap = $('#forumReviewCards');
+    if(!wrap || !state.forum) return;
+
+    const query = ($('#forumReviewSearch')?.value || '').toLowerCase().trim();
+    const statusFilter = $('#forumReviewStatus')?.value || 'pending';
+    const typeFilter = $('#forumReviewType')?.value || 'all';
+    const sort = $('#forumReviewSort')?.value || 'oldest';
+
+    let items = buildForumReviewItems();
+
+    items = items.filter(item => {
+      if(typeFilter !== 'all' && item.type !== typeFilter) return false;
+
+      if(statusFilter === 'pending' && item.status !== 'pending') return false;
+      if(statusFilter === 'reports' && !(item.reports > 0 || item.status === 'reported')) return false;
+      if(statusFilter === 'open_queue' && !item.queueOpen) return false;
+      if(statusFilter === 'approved' && item.status !== 'approved') return false;
+      if(statusFilter === 'rejected' && item.status !== 'rejected') return false;
+
+      if(query) {
+        const text = `${item.title} ${item.body} ${item.author} ${item.category} ${item.status} ${item.id}`.toLowerCase();
+        if(!text.includes(query)) return false;
+      }
+      return true;
+    });
+
+    items.sort((a,b) => sort === 'newest' ? dateValue_(b) - dateValue_(a) : dateValue_(a) - dateValue_(b));
+
+    if(!items.length) {
+      wrap.innerHTML = '<div class="empty-state">No hay elementos con ese filtro.</div>';
+      return;
+    }
+
+    wrap.innerHTML = items.map(item => {
+      const safeType = escapeHtml(item.type);
+      const safeId = escapeHtml(item.id || '');
+      const isPost = item.type === 'post';
+      const postLink = isPost ? `./post.html?id=${encodeURIComponent(item.id || '')}` : (item.postId ? `./post.html?id=${encodeURIComponent(item.postId)}` : './foro.html');
+      return `
+        <article class="forum-review-item ${escapeHtml(item.status || '')}">
+          <div class="forum-review-top">
+            <span class="forum-type">${isPost ? 'Publicación' : 'Respuesta'}</span>
+            <span class="status-pill ${escapeHtml(item.status || 'sin-estado')}">${escapeHtml(item.status || 'sin estado')}</span>
+            ${item.queueOpen ? '<span class="status-pill open">cola abierta</span>' : ''}
+            ${item.reports ? `<span class="status-pill reported">${item.reports} reporte${item.reports === 1 ? '' : 's'}</span>` : ''}
+          </div>
+          <h4>${escapeHtml(short(item.title || '', 120))}</h4>
+          <p class="forum-review-body">${escapeHtml(short(item.body || '', 420))}</p>
+          <div class="forum-review-meta">
+            ${item.author ? `<span>Autor: <strong>${escapeHtml(item.author)}</strong></span>` : ''}
+            ${item.role ? `<span>Rol: ${escapeHtml(item.role)}</span>` : ''}
+            ${item.category ? `<span>Categoría: ${escapeHtml(item.category)}</span>` : ''}
+            ${item.date ? `<span>Fecha: ${escapeHtml(item.date)}</span>` : ''}
+          </div>
+          ${item.moderation ? `<div class="forum-review-reason"><strong>Motivo:</strong> ${escapeHtml(short(item.moderation, 240))}</div>` : ''}
+          <div class="mini-actions">
+            <a class="mini-btn" href="${escapeHtml(postLink)}" target="_blank" rel="noopener noreferrer">Vista previa</a>
+            <button class="mini-btn approve" data-moderate="approved" data-type="${safeType}" data-id="${safeId}">Aprobar</button>
+            <button class="mini-btn reject" data-moderate="rejected" data-type="${safeType}" data-id="${safeId}">Rechazar</button>
+            <button class="mini-btn delete" data-moderate="deleted" data-type="${safeType}" data-id="${safeId}">Eliminar</button>
+          </div>
+        </article>
+      `;
+    }).join('');
+  }
+
+
   async function loadForum(){
     try{
       const data = await apiPost(CONFIG.FORUM_API_URL, { action:'adminDashboard', token:state.token }, 'FORUM_API_URL');
@@ -536,6 +598,7 @@
       $('#tableReports').innerHTML = tableHTML(reports, { hide:['rowNumber'], keys:['id','target_type','target_id','reporter_email','reason','status','created_at','resolved_by'] });
       $('#tablePosts').innerHTML = tableHTML(posts, { hide:['rowNumber'], keys:['id','title','category','author_name','author_role','status','moderation_reason','created_at','reports_count'], actions:(row)=>moderateActions(row, 'post') });
       $('#tableComments').innerHTML = tableHTML(comments, { hide:['rowNumber'], keys:['id','post_id','body','author_name','author_role','status','moderation_reason','created_at','reports_count'], actions:(row)=>moderateActions(row, 'comment') });
+      renderForumReviewCards();
     }catch(err){ $('#tableModerationQueue').innerHTML = `<div class="empty-state">${escapeHtml(err.message)}</div>`; }
   }
 
@@ -561,10 +624,8 @@
     }
     if(e.target?.classList?.contains('content-mode-btn')){
       const mode = e.target.dataset.contentMode;
-      setContentMode(mode);
-    }
-    if(e.target?.dataset?.contentEdit){
-      editContentRecord(e.target.dataset.contentEdit, e.target.dataset.contentId);
+      $$('.content-mode-btn').forEach(b=>b.classList.toggle('active', b === e.target));
+      $$('.content-editor-card').forEach(card=>card.classList.toggle('active', card.dataset.contentEditor === mode));
     }
     if(e.target?.classList?.contains('clear-image-btn')){
       const box = e.target.closest('.admin-image-preview');
@@ -591,11 +652,11 @@
 
 
   document.addEventListener('input', (e)=>{
-    if(e.target?.id === 'contentSearch') renderContentCards();
+    if(e.target?.id === 'forumReviewSearch') renderForumReviewCards();
   });
 
   document.addEventListener('change', (e)=>{
-    if(e.target?.id === 'contentStatusFilter') renderContentCards();
+    if(['forumReviewStatus','forumReviewType','forumReviewSort'].includes(e.target?.id)) renderForumReviewCards();
 
     if(e.target?.matches?.('.content-image-input, #contentImageFile')){
       const file = e.target.files && e.target.files[0];
@@ -824,15 +885,15 @@
       if(button){ button.disabled = true; if(button.tagName === 'BUTTON') button.textContent = 'Guardando...'; }
       setMsg('info','Validando campos...');
 
-      if(formId === 'adSimpleForm') { setMsg('info','Validando anuncio...'); await saveAdForm(form); }
-      else if(formId === 'serviceSimpleForm') { setMsg('info','Validando servicio J1...'); await saveServiceForm(form); }
-      else if(formId === 'courseSimpleForm') { setMsg('info','Validando curso de inglés...'); await saveCourseForm(form); }
-      else if(formId === 'instagramSimpleForm') { setMsg('info','Validando Instagram...'); await saveInstagramForm(form); }
-      else if(formId === 'whatsappSimpleForm') { setMsg('info','Validando grupo de WhatsApp...'); await saveWhatsAppForm(form); }
-      else if(formId === 'contentQuickForm') { setMsg('info','Validando registro avanzado...'); await saveAdvancedForm(form); }
+      if(formId === 'adSimpleForm') await saveAdForm(form);
+      else if(formId === 'serviceSimpleForm') await saveServiceForm(form);
+      else if(formId === 'courseSimpleForm') await saveCourseForm(form);
+      else if(formId === 'instagramSimpleForm') await saveInstagramForm(form);
+      else if(formId === 'whatsappSimpleForm') await saveWhatsAppForm(form);
+      else if(formId === 'contentQuickForm') await saveAdvancedForm(form);
       else if(formId === 'forumSettingsForm') await saveForumSettingsForm(form);
       else if(formId === 'userActionForm') await saveUserActionForm(form, button);
-      else throw new Error('Este formulario no existe en el panel admin actualizado: ' + formId + '.');
+      else throw new Error('Este formulario no existe en el panel admin actualizado.');
     }catch(err){
       setMsg('error', err.message || String(err));
     }finally{
@@ -859,35 +920,9 @@
     });
   }
 
-  function bindStableContentButtons(){
-    const pairs = [
-      ['saveAdDirectBtn','adSimpleForm'],
-      ['saveServiceDirectBtn','serviceSimpleForm'],
-      ['saveCourseDirectBtn','courseSimpleForm'],
-      ['saveInstagramDirectBtn','instagramSimpleForm'],
-      ['saveWhatsAppDirectBtn','whatsappSimpleForm'],
-      ['saveAdvancedDirectBtn','contentQuickForm']
-    ];
-    pairs.forEach(([btnId, formId]) => {
-      const btn = document.getElementById(btnId);
-      if(!btn) return;
-      btn.type = 'button';
-      btn.setAttribute('data-admin-save', formId);
-      btn.onclick = (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        if(event.stopImmediatePropagation) event.stopImmediatePropagation();
-        window.WTAdminSave(formId, btn, event);
-        return false;
-      };
-    });
-  }
-
-
   bindDirectAdminButtons();
-  bindStableContentButtons();
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { bindDirectAdminButtons(); bindStableContentButtons(); });
-  window.addEventListener('pageshow', () => { bindDirectAdminButtons(); bindStableContentButtons(); });
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindDirectAdminButtons);
+  window.addEventListener('pageshow', bindDirectAdminButtons);
 
   document.addEventListener('click', (e)=>{
     const btn = e.target?.closest?.('[data-admin-save]');
@@ -911,5 +946,5 @@
   }, true);
 
   window.addEventListener('scroll', () => { const p = $('#progressBar'); if(p) p.style.width = ((window.scrollY/(document.body.scrollHeight-innerHeight))*100) + '%'; });
-  checkAccess().then(ok => { if(ok) { setMsg('success','Panel listo. Los botones de Contenido están conectados.'); loadAll(); } });
+  checkAccess().then(ok => { if(ok) { setMsg('success','Panel listo. Área de Contenido en modo estable.'); loadAll(); } });
 })();

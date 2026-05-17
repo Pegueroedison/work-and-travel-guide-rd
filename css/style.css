@@ -1871,7 +1871,7 @@ img { max-width: 100%; display: block; }
 }
 
 
-/* v37: popup visible y seguro */
+/* v40: popup visible y seguro */
 .ad-popup-overlay {
   background: rgba(5,10,25,.78) !important;
 }
@@ -1898,9 +1898,21 @@ img { max-width: 100%; display: block; }
   border-radius: 14px;
 }
 
-/* v37: mejor encaje de imágenes en popup */
+/* v40: mejor encaje de imágenes en popup */
 #adPopupContent .ad-banner img {
   object-fit: contain !important;
   background: #0d1b3e;
   max-height: 320px !important;
+}
+
+/* v40: footer logo safeguard */
+.footer > img:not(.footer-logo) {
+  width: 56px !important;
+  height: 56px !important;
+  max-width: 56px !important;
+  max-height: 56px !important;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 1rem;
+  border: 2px solid var(--gold);
 }

@@ -7,8 +7,8 @@
   <title>Panel Admin | Work and Travel Guide RD</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./images/logo.png" type="image/png" />
-  <link rel="stylesheet" href="./css/style.css" />
-  <link rel="stylesheet" href="./css/admin.css?v=38?v=27" />
+  <link rel="stylesheet" href="./css/style.css?v=40" />
+  <link rel="stylesheet" href="./css/admin.css?v=40?v=27" />
 </head>
 <body>
   <div id="progressBar" class="progress-bar"></div>
@@ -146,7 +146,7 @@
               <div class="admin-image-preview" id="adImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
               <p class="admin-note small">Máximo 3 MB. Formatos: JPG, JPEG, PNG o WEBP.</p>
             </div>
-            <button id="saveAdDirectBtn" onclick="window.WTAdminSave && window.WTAdminSave('adSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="adSimpleForm">Guardar anuncio</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('adSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="adSimpleForm">Guardar anuncio</button>
           </form>
         </div>
 
@@ -166,7 +166,7 @@
               <label>Imagen del servicio <input class="content-image-input" data-preview="serviceImagePreview" name="image_file" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" /></label>
               <div class="admin-image-preview" id="serviceImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
             </div>
-            <button id="saveServiceDirectBtn" onclick="window.WTAdminSave && window.WTAdminSave('serviceSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="serviceSimpleForm">Guardar servicio</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('serviceSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="serviceSimpleForm">Guardar servicio</button>
           </form>
         </div>
 
@@ -186,7 +186,7 @@
               <label>Imagen del curso <input class="content-image-input" data-preview="courseImagePreview" name="image_file" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" /></label>
               <div class="admin-image-preview" id="courseImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
             </div>
-            <button id="saveCourseDirectBtn" onclick="window.WTAdminSave && window.WTAdminSave('courseSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="courseSimpleForm">Guardar curso</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('courseSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="courseSimpleForm">Guardar curso</button>
           </form>
         </div>
 
@@ -199,7 +199,7 @@
             <label>Mostrar en footer <select name="mostrar_footer"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
             <label>Mostrar en comunidad <select name="mostrar_comunidad"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
             <label>Activo <select name="activo"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
-            <button id="saveInstagramDirectBtn" onclick="window.WTAdminSave && window.WTAdminSave('instagramSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="instagramSimpleForm">Guardar Instagram</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('instagramSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="instagramSimpleForm">Guardar Instagram</button>
           </form>
           <hr class="admin-soft-line">
           <form id="whatsappSimpleForm" novalidate class="admin-form-grid clean-form">
@@ -212,7 +212,7 @@
             <label>Principal <select name="principal"><option value="FALSE">No</option><option value="TRUE">Sí</option></select></label>
             <label>Destacado <select name="destacado"><option value="FALSE">No</option><option value="TRUE">Sí</option></select></label>
             <label>Activo <select name="activo"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
-            <button id="saveWhatsAppDirectBtn" onclick="window.WTAdminSave && window.WTAdminSave('whatsappSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="whatsappSimpleForm">Guardar grupo</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('whatsappSimpleForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="whatsappSimpleForm">Guardar grupo</button>
           </form>
         </div>
 
@@ -238,28 +238,8 @@
             <label>Orden<input name="orden" type="number" min="0" placeholder="1" /></label>
             <label>Activo<select name="activo"><option value="TRUE">TRUE</option><option value="FALSE">FALSE</option></select></label>
             <label>Destacado<select name="destacado"><option value="FALSE">FALSE</option><option value="TRUE">TRUE</option></select></label>
-            <button id="saveAdvancedDirectBtn" onclick="window.WTAdminSave && window.WTAdminSave('contentQuickForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="contentQuickForm">Guardar registro avanzado</button>
+            <button onclick="window.WTAdminSave && window.WTAdminSave('contentQuickForm', this, event); return false;" class="btn btn-primary full-row" type="button" data-admin-save="contentQuickForm">Guardar registro avanzado</button>
           </form>
-        </div>
-
-        <div class="admin-content-browser">
-          <div class="admin-browser-head">
-            <div>
-              <h3>Contenido creado</h3>
-              <p>Busca, filtra, revisa una vista previa y edita registros ya creados sin tocar Google Sheets.</p>
-            </div>
-            <div class="admin-browser-filters">
-              <input id="contentSearch" type="search" placeholder="Buscar contenido..." />
-              <select id="contentStatusFilter">
-                <option value="all">Todos</option>
-                <option value="active">Activos</option>
-                <option value="inactive">Inactivos</option>
-                <option value="featured">Destacados</option>
-                <option value="pending">Pendientes / incompletos</option>
-              </select>
-            </div>
-          </div>
-          <div id="contentCards" class="admin-content-cards"></div>
         </div>
 
         <div class="admin-grid-2 admin-content-tables">
@@ -308,6 +288,36 @@
           </form>
         </div>
 
+        <div class="admin-card forum-review-card">
+          <div class="forum-review-head">
+            <div>
+              <h3>Revisión visual del foro</h3>
+              <p>Filtra, busca y revisa una vista previa antes de aprobar, rechazar o eliminar.</p>
+            </div>
+            <div class="forum-review-filters">
+              <input id="forumReviewSearch" type="search" placeholder="Buscar por título, autor, categoría o texto..." />
+              <select id="forumReviewStatus">
+                <option value="pending">Pendiente de aprobación</option>
+                <option value="reports">Reportados</option>
+                <option value="open_queue">Cola abierta</option>
+                <option value="approved">Aprobados</option>
+                <option value="rejected">Rechazados</option>
+                <option value="all">Todo</option>
+              </select>
+              <select id="forumReviewType">
+                <option value="all">Publicaciones y respuestas</option>
+                <option value="post">Solo publicaciones</option>
+                <option value="comment">Solo respuestas</option>
+              </select>
+              <select id="forumReviewSort">
+                <option value="oldest">Más antiguos primero</option>
+                <option value="newest">Más recientes primero</option>
+              </select>
+            </div>
+          </div>
+          <div id="forumReviewCards" class="forum-review-list"></div>
+        </div>
+
         <div class="admin-grid-2">
           <div class="admin-card"><h3>Cola de moderación</h3><div id="tableModerationQueue" class="admin-table-wrap"></div></div>
           <div class="admin-card"><h3>Reportes</h3><div id="tableReports" class="admin-table-wrap"></div></div>
@@ -335,6 +345,6 @@
 
   <script src="./js/config.js"></script>
   <script src="./js/ui.js"></script>
-  <script src="./js/admin.js?v=38"></script>
+  <script src="./js/admin.js?v=40"></script>
 </body>
 </html>

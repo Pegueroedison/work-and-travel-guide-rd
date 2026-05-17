@@ -37,7 +37,6 @@
   function displayTitle(value) {
     const raw = String(value || '').trim();
     if (!raw) return 'Curso de inglés';
-    // Evita títulos accidentales compuestos solo por números o símbolos.
     if (/^[\d\s.,$RDrd-]+$/.test(raw)) return 'Curso de inglés';
     return raw;
   }

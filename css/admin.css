@@ -295,34 +295,29 @@
 button[data-admin-save] { position: relative; }
 button[data-admin-save]:disabled { opacity: .68; cursor: wait; }
 
-/* v37: navegador de contenido con vista previa, filtros y edición */
-.admin-content-browser {
-  background: var(--white);
-  border: 1px solid #d9e2f3;
-  border-radius: 22px;
-  padding: 1rem;
-  box-shadow: var(--shadow-sm);
+/* v40: forum visual moderation */
+.forum-review-card {
   margin: 1rem 0;
 }
-.admin-browser-head {
+.forum-review-head {
   display:flex;
   justify-content:space-between;
   align-items:flex-start;
   gap:1rem;
   margin-bottom:1rem;
 }
-.admin-browser-head p {
+.forum-review-head p {
   color: var(--text-mid);
   margin-top:.25rem;
 }
-.admin-browser-filters {
+.forum-review-filters {
   display:grid;
-  grid-template-columns:minmax(220px, 1fr) 190px;
-  gap:.7rem;
-  min-width:min(100%, 460px);
+  grid-template-columns:minmax(240px, 1fr) 190px 190px 190px;
+  gap:.65rem;
+  width:min(100%, 860px);
 }
-.admin-browser-filters input,
-.admin-browser-filters select {
+.forum-review-filters input,
+.forum-review-filters select {
   width:100%;
   border:1px solid #d9e2f3;
   border-radius:14px;
@@ -330,87 +325,74 @@ button[data-admin-save]:disabled { opacity: .68; cursor: wait; }
   font:inherit;
   background:#fff;
 }
-.admin-content-cards {
+.forum-review-list {
   display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap:.8rem;
 }
-.admin-content-item {
-  display:grid;
-  grid-template-columns:86px 1fr;
-  gap:.8rem;
-  padding:.85rem;
+.forum-review-item {
+  background:#f8fbff;
   border:1px solid #d9e2f3;
   border-radius:18px;
-  background:#f8fbff;
+  padding:1rem;
 }
-.admin-content-item.is-incomplete {
+.forum-review-item.pending,
+.forum-review-item.open {
   border-color:#f5a623;
   background:#fff8ea;
 }
-.admin-content-preview {
-  width:86px;
-  height:86px;
-  border-radius:16px;
-  overflow:hidden;
-  background:#0d1b3e;
-  display:grid;
-  place-items:center;
-  color:#f5a623;
-  font-size:2rem;
+.forum-review-item.rejected {
+  border-color:#fecaca;
+  background:#fff1f2;
 }
-.admin-content-preview img {
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  background:#0d1b3e;
-}
-.admin-content-body {
-  min-width:0;
-}
-.admin-content-meta {
+.forum-review-top,
+.forum-review-meta {
   display:flex;
-  gap:.35rem;
   flex-wrap:wrap;
+  gap:.4rem;
   align-items:center;
-  margin-bottom:.35rem;
 }
-.admin-content-meta > span:first-child {
+.forum-type {
+  display:inline-flex;
+  border-radius:999px;
+  padding:4px 10px;
   background:#eaf0ff;
   color:#0d1b3e;
-  border-radius:999px;
-  padding:3px 8px;
-  font-size:.72rem;
+  font-size:.75rem;
   font-weight:900;
 }
-.admin-content-body h4 {
-  margin:.15rem 0;
+.status-pill.reported {
+  background:#ffe4e6;
+  color:#991b1b;
+}
+.status-pill.open {
+  background:#fff4d6;
+  color:#8a5200;
+}
+.forum-review-item h4 {
   color:#0d1b3e;
-  font-size:1rem;
+  margin:.65rem 0 .35rem;
+  font-size:1.05rem;
   overflow-wrap:anywhere;
 }
-.admin-content-body p {
+.forum-review-body {
   color:#3a4a6b;
-  font-size:.85rem;
-  line-height:1.35;
+  line-height:1.5;
   overflow-wrap:anywhere;
 }
-.content-warning {
-  display:block;
-  color:#9a3412;
-  font-weight:900;
-  margin:.3rem 0;
+.forum-review-meta {
+  margin:.7rem 0;
+  color:#6b7fa3;
+  font-size:.82rem;
 }
-@media (max-width: 720px) {
-  .admin-browser-head { flex-direction:column; }
-  .admin-browser-filters { grid-template-columns:1fr; width:100%; }
-  .admin-content-item { grid-template-columns:70px 1fr; }
-  .admin-content-preview { width:70px; height:70px; }
+.forum-review-reason {
+  background:#fff;
+  border-left:4px solid #f5a623;
+  padding:.65rem .8rem;
+  border-radius:10px;
+  color:#3a4a6b;
+  margin:.6rem 0;
 }
-
-/* v38: mejor aviso de validación */
-.admin-message.info,
-.admin-message.success,
-.admin-message.error {
-  font-weight: 900;
+@media (max-width: 900px) {
+  .forum-review-head { flex-direction:column; }
+  .forum-review-filters { grid-template-columns:1fr; width:100%; }
 }

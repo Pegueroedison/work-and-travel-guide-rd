@@ -173,15 +173,24 @@
   .courses-hero { min-height:auto; padding-top:92px; }
 }
 
-/* v37: mejor encaje de imágenes de cursos */
+/* v39: mejor encaje de imágenes de cursos */
 .course-image {
   background: linear-gradient(135deg, #07122b, #0d1b3e);
 }
 .course-image img {
   object-fit: contain !important;
   background: #07122b;
-  padding: 0;
 }
-.course-card {
-  overflow: hidden;
+
+/* v40: imagen de curso centrada */
+.course-image {
+  align-items: center;
+  justify-content: center;
+}
+.course-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important;
+  object-position: center center;
+  background: #07122b;
 }
