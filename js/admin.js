@@ -259,82 +259,113 @@
     }
   });
 
+  const ADMIN_FORMS = new Set([
+    'adSimpleForm',
+    'serviceSimpleForm',
+    'courseSimpleForm',
+    'instagramSimpleForm',
+    'whatsappSimpleForm',
+    'contentQuickForm',
+    'forumSettingsForm',
+    'userActionForm'
+  ]);
+
   document.addEventListener('submit', async (e)=>{
     const form = e.target;
-    if(form.id === 'adSimpleForm'){
-      e.preventDefault();
-      const fd = Object.fromEntries(new FormData(form).entries());
-      const row = {
-        id: fd.id || autoId('AD'), tipo: fd.tipo, titulo: fd.titulo, descripcion: fd.descripcion,
-        imagen_url: fd.imagen_url, enlace: fd.enlace, cta: fd.cta || 'Ver más', posicion: fd.posicion,
-        orden: fd.orden ? Number(fd.orden) : 1, destacado: boolVal(fd.destacado), activo: boolVal(fd.activo),
-        delay_ms: fd.tipo === 'popup' ? 2500 : 0
-      };
-      try{ await saveContentRow('Anuncios', row, form); } catch(err){ setMsg('error', err.message); }
-      return;
-    }
-    if(form.id === 'serviceSimpleForm'){
-      e.preventDefault();
-      const fd = Object.fromEntries(new FormData(form).entries());
-      const row = {
-        id: fd.id || autoId('SVC'), nombre: fd.nombre, descripcion: fd.descripcion, icono: fd.icono,
-        imagen_url: fd.imagen_url, enlace: fd.enlace, cta: fd.cta || 'Solicitar información',
-        orden: fd.orden ? Number(fd.orden) : 1, destacado: boolVal(fd.destacado), activo: boolVal(fd.activo)
-      };
-      try{ await saveContentRow('ServiciosJ1', row, form); } catch(err){ setMsg('error', err.message); }
-      return;
-    }
-    if(form.id === 'courseSimpleForm'){
-      e.preventDefault();
-      const fd = Object.fromEntries(new FormData(form).entries());
-      const row = {
-        id: fd.id || 'ENG-001', titulo: fd.titulo, descripcion: fd.descripcion, precio: fd.precio,
-        imagen_url: fd.imagen_url, enlace: fd.enlace, cta: fd.cta || 'Solicitar información',
-        orden: fd.orden ? Number(fd.orden) : 1, destacado: boolVal(fd.destacado), activo: boolVal(fd.activo)
-      };
-      try{ await saveContentRow('CursoIngles', row, form); } catch(err){ setMsg('error', err.message); }
-      return;
-    }
-    if(form.id === 'instagramSimpleForm'){
-      e.preventDefault();
-      const fd = Object.fromEntries(new FormData(form).entries());
-      const row = {
-        id:'IG-001', url:fd.url, texto_boton:fd.texto_boton || 'Síguenos en Instagram',
-        mostrar_inicio:boolVal(fd.mostrar_inicio), mostrar_footer:boolVal(fd.mostrar_footer), mostrar_comunidad:boolVal(fd.mostrar_comunidad), activo:boolVal(fd.activo)
-      };
-      try{ await saveContentRow('Instagram', row, form); } catch(err){ setMsg('error', err.message); }
-      return;
-    }
-    if(form.id === 'whatsappSimpleForm'){
-      e.preventDefault();
-      const fd = Object.fromEntries(new FormData(form).entries());
-      const row = {
-        id: fd.id || autoId('WA'), nombre: fd.nombre, estado: fd.estado || 'General', descripcion: fd.descripcion,
-        enlace: fd.enlace, orden: fd.orden ? Number(fd.orden) : 1, destacado:boolVal(fd.destacado), principal:boolVal(fd.principal), activo:boolVal(fd.activo)
-      };
-      try{ await saveContentRow('GruposWhatsApp', row, form); } catch(err){ setMsg('error', err.message); }
-      return;
-    }
-    if(form.id === 'contentQuickForm'){
-      e.preventDefault();
-      const formData = new FormData(form);
-      const fd = Object.fromEntries(formData.entries());
-      const row = {};
-      const sheetName = fd.sheetName;
-      if(sheetName === 'Config') { row.clave = fd.id; row.valor = fd.titulo; row.descripcion = fd.descripcion; }
-      else {
-        row.id = fd.id;
-        if(fd.titulo) { row.titulo = fd.titulo; row.nombre = fd.titulo; row.url = fd.titulo.startsWith('http') ? fd.titulo : undefined; }
-        if(fd.descripcion) row.descripcion = fd.descripcion;
-        if(fd.enlace) { row.enlace = fd.enlace; row.url = fd.enlace; }
-        if(fd.imagen_url) row.imagen_url = fd.imagen_url;
-        if(fd.cta) { row.cta = fd.cta; row.texto_boton = fd.cta; }
-        if(fd.orden) row.orden = Number(fd.orden);
-        row.activo = fd.activo === 'TRUE';
-        row.destacado = fd.destacado === 'TRUE';
+    if(!form || !ADMIN_FORMS.has(form.id)) return;
+
+    // Importante: evita que el navegador recargue admin.html y parezca que se cerró la sesión.
+    e.preventDefault();
+    e.stopPropagation();
+
+    if(form.dataset.saving === 'true') return;
+
+    const submitter = e.submitter || document.activeElement;
+    const submitBtn = submitter?.matches?.('button,input') ? submitter : form.querySelector('button[type="submit"], input[type="submit"]');
+    const oldText = submitBtn ? submitBtn.textContent : '';
+
+    try {
+      form.dataset.saving = 'true';
+      if(submitBtn) {
+        submitBtn.disabled = true;
+        if(submitBtn.tagName === 'BUTTON') submitBtn.textContent = 'Guardando...';
       }
-      Object.keys(row).forEach(k => row[k] === undefined && delete row[k]);
-      try{
+
+      if(form.id === 'adSimpleForm'){
+        const fd = Object.fromEntries(new FormData(form).entries());
+        const row = {
+          id: fd.id || autoId('AD'), tipo: fd.tipo, titulo: fd.titulo, descripcion: fd.descripcion,
+          imagen_url: fd.imagen_url, enlace: fd.enlace, cta: fd.cta || 'Ver más', posicion: fd.posicion,
+          orden: fd.orden ? Number(fd.orden) : 1, destacado: boolVal(fd.destacado), activo: boolVal(fd.activo),
+          delay_ms: fd.tipo === 'popup' ? 2500 : 0
+        };
+        await saveContentRow('Anuncios', row, form);
+        return;
+      }
+
+      if(form.id === 'serviceSimpleForm'){
+        const fd = Object.fromEntries(new FormData(form).entries());
+        const row = {
+          id: fd.id || autoId('SVC'), nombre: fd.nombre, descripcion: fd.descripcion, icono: fd.icono,
+          imagen_url: fd.imagen_url, enlace: fd.enlace, cta: fd.cta || 'Solicitar información',
+          orden: fd.orden ? Number(fd.orden) : 1, destacado: boolVal(fd.destacado), activo: boolVal(fd.activo)
+        };
+        await saveContentRow('ServiciosJ1', row, form);
+        return;
+      }
+
+      if(form.id === 'courseSimpleForm'){
+        const fd = Object.fromEntries(new FormData(form).entries());
+        const row = {
+          id: fd.id || 'ENG-001', titulo: fd.titulo, descripcion: fd.descripcion, precio: fd.precio,
+          imagen_url: fd.imagen_url, enlace: fd.enlace, cta: fd.cta || 'Solicitar información',
+          orden: fd.orden ? Number(fd.orden) : 1, destacado: boolVal(fd.destacado), activo: boolVal(fd.activo)
+        };
+        await saveContentRow('CursoIngles', row, form);
+        return;
+      }
+
+      if(form.id === 'instagramSimpleForm'){
+        const fd = Object.fromEntries(new FormData(form).entries());
+        const row = {
+          id:'IG-001', url:fd.url, texto_boton:fd.texto_boton || 'Síguenos en Instagram',
+          mostrar_inicio:boolVal(fd.mostrar_inicio), mostrar_footer:boolVal(fd.mostrar_footer), mostrar_comunidad:boolVal(fd.mostrar_comunidad), activo:boolVal(fd.activo)
+        };
+        await saveContentRow('Instagram', row, form);
+        return;
+      }
+
+      if(form.id === 'whatsappSimpleForm'){
+        const fd = Object.fromEntries(new FormData(form).entries());
+        const row = {
+          id: fd.id || autoId('WA'), nombre: fd.nombre, estado: fd.estado || 'General', descripcion: fd.descripcion,
+          enlace: fd.enlace, orden: fd.orden ? Number(fd.orden) : 1, destacado:boolVal(fd.destacado), principal:boolVal(fd.principal), activo:boolVal(fd.activo)
+        };
+        await saveContentRow('GruposWhatsApp', row, form);
+        return;
+      }
+
+      if(form.id === 'contentQuickForm'){
+        const formData = new FormData(form);
+        const fd = Object.fromEntries(formData.entries());
+        const row = {};
+        const sheetName = fd.sheetName;
+        if(sheetName === 'Config') {
+          row.clave = fd.id;
+          row.valor = fd.titulo;
+          row.descripcion = fd.descripcion;
+        } else {
+          row.id = fd.id || autoId('REG');
+          if(fd.titulo) { row.titulo = fd.titulo; row.nombre = fd.titulo; row.url = fd.titulo.startsWith('http') ? fd.titulo : undefined; }
+          if(fd.descripcion) row.descripcion = fd.descripcion;
+          if(fd.enlace) { row.enlace = fd.enlace; row.url = fd.enlace; }
+          if(fd.imagen_url) row.imagen_url = fd.imagen_url;
+          if(fd.cta) { row.cta = fd.cta; row.texto_boton = fd.cta; }
+          if(fd.orden) row.orden = Number(fd.orden);
+          row.activo = fd.activo === 'TRUE';
+          row.destacado = fd.destacado === 'TRUE';
+        }
+        Object.keys(row).forEach(k => row[k] === undefined && delete row[k]);
         const file = $('#contentImageFile')?.files?.[0];
         if(file && sheetName !== 'Config'){
           setMsg('info','Subiendo imagen a Google Drive...');
@@ -363,31 +394,37 @@
         form.reset();
         const preview = $('#contentImagePreview'); if(preview) preview.hidden = true;
         loadContent();
+        return;
       }
-      catch(err){ setMsg('error', err.message); }
-    }
-    if(form.id === 'forumSettingsForm'){
-      e.preventDefault();
-      const fd = Object.fromEntries(new FormData(form).entries());
-      try{
+
+      if(form.id === 'forumSettingsForm'){
+        const fd = Object.fromEntries(new FormData(form).entries());
         await apiPost(CONFIG.FORUM_API_URL, { action:'adminUpdateConfig', token:state.token, key:'comments_require_approval', value:fd.comments_require_approval }, 'FORUM_API_URL');
         setMsg('success','Ajuste del foro guardado.');
         loadForum();
-      }catch(err){ setMsg('error', err.message); }
-    }
+        return;
+      }
 
-    if(form.id === 'userActionForm'){
-      e.preventDefault();
-      const clicked = document.activeElement?.value;
-      const fd = Object.fromEntries(new FormData(form).entries());
-      try{
+      if(form.id === 'userActionForm'){
+        const clicked = submitter?.value;
+        const fd = Object.fromEntries(new FormData(form).entries());
         if(clicked === 'setRole') await apiPost(CONFIG.USERS_API_URL, { action:'adminSetRole', token:state.token, user_id:fd.user_id, role:fd.role }, 'USERS_API_URL');
         if(clicked === 'block') await apiPost(CONFIG.USERS_API_URL, { action:'adminBlockUser', token:state.token, user_id:fd.user_id, reason:fd.reason }, 'USERS_API_URL');
         if(clicked === 'unblock') await apiPost(CONFIG.USERS_API_URL, { action:'adminUnblockUser', token:state.token, user_id:fd.user_id }, 'USERS_API_URL');
-        setMsg('success','Acción aplicada al usuario.'); loadUsers();
-      }catch(err){ setMsg('error', err.message); }
+        setMsg('success','Acción aplicada al usuario.');
+        loadUsers();
+        return;
+      }
+    } catch(err) {
+      setMsg('error', err.message || String(err));
+    } finally {
+      form.dataset.saving = 'false';
+      if(submitBtn) {
+        submitBtn.disabled = false;
+        if(submitBtn.tagName === 'BUTTON') submitBtn.textContent = oldText || 'Guardar';
+      }
     }
-  });
+  }, true);
 
   window.addEventListener('scroll', () => { const p = $('#progressBar'); if(p) p.style.width = ((window.scrollY/(document.body.scrollHeight-innerHeight))*100) + '%'; });
   checkAccess().then(ok => { if(ok) loadAll(); });
