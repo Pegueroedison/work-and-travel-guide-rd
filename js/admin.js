@@ -9,7 +9,19 @@
   function setMsg(type, text){ const el=$('#adminMessage'); if(!el) return; el.className = 'admin-message ' + (type || 'info'); el.textContent = text; }
   function apiUrl(baseUrl, params={}){ const u = new URL(baseUrl); Object.entries(params).forEach(([k,v])=>u.searchParams.set(k,v)); return u.toString(); }
   async function apiGet(baseUrl, params={}, label='API'){ if(!baseUrl) throw new Error(`Falta configurar ${label} en js/config.js.`); const res=await fetch(apiUrl(baseUrl, params)); const data=await res.json(); if(data.ok===false) throw new Error(data.message || 'Error'); return data; }
-  async function apiPost(baseUrl, payload={}, label='API'){ if(!baseUrl) throw new Error(`Falta configurar ${label} en js/config.js.`); const res=await fetch(baseUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}); const data=await res.json(); if(data.ok===false) throw new Error(data.message || 'Error'); return data; }
+  async function apiPost(baseUrl, payload={}, label='API'){
+    if(!baseUrl) throw new Error(`Falta configurar ${label} en js/config.js.`);
+    const finalPayload = { ...payload };
+    // La Web App de Contenido también necesita validar roles usando la Web App de Usuarios.
+    // Enviamos USERS_API_URL desde config.js para que no tengas que pegarlo manualmente en Sheets cada vez.
+    if(baseUrl === CONFIG.CONTENT_API_URL && String(finalPayload.action || '').toLowerCase().startsWith('admin')) {
+      finalPayload.usersApiUrl = CONFIG.USERS_API_URL || '';
+    }
+    const res=await fetch(baseUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(finalPayload)});
+    const data=await res.json();
+    if(data.ok===false) throw new Error(data.message || 'Error');
+    return data;
+  }
   function isAdmin(user){ return ['admin','superadmin'].includes(String(user?.role || '').toLowerCase()); }
   function isSuper(user){ return String(user?.role || '').toLowerCase() === 'superadmin'; }
   function short(v, n=80){ v = String(v ?? ''); return v.length > n ? v.slice(0,n) + '…' : v; }
@@ -33,6 +45,41 @@
     if(sheetName === 'ServiciosJ1') return 'Servicios';
     if(sheetName === 'CursoIngles') return 'Curso de ingles';
     return 'Contenido';
+  }
+
+  function boolVal(v){ return v === 'TRUE' || v === true || String(v).toLowerCase() === 'true'; }
+  function autoId(prefix){ return `${prefix}-${Date.now().toString().slice(-8)}`; }
+  function cleanRow(row){ Object.keys(row).forEach(k => (row[k] === undefined || row[k] === '') && delete row[k]); return row; }
+
+  async function uploadContentImageIfAny(form, sheetName, recordId, row){
+    const file = form.querySelector('input[type="file"]')?.files?.[0];
+    if(!file) return row;
+    setMsg('info','Subiendo imagen a Google Drive...');
+    const upload = await apiPost(CONFIG.CONTENT_API_URL, {
+      action:'adminUploadImage',
+      token:state.token,
+      sheetName,
+      recordId,
+      folder:imageFolderForSheet(sheetName),
+      file:{ name:file.name, mimeType:file.type, size:file.size, base64:await fileToBase64(file) }
+    }, 'CONTENT_API_URL');
+    const image = upload.image || upload.data?.image || upload;
+    row.imagen_url = image.image_url || image.url || row.imagen_url || '';
+    row.image_file_id = image.file_id || image.image_file_id || '';
+    row.image_name = image.name || file.name;
+    row.image_size = image.size || file.size;
+    row.image_type = image.mimeType || file.type;
+    return row;
+  }
+
+  async function saveContentRow(sheetName, row, form){
+    row = cleanRow(row);
+    await uploadContentImageIfAny(form, sheetName, row.id || row.clave || '', row);
+    await apiPost(CONFIG.CONTENT_API_URL, { action:'adminSaveRow', token:state.token, sheetName, row }, 'CONTENT_API_URL');
+    setMsg('success','Guardado correctamente. Actualizando datos...');
+    form.reset();
+    form.querySelectorAll('.admin-image-preview').forEach(p => { p.hidden = true; const img = p.querySelector('img'); if(img) img.removeAttribute('src'); });
+    loadContent();
   }
 
   async function checkAccess(){
@@ -150,6 +197,26 @@
     if(e.target?.id === 'reloadContentBtn') loadContent();
     if(e.target?.id === 'reloadUsersBtn') loadUsers();
     if(e.target?.id === 'reloadForumBtn') loadForum();
+    if(e.target?.id === 'prepareContentDriveBtn'){
+      try{
+        setMsg('info','Preparando carpeta de Drive para imágenes de contenido...');
+        const data = await apiPost(CONFIG.CONTENT_API_URL, { action:'adminPrepareContentStorage', token:state.token }, 'CONTENT_API_URL');
+        setMsg('success', `Carpeta lista: ${data.folder?.name || 'WT Guide RD - Imagenes de Contenido'}. ID: ${data.folder?.id || ''}`);
+        loadContent();
+      }catch(err){ setMsg('error', err.message); }
+    }
+    if(e.target?.classList?.contains('content-mode-btn')){
+      const mode = e.target.dataset.contentMode;
+      $$('.content-mode-btn').forEach(b=>b.classList.toggle('active', b === e.target));
+      $$('.content-editor-card').forEach(card=>card.classList.toggle('active', card.dataset.contentEditor === mode));
+    }
+    if(e.target?.classList?.contains('clear-image-btn')){
+      const box = e.target.closest('.admin-image-preview');
+      const form = e.target.closest('form');
+      const input = form?.querySelector('input[type="file"]');
+      if(input) input.value = '';
+      if(box){ box.hidden = true; const img = box.querySelector('img'); if(img) img.removeAttribute('src'); }
+    }
     if(e.target?.id === 'clearContentImageBtn'){
       const input = $('#contentImageFile');
       const preview = $('#contentImagePreview');
@@ -168,9 +235,10 @@
 
 
   document.addEventListener('change', (e)=>{
-    if(e.target?.id === 'contentImageFile'){
+    if(e.target?.matches?.('.content-image-input, #contentImageFile')){
       const file = e.target.files && e.target.files[0];
-      const preview = $('#contentImagePreview');
+      const previewId = e.target.dataset.preview || 'contentImagePreview';
+      const preview = $('#' + previewId);
       const img = preview?.querySelector('img');
       if(!file || !preview || !img){ if(preview) preview.hidden = true; return; }
       if(!/^image\/(png|jpe?g|webp)$/i.test(file.type)){
@@ -187,11 +255,66 @@
       }
       img.src = URL.createObjectURL(file);
       preview.hidden = false;
+      setMsg('info','Imagen lista. Ahora presiona guardar para subirla a Drive.');
     }
   });
 
   document.addEventListener('submit', async (e)=>{
     const form = e.target;
+    if(form.id === 'adSimpleForm'){
+      e.preventDefault();
+      const fd = Object.fromEntries(new FormData(form).entries());
+      const row = {
+        id: fd.id || autoId('AD'), tipo: fd.tipo, titulo: fd.titulo, descripcion: fd.descripcion,
+        imagen_url: fd.imagen_url, enlace: fd.enlace, cta: fd.cta || 'Ver más', posicion: fd.posicion,
+        orden: fd.orden ? Number(fd.orden) : 1, destacado: boolVal(fd.destacado), activo: boolVal(fd.activo),
+        delay_ms: fd.tipo === 'popup' ? 2500 : 0
+      };
+      try{ await saveContentRow('Anuncios', row, form); } catch(err){ setMsg('error', err.message); }
+      return;
+    }
+    if(form.id === 'serviceSimpleForm'){
+      e.preventDefault();
+      const fd = Object.fromEntries(new FormData(form).entries());
+      const row = {
+        id: fd.id || autoId('SVC'), nombre: fd.nombre, descripcion: fd.descripcion, icono: fd.icono,
+        imagen_url: fd.imagen_url, enlace: fd.enlace, cta: fd.cta || 'Solicitar información',
+        orden: fd.orden ? Number(fd.orden) : 1, destacado: boolVal(fd.destacado), activo: boolVal(fd.activo)
+      };
+      try{ await saveContentRow('ServiciosJ1', row, form); } catch(err){ setMsg('error', err.message); }
+      return;
+    }
+    if(form.id === 'courseSimpleForm'){
+      e.preventDefault();
+      const fd = Object.fromEntries(new FormData(form).entries());
+      const row = {
+        id: fd.id || 'ENG-001', titulo: fd.titulo, descripcion: fd.descripcion, precio: fd.precio,
+        imagen_url: fd.imagen_url, enlace: fd.enlace, cta: fd.cta || 'Solicitar información',
+        orden: fd.orden ? Number(fd.orden) : 1, destacado: boolVal(fd.destacado), activo: boolVal(fd.activo)
+      };
+      try{ await saveContentRow('CursoIngles', row, form); } catch(err){ setMsg('error', err.message); }
+      return;
+    }
+    if(form.id === 'instagramSimpleForm'){
+      e.preventDefault();
+      const fd = Object.fromEntries(new FormData(form).entries());
+      const row = {
+        id:'IG-001', url:fd.url, texto_boton:fd.texto_boton || 'Síguenos en Instagram',
+        mostrar_inicio:boolVal(fd.mostrar_inicio), mostrar_footer:boolVal(fd.mostrar_footer), mostrar_comunidad:boolVal(fd.mostrar_comunidad), activo:boolVal(fd.activo)
+      };
+      try{ await saveContentRow('Instagram', row, form); } catch(err){ setMsg('error', err.message); }
+      return;
+    }
+    if(form.id === 'whatsappSimpleForm'){
+      e.preventDefault();
+      const fd = Object.fromEntries(new FormData(form).entries());
+      const row = {
+        id: fd.id || autoId('WA'), nombre: fd.nombre, estado: fd.estado || 'General', descripcion: fd.descripcion,
+        enlace: fd.enlace, orden: fd.orden ? Number(fd.orden) : 1, destacado:boolVal(fd.destacado), principal:boolVal(fd.principal), activo:boolVal(fd.activo)
+      };
+      try{ await saveContentRow('GruposWhatsApp', row, form); } catch(err){ setMsg('error', err.message); }
+      return;
+    }
     if(form.id === 'contentQuickForm'){
       e.preventDefault();
       const formData = new FormData(form);

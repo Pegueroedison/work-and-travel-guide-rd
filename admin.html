@@ -87,14 +87,141 @@
 
       <section class="admin-panel active" data-admin-panel="contenido">
         <div class="admin-panel-header">
-          <div><h2>Contenido, publicidad, servicios y comunidad</h2><p>Edita datos administrables sin tocar GitHub. Se guardan en Google Sheets por medio de la Web App de Contenido.</p></div>
-          <button class="btn btn-outline" type="button" id="reloadContentBtn">Actualizar</button>
+          <div>
+            <h2>Contenido de la página</h2>
+            <p>Administra lo más importante con formularios separados y fáciles. No necesitas tocar Google Sheets para crear anuncios, servicios o configurar Instagram.</p>
+          </div>
+          <div class="admin-actions-row">
+            <button class="btn btn-outline" type="button" id="prepareContentDriveBtn">Preparar carpeta Drive</button>
+            <button class="btn btn-outline" type="button" id="reloadContentBtn">Actualizar</button>
+          </div>
         </div>
 
-        <div class="admin-card">
-          <h3>Guardar o actualizar registro</h3>
-          <p class="admin-note">Para editar un registro existente, usa el mismo <strong>id</strong> o <strong>clave</strong>. Para crear uno nuevo, escribe un id nuevo.</p>
-          <form id="contentQuickForm" class="admin-form-grid">
+        <div class="admin-help-box">
+          <strong>Uso rápido:</strong> primero elige el tipo de contenido, llena los campos, selecciona una imagen si aplica y guarda. El sistema sube la imagen a Drive automáticamente y guarda el enlace en Google Sheets.
+        </div>
+
+        <div class="admin-content-actions">
+          <button class="content-mode-btn active" type="button" data-content-mode="ad">📢 Anuncio</button>
+          <button class="content-mode-btn" type="button" data-content-mode="service">🧰 Servicio J1</button>
+          <button class="content-mode-btn" type="button" data-content-mode="course">📚 Curso de inglés</button>
+          <button class="content-mode-btn" type="button" data-content-mode="community">💬 Comunidad</button>
+          <button class="content-mode-btn" type="button" data-content-mode="advanced">⚙️ Avanzado</button>
+        </div>
+
+        <div class="content-editor-card active" data-content-editor="ad">
+          <div class="editor-card-header"><h3>Crear o editar anuncio</h3><p>Para banner principal, popup, anuncio destacado o anuncio entre secciones.</p></div>
+          <form id="adSimpleForm" class="admin-form-grid clean-form">
+            <label>ID del anuncio <input name="id" placeholder="Ejemplo: AD-005. Déjalo vacío para crear automático" /></label>
+            <label>Tipo de anuncio
+              <select name="tipo" required>
+                <option value="banner_principal">Banner principal</option>
+                <option value="destacado">Destacado en inicio</option>
+                <option value="entre_secciones">Entre secciones</option>
+                <option value="popup">Popup emergente</option>
+              </select>
+            </label>
+            <label>Posición
+              <select name="posicion" required>
+                <option value="inicio">Inicio</option>
+                <option value="hero">Pantalla azul / Hero</option>
+                <option value="despues_servicios">Después de Servicios J1</option>
+                <option value="despues_comunidad">Después de Comunidad</option>
+                <option value="despues_preguntas">Después de Preguntas</option>
+                <option value="despues_record">Después de Récord</option>
+                <option value="despues_visa">Después de Visa</option>
+                <option value="despues_internet">Después de Internet</option>
+                <option value="popup">Popup</option>
+              </select>
+            </label>
+            <label>Título <input name="titulo" required placeholder="Título del anuncio" /></label>
+            <label>Descripción <textarea name="descripcion" rows="3" placeholder="Texto del anuncio"></textarea></label>
+            <label>Enlace destino <input name="enlace" placeholder="https://... o #servicios" /></label>
+            <label>Texto del botón <input name="cta" placeholder="Ver más" /></label>
+            <label>Orden <input name="orden" type="number" min="0" placeholder="1" /></label>
+            <label>Activo <select name="activo"><option value="TRUE">Sí, mostrar</option><option value="FALSE">No mostrar</option></select></label>
+            <label>Destacado <select name="destacado"><option value="FALSE">No</option><option value="TRUE">Sí</option></select></label>
+            <div class="admin-image-uploader full-row">
+              <label>Imagen del anuncio <input class="content-image-input" data-preview="adImagePreview" name="image_file" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" /></label>
+              <label>O pegar URL de imagen <input name="imagen_url" placeholder="https://.../imagen.png" /></label>
+              <div class="admin-image-preview" id="adImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
+              <p class="admin-note small">Máximo 3 MB. Formatos: JPG, JPEG, PNG o WEBP.</p>
+            </div>
+            <button class="btn btn-primary full-row" type="submit">Guardar anuncio</button>
+          </form>
+        </div>
+
+        <div class="content-editor-card" data-content-editor="service">
+          <div class="editor-card-header"><h3>Crear o editar servicio J1</h3><p>Agrega servicios como taxes, asesoría, documentos, entrevista o internet USA.</p></div>
+          <form id="serviceSimpleForm" class="admin-form-grid clean-form">
+            <label>ID del servicio <input name="id" placeholder="Ejemplo: SVC-006. Déjalo vacío para crear automático" /></label>
+            <label>Nombre <input name="nombre" required placeholder="Taxes Work and Travel" /></label>
+            <label>Icono <input name="icono" placeholder="🧾" /></label>
+            <label>Descripción <textarea name="descripcion" rows="3" placeholder="Explica el servicio"></textarea></label>
+            <label>Enlace <input name="enlace" placeholder="https://... o #comunidad" /></label>
+            <label>Texto del botón <input name="cta" placeholder="Solicitar información" /></label>
+            <label>Orden <input name="orden" type="number" min="0" placeholder="1" /></label>
+            <label>Activo <select name="activo"><option value="TRUE">Sí, mostrar</option><option value="FALSE">No mostrar</option></select></label>
+            <label>Destacado <select name="destacado"><option value="FALSE">No</option><option value="TRUE">Sí</option></select></label>
+            <div class="admin-image-uploader full-row">
+              <label>Imagen del servicio <input class="content-image-input" data-preview="serviceImagePreview" name="image_file" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" /></label>
+              <label>O pegar URL de imagen <input name="imagen_url" placeholder="https://.../imagen.png" /></label>
+              <div class="admin-image-preview" id="serviceImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
+            </div>
+            <button class="btn btn-primary full-row" type="submit">Guardar servicio</button>
+          </form>
+        </div>
+
+        <div class="content-editor-card" data-content-editor="course">
+          <div class="editor-card-header"><h3>Configurar curso de inglés</h3><p>Este curso se administra desde Sheets, pero aquí puedes editarlo más fácil.</p></div>
+          <form id="courseSimpleForm" class="admin-form-grid clean-form">
+            <label>ID <input name="id" value="ENG-001" /></label>
+            <label>Título <input name="titulo" required placeholder="Curso de inglés para entrevista J1" /></label>
+            <label>Precio <input name="precio" placeholder="RD$0" /></label>
+            <label>Descripción <textarea name="descripcion" rows="3" placeholder="Detalles del curso"></textarea></label>
+            <label>Enlace <input name="enlace" placeholder="https://... o #comunidad" /></label>
+            <label>Texto del botón <input name="cta" placeholder="Solicitar información" /></label>
+            <label>Orden <input name="orden" type="number" min="0" placeholder="1" /></label>
+            <label>Activo <select name="activo"><option value="TRUE">Sí, mostrar</option><option value="FALSE">No mostrar</option></select></label>
+            <label>Destacado <select name="destacado"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
+            <div class="admin-image-uploader full-row">
+              <label>Imagen del curso <input class="content-image-input" data-preview="courseImagePreview" name="image_file" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" /></label>
+              <label>O pegar URL de imagen <input name="imagen_url" placeholder="https://.../imagen.png" /></label>
+              <div class="admin-image-preview" id="courseImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
+            </div>
+            <button class="btn btn-primary full-row" type="submit">Guardar curso</button>
+          </form>
+        </div>
+
+        <div class="content-editor-card" data-content-editor="community">
+          <div class="editor-card-header"><h3>Comunidad: WhatsApp e Instagram</h3><p>Configura el Instagram y agrega grupos de WhatsApp sin usar formularios complicados.</p></div>
+          <form id="instagramSimpleForm" class="admin-form-grid clean-form">
+            <label>Instagram URL <input name="url" required placeholder="https://www.instagram.com/tuusuario" /></label>
+            <label>Texto del botón <input name="texto_boton" placeholder="Síguenos en Instagram" /></label>
+            <label>Mostrar en inicio <select name="mostrar_inicio"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
+            <label>Mostrar en footer <select name="mostrar_footer"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
+            <label>Mostrar en comunidad <select name="mostrar_comunidad"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
+            <label>Activo <select name="activo"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
+            <button class="btn btn-primary full-row" type="submit">Guardar Instagram</button>
+          </form>
+          <hr class="admin-soft-line">
+          <form id="whatsappSimpleForm" class="admin-form-grid clean-form">
+            <label>ID del grupo <input name="id" placeholder="WA-004. Déjalo vacío para crear automático" /></label>
+            <label>Nombre del grupo <input name="nombre" required placeholder="Grupo Principal Work and Travel RD" /></label>
+            <label>Estado / zona <input name="estado" placeholder="General, New York, New Jersey..." /></label>
+            <label>Descripción <textarea name="descripcion" rows="3" placeholder="Descripción del grupo"></textarea></label>
+            <label>Enlace WhatsApp <input name="enlace" required placeholder="https://chat.whatsapp.com/..." /></label>
+            <label>Orden <input name="orden" type="number" min="0" placeholder="1" /></label>
+            <label>Principal <select name="principal"><option value="FALSE">No</option><option value="TRUE">Sí</option></select></label>
+            <label>Destacado <select name="destacado"><option value="FALSE">No</option><option value="TRUE">Sí</option></select></label>
+            <label>Activo <select name="activo"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
+            <button class="btn btn-primary full-row" type="submit">Guardar grupo</button>
+          </form>
+        </div>
+
+        <div class="content-editor-card" data-content-editor="advanced">
+          <div class="editor-card-header"><h3>Modo avanzado</h3><p>Úsalo solo si necesitas editar una hoja manualmente por ID o clave.</p></div>
+          <form id="contentQuickForm" class="admin-form-grid clean-form">
             <label>Hoja
               <select name="sheetName" required>
                 <option value="Anuncios">Anuncios</option>
@@ -109,28 +236,16 @@
             <label>Título / Nombre / Valor<input name="titulo" placeholder="Título, nombre o valor" /></label>
             <label>Descripción<textarea name="descripcion" rows="3" placeholder="Descripción del registro"></textarea></label>
             <label>Enlace / URL<input name="enlace" placeholder="https://..." /></label>
-            <div class="admin-image-uploader">
-              <label>Imagen del contenido
-                <input id="contentImageFile" name="image_file" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" />
-              </label>
-              <label>O pegar URL de imagen
-                <input name="imagen_url" placeholder="https://.../imagen.png" />
-              </label>
-              <div class="admin-image-preview" id="contentImagePreview" hidden>
-                <img src="" alt="Vista previa de la imagen" />
-                <button type="button" id="clearContentImageBtn">Quitar imagen</button>
-              </div>
-              <p class="admin-note small">Puedes subir una imagen desde tu celular/computadora o pegar un enlace manualmente. Máximo 3 MB. Formatos: JPG, JPEG, PNG o WEBP.</p>
-            </div>
+            <label>Imagen URL<input name="imagen_url" placeholder="https://.../imagen.png" /></label>
             <label>CTA / Texto botón<input name="cta" placeholder="Ver más" /></label>
             <label>Orden<input name="orden" type="number" min="0" placeholder="1" /></label>
             <label>Activo<select name="activo"><option value="TRUE">TRUE</option><option value="FALSE">FALSE</option></select></label>
             <label>Destacado<select name="destacado"><option value="FALSE">FALSE</option><option value="TRUE">TRUE</option></select></label>
-            <button class="btn btn-primary" type="submit">Guardar registro</button>
+            <button class="btn btn-primary full-row" type="submit">Guardar registro avanzado</button>
           </form>
         </div>
 
-        <div class="admin-grid-2">
+        <div class="admin-grid-2 admin-content-tables">
           <div class="admin-card"><h3>Anuncios</h3><div id="tableAnuncios" class="admin-table-wrap"></div></div>
           <div class="admin-card"><h3>Servicios J1</h3><div id="tableServiciosJ1" class="admin-table-wrap"></div></div>
           <div class="admin-card"><h3>Curso de inglés</h3><div id="tableCursoIngles" class="admin-table-wrap"></div></div>

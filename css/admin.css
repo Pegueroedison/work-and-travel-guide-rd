@@ -178,3 +178,87 @@
   color:var(--navy);
   font-weight:800;
 }
+
+/* === v13: panel de contenido más sencillo === */
+.admin-help-box{
+  background:linear-gradient(135deg,#fff8e8,#ffffff);
+  border:1px solid rgba(245,166,35,.35);
+  border-left:5px solid var(--gold);
+  border-radius:18px;
+  padding:1rem 1.1rem;
+  color:var(--navy);
+  box-shadow:var(--shadow-sm);
+  margin-bottom:1rem;
+}
+.admin-content-actions{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:.75rem;
+  margin-bottom:1rem;
+}
+.content-mode-btn{
+  border:1px solid #d9e2f3;
+  background:#fff;
+  color:var(--navy);
+  border-radius:18px;
+  padding:1rem .85rem;
+  font-weight:900;
+  font-family:'Nunito',sans-serif;
+  cursor:pointer;
+  box-shadow:var(--shadow-sm);
+  transition:all var(--transition);
+}
+.content-mode-btn:hover{ transform:translateY(-2px); box-shadow:var(--shadow-md); }
+.content-mode-btn.active{
+  background:linear-gradient(135deg,var(--navy),var(--navy-mid));
+  color:#fff;
+  border-color:var(--gold);
+}
+.content-editor-card{
+  display:none;
+  background:#fff;
+  border:1px solid #d9e2f3;
+  border-radius:24px;
+  box-shadow:var(--shadow-sm);
+  padding:1.2rem;
+  margin-bottom:1.2rem;
+}
+.content-editor-card.active{ display:block; }
+.editor-card-header{
+  display:flex;
+  flex-direction:column;
+  gap:.2rem;
+  margin-bottom:1rem;
+  padding-bottom:.8rem;
+  border-bottom:1px solid #e8edf8;
+}
+.editor-card-header h3{ color:var(--navy); font-size:1.35rem; }
+.editor-card-header p{ color:var(--text-mid); margin:0; }
+.admin-form-grid.clean-form{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1rem;
+}
+.admin-form-grid.clean-form label{
+  background:#f8fbff;
+  border:1px solid #e3eaf7;
+  border-radius:16px;
+  padding:.85rem;
+}
+.admin-form-grid.clean-form input,
+.admin-form-grid.clean-form select,
+.admin-form-grid.clean-form textarea{
+  margin-top:.35rem;
+  background:#fff;
+}
+.full-row{ grid-column:1 / -1; }
+.admin-soft-line{
+  border:0;
+  border-top:1px solid #e8edf8;
+  margin:1.1rem 0;
+}
+.admin-actions-row{ display:flex; gap:.65rem; flex-wrap:wrap; align-items:center; }
+@media(max-width:760px){
+  .admin-form-grid.clean-form{ grid-template-columns:1fr; }
+  .content-editor-card{ padding:1rem; border-radius:18px; }
+  .admin-content-actions{ grid-template-columns:1fr; }
+}
