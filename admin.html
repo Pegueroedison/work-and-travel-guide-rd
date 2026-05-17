@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./images/logo.png" type="image/png" />
   <link rel="stylesheet" href="./css/style.css?v=40" />
-  <link rel="stylesheet" href="./css/admin.css?v=42?v=27" />
+  <link rel="stylesheet" href="./css/admin.css?v=43?v=27" />
 </head>
 <body>
   <div id="progressBar" class="progress-bar"></div>
@@ -242,6 +242,38 @@
           </form>
         </div>
 
+
+        <div class="admin-card content-edit-browser" id="contentEditBrowser">
+          <div class="content-edit-head">
+            <div>
+              <h3>Editar contenido creado</h3>
+              <p>Busca un anuncio, servicio o curso ya creado, revisa su vista previa y presiona <strong>Editar</strong> para cargarlo en el formulario.</p>
+            </div>
+            <div class="content-edit-filters">
+              <input id="contentEditSearch" type="search" placeholder="Buscar por título, descripción o ID..." />
+              <select id="contentEditType">
+                <option value="all">Todo</option>
+                <option value="Anuncios">Anuncios</option>
+                <option value="ServiciosJ1">Servicios J1</option>
+                <option value="CursoIngles">Cursos</option>
+                <option value="GruposWhatsApp">WhatsApp</option>
+                <option value="Instagram">Instagram</option>
+              </select>
+              <select id="contentEditStatus">
+                <option value="all">Todos los estados</option>
+                <option value="active">Activos</option>
+                <option value="inactive">Inactivos</option>
+                <option value="featured">Destacados</option>
+                <option value="incomplete">Pendientes / incompletos</option>
+              </select>
+              <button class="btn btn-outline" type="button" id="reloadContentEditBtn">Actualizar lista</button>
+            </div>
+          </div>
+          <div id="contentEditCards" class="content-edit-cards">
+            <div class="empty-state">Cargando contenido creado...</div>
+          </div>
+        </div>
+
         <div class="admin-grid-2 admin-content-tables">
           <div class="admin-card"><h3>Anuncios</h3><div id="tableAnuncios" class="admin-table-wrap"></div></div>
           <div class="admin-card"><h3>Servicios J1</h3><div id="tableServiciosJ1" class="admin-table-wrap"></div></div>
@@ -345,7 +377,8 @@
 
   <script src="./js/config.js"></script>
   <script src="./js/ui.js"></script>
-  <script src="./js/admin.js?v=42"></script>
-  <script src="./js/admin-content-direct.js?v=42"></script>
+  <script src="./js/admin.js?v=43"></script>
+  <script src="./js/admin-content-direct.js?v=43"></script>
+  <script src="./js/admin-content-editor.js?v=43"></script>
 </body>
 </html>

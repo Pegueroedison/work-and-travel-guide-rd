@@ -1,6 +1,6 @@
 /* === WORK AND TRAVEL GUIDE RD — SERVICE WORKER === */
 
-const CACHE_NAME = 'wt-guide-rd-v42';
+const CACHE_NAME = 'wt-guide-rd-v43';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -30,6 +30,7 @@ const ASSETS_TO_CACHE = [
   './js/auth.js',
   './js/admin.js',
   './js/admin-content-direct.js',
+  './js/admin-content-editor.js',
   './manifest.json',
   './images/logo.png',
   './images/ceac_status.png',
