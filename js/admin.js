@@ -1,4 +1,4 @@
-/* === PANEL ADMIN WEB — GitHub Pages + Web Apps — v29 === */
+/* === PANEL ADMIN WEB — GitHub Pages + Web Apps — v31 === */
 (function(){
   const CONFIG = window.WT_CONFIG || {};
   const $ = (s,r=document)=>r.querySelector(s);
@@ -499,147 +499,213 @@
     'userActionForm'
   ]);
 
-  function validateRequired(form){
-    const required = Array.from(form.querySelectorAll('[required]'));
-    for (const field of required){
-      if(!String(field.value || '').trim()){
-        const label = field.closest('label')?.innerText?.split('\n')[0] || field.name || 'campo requerido';
-        field.focus();
-        throw new Error(`Completa el campo: ${label}`);
-      }
+  function formById(formId){
+    const form = formId ? document.getElementById(formId) : null;
+    if(!form){
+      throw new Error('No encontré el formulario. Sube admin.html y js/admin.js de la misma versión.');
+    }
+    return form;
+  }
+
+  function fdObj(form){ return Object.fromEntries(new FormData(form).entries()); }
+
+  function focusField(form, name){
+    const field = form?.querySelector?.(`[name="${name}"]`);
+    if(field && typeof field.focus === 'function') field.focus();
+  }
+
+  function requireValue(form, value, fieldName, message){
+    if(!String(value || '').trim()){
+      focusField(form, fieldName);
+      throw new Error(message);
     }
   }
 
-  async function handleAdminForm(form, submitter){
-    if(!form || !ADMIN_FORMS.has(form.id)) { setMsg('error','Este formulario no está conectado correctamente.'); return; }
+  function selectedFile(form){ return form?.querySelector?.('input[type="file"]')?.files?.[0] || null; }
+
+  function requireLinkOrImage(form, row, message){
+    const file = selectedFile(form);
+    if(!file && !String(row.enlace || '').trim() && !String(row.imagen_url || '').trim()){
+      throw new Error(message);
+    }
+  }
+
+  async function saveAdForm(form){
+    const fd = fdObj(form);
+    const row = {
+      id: fd.id || autoId('AD'),
+      tipo: fd.tipo,
+      titulo: fd.titulo,
+      descripcion: fd.descripcion,
+      imagen_url: fd.imagen_url,
+      enlace: fd.enlace,
+      cta: fd.cta || 'Ver más',
+      posicion: fd.posicion,
+      orden: fd.orden ? Number(fd.orden) : 1,
+      destacado: boolVal(fd.destacado),
+      activo: boolVal(fd.activo),
+      delay_ms: fd.tipo === 'popup' ? 2500 : 0
+    };
+    requireValue(form, row.tipo, 'tipo', 'Debes seleccionar el tipo de anuncio.');
+    requireValue(form, row.posicion, 'posicion', 'Debes seleccionar la posición del anuncio.');
+    requireValue(form, row.titulo, 'titulo', 'El título del anuncio es obligatorio.');
+    requireValue(form, row.descripcion, 'descripcion', 'La descripción del anuncio es obligatoria.');
+    requireLinkOrImage(form, row, 'El anuncio necesita un enlace o una imagen.');
+    await saveContentRow('Anuncios', row, form);
+  }
+
+  async function saveServiceForm(form){
+    const fd = fdObj(form);
+    const row = {
+      id: fd.id || autoId('SVC'),
+      nombre: fd.nombre,
+      descripcion: fd.descripcion,
+      icono: fd.icono || '🧰',
+      imagen_url: fd.imagen_url,
+      enlace: fd.enlace,
+      cta: fd.cta || 'Solicitar información',
+      orden: fd.orden ? Number(fd.orden) : 1,
+      destacado: boolVal(fd.destacado),
+      activo: boolVal(fd.activo)
+    };
+    requireValue(form, row.nombre, 'nombre', 'El nombre del servicio es obligatorio.');
+    requireValue(form, row.descripcion, 'descripcion', 'La descripción del servicio es obligatoria.');
+    requireLinkOrImage(form, row, 'El servicio necesita un enlace/contacto o una imagen.');
+    await saveContentRow('ServiciosJ1', row, form);
+  }
+
+  async function saveCourseForm(form){
+    const fd = fdObj(form);
+    const row = {
+      id: fd.id || 'ENG-001',
+      titulo: fd.titulo,
+      descripcion: fd.descripcion,
+      precio: fd.precio,
+      imagen_url: fd.imagen_url,
+      enlace: fd.enlace,
+      cta: fd.cta || 'Solicitar información',
+      orden: fd.orden ? Number(fd.orden) : 1,
+      destacado: boolVal(fd.destacado),
+      activo: boolVal(fd.activo)
+    };
+    requireValue(form, row.titulo, 'titulo', 'El título del curso es obligatorio.');
+    requireValue(form, row.descripcion, 'descripcion', 'La descripción del curso es obligatoria.');
+    requireLinkOrImage(form, row, 'El curso necesita un enlace/contacto o una imagen.');
+    await saveContentRow('CursoIngles', row, form);
+  }
+
+  async function saveInstagramForm(form){
+    const fd = fdObj(form);
+    const row = {
+      id:'IG-001',
+      url: fd.url,
+      texto_boton: fd.texto_boton || 'Síguenos en Instagram',
+      mostrar_inicio: boolVal(fd.mostrar_inicio),
+      mostrar_footer: boolVal(fd.mostrar_footer),
+      mostrar_comunidad: boolVal(fd.mostrar_comunidad),
+      activo: boolVal(fd.activo)
+    };
+    if(row.activo || row.mostrar_inicio || row.mostrar_footer || row.mostrar_comunidad){
+      requireValue(form, row.url, 'url', 'El enlace de Instagram es obligatorio si Instagram está activo o visible.');
+    }
+    await saveContentRow('Instagram', row, form);
+  }
+
+  async function saveWhatsAppForm(form){
+    const fd = fdObj(form);
+    const row = {
+      id: fd.id || autoId('WA'),
+      nombre: fd.nombre,
+      estado: fd.estado || 'General',
+      descripcion: fd.descripcion,
+      enlace: fd.enlace,
+      orden: fd.orden ? Number(fd.orden) : 1,
+      destacado: boolVal(fd.destacado),
+      principal: boolVal(fd.principal),
+      activo: boolVal(fd.activo)
+    };
+    requireValue(form, row.nombre, 'nombre', 'El nombre del grupo de WhatsApp es obligatorio.');
+    requireValue(form, row.enlace, 'enlace', 'El enlace del grupo de WhatsApp es obligatorio.');
+    await saveContentRow('GruposWhatsApp', row, form);
+  }
+
+  async function saveAdvancedForm(form){
+    const fd = fdObj(form);
+    const sheetName = fd.sheetName;
+    requireValue(form, sheetName, 'sheetName', 'Debes seleccionar la hoja.');
+    const row = {};
+    if(sheetName === 'Config'){
+      row.clave = fd.id;
+      row.valor = fd.titulo;
+      row.descripcion = fd.descripcion;
+      requireValue(form, row.clave, 'id', 'La clave de configuración es obligatoria.');
+      requireValue(form, row.valor, 'titulo', 'El valor de configuración es obligatorio.');
+    } else {
+      row.id = fd.id || autoId('REG');
+      if(fd.titulo){
+        row.titulo = fd.titulo;
+        row.nombre = fd.titulo;
+        if(String(fd.titulo).startsWith('http')) row.url = fd.titulo;
+      }
+      if(fd.descripcion) row.descripcion = fd.descripcion;
+      if(fd.enlace){ row.enlace = fd.enlace; row.url = fd.enlace; }
+      if(fd.imagen_url) row.imagen_url = fd.imagen_url;
+      if(fd.cta){ row.cta = fd.cta; row.texto_boton = fd.cta; }
+      if(fd.orden) row.orden = Number(fd.orden);
+      row.activo = boolVal(fd.activo);
+      row.destacado = boolVal(fd.destacado);
+      if(!contentRowHasMeaning(row)) throw new Error('No puedes guardar una configuración vacía. Completa al menos título/nombre, descripción, enlace o imagen.');
+    }
+    Object.keys(row).forEach(k => row[k] === undefined && delete row[k]);
+    await saveContentRow(sheetName, row, form);
+  }
+
+  async function saveForumSettingsForm(form){
+    const fd = fdObj(form);
+    await apiPost(CONFIG.FORUM_API_URL, { action:'adminUpdateConfig', token:state.token, key:'comments_require_approval', value:fd.comments_require_approval }, 'FORUM_API_URL');
+    setMsg('success','Ajuste de moderación guardado.');
+    loadForum();
+  }
+
+  async function saveUserActionForm(form, submitter){
+    const clicked = submitter?.value || submitter?.getAttribute?.('value') || '';
+    const fd = fdObj(form);
+    requireValue(form, fd.user_id, 'user_id', 'El ID del usuario es obligatorio.');
+    if(clicked === 'setRole') await apiPost(CONFIG.USERS_API_URL, { action:'adminSetRole', token:state.token, user_id:fd.user_id, role:fd.role }, 'USERS_API_URL');
+    else if(clicked === 'block'){
+      requireValue(form, fd.reason, 'reason', 'Debes escribir el motivo del bloqueo.');
+      await apiPost(CONFIG.USERS_API_URL, { action:'adminBlockUser', token:state.token, user_id:fd.user_id, reason:fd.reason }, 'USERS_API_URL');
+    }
+    else if(clicked === 'unblock') await apiPost(CONFIG.USERS_API_URL, { action:'adminUnblockUser', token:state.token, user_id:fd.user_id }, 'USERS_API_URL');
+    else throw new Error('Selecciona una acción para el usuario.');
+    setMsg('success','Acción aplicada al usuario.');
+    loadUsers();
+  }
+
+  async function handleDirectAdminSave(formId, button){
+    const form = formById(formId);
     if(form.dataset.saving === 'true') return;
-
-    validateRequired(form);
-
-    const submitBtn = submitter?.matches?.('button,input') ? submitter : form.querySelector('[data-admin-save], button[type="submit"], input[type="submit"]');
-    const oldText = submitBtn ? submitBtn.textContent : '';
-
-    try {
+    const oldText = button && button.tagName === 'BUTTON' ? button.textContent : '';
+    try{
       form.dataset.saving = 'true';
-      if(submitBtn) {
-        submitBtn.disabled = true;
-        if(submitBtn.tagName === 'BUTTON') submitBtn.textContent = 'Guardando...';
-      }
+      if(button){ button.disabled = true; if(button.tagName === 'BUTTON') button.textContent = 'Guardando...'; }
+      setMsg('info','Validando campos...');
 
-      if(form.id === 'adSimpleForm'){
-        const fd = Object.fromEntries(new FormData(form).entries());
-        const row = {
-          id: fd.id || autoId('AD'), tipo: fd.tipo, titulo: fd.titulo, descripcion: fd.descripcion,
-          imagen_url: fd.imagen_url, enlace: fd.enlace, cta: fd.cta || 'Ver más', posicion: fd.posicion,
-          orden: fd.orden ? Number(fd.orden) : 1, destacado: boolVal(fd.destacado), activo: boolVal(fd.activo),
-          delay_ms: fd.tipo === 'popup' ? 2500 : 0
-        };
-        await saveContentRow('Anuncios', row, form);
-        return;
-      }
-
-      if(form.id === 'serviceSimpleForm'){
-        const fd = Object.fromEntries(new FormData(form).entries());
-        const row = {
-          id: fd.id || autoId('SVC'), nombre: fd.nombre, descripcion: fd.descripcion, icono: fd.icono,
-          imagen_url: fd.imagen_url, enlace: fd.enlace, cta: fd.cta || 'Solicitar información',
-          orden: fd.orden ? Number(fd.orden) : 1, destacado: boolVal(fd.destacado), activo: boolVal(fd.activo)
-        };
-        await saveContentRow('ServiciosJ1', row, form);
-        return;
-      }
-
-      if(form.id === 'courseSimpleForm'){
-        const fd = Object.fromEntries(new FormData(form).entries());
-        const row = {
-          id: fd.id || 'ENG-001', titulo: fd.titulo, descripcion: fd.descripcion, precio: fd.precio,
-          imagen_url: fd.imagen_url, enlace: fd.enlace, cta: fd.cta || 'Solicitar información',
-          orden: fd.orden ? Number(fd.orden) : 1, destacado: boolVal(fd.destacado), activo: boolVal(fd.activo)
-        };
-        await saveContentRow('CursoIngles', row, form);
-        return;
-      }
-
-      if(form.id === 'instagramSimpleForm'){
-        const fd = Object.fromEntries(new FormData(form).entries());
-        const row = {
-          id:'IG-001', url:fd.url, texto_boton:fd.texto_boton || 'Síguenos en Instagram',
-          mostrar_inicio:boolVal(fd.mostrar_inicio), mostrar_footer:boolVal(fd.mostrar_footer), mostrar_comunidad:boolVal(fd.mostrar_comunidad), activo:boolVal(fd.activo)
-        };
-        await saveContentRow('Instagram', row, form);
-        return;
-      }
-
-      if(form.id === 'whatsappSimpleForm'){
-        const fd = Object.fromEntries(new FormData(form).entries());
-        const row = {
-          id: fd.id || autoId('WA'), nombre: fd.nombre, estado: fd.estado || 'General', descripcion: fd.descripcion,
-          enlace: fd.enlace, orden: fd.orden ? Number(fd.orden) : 1, destacado:boolVal(fd.destacado), principal:boolVal(fd.principal), activo:boolVal(fd.activo)
-        };
-        await saveContentRow('GruposWhatsApp', row, form);
-        return;
-      }
-
-      if(form.id === 'contentQuickForm'){
-        const formData = new FormData(form);
-        const fd = Object.fromEntries(formData.entries());
-        const row = {};
-        const sheetName = fd.sheetName;
-        if(sheetName === 'Config') {
-          row.clave = fd.id;
-          row.valor = fd.titulo;
-          row.descripcion = fd.descripcion;
-        } else {
-          row.id = fd.id || autoId('REG');
-          if(fd.titulo) { row.titulo = fd.titulo; row.nombre = fd.titulo; row.url = fd.titulo.startsWith('http') ? fd.titulo : undefined; }
-          if(fd.descripcion) row.descripcion = fd.descripcion;
-          if(fd.enlace) { row.enlace = fd.enlace; row.url = fd.enlace; }
-          if(fd.imagen_url) row.imagen_url = fd.imagen_url;
-          if(fd.cta) { row.cta = fd.cta; row.texto_boton = fd.cta; }
-          if(fd.orden) row.orden = Number(fd.orden);
-          row.activo = fd.activo === 'TRUE';
-          row.destacado = fd.destacado === 'TRUE';
-        }
-        Object.keys(row).forEach(k => row[k] === undefined && delete row[k]);
-        await saveContentRow(sheetName, row, form);
-        return;
-      }
-
-      if(form.id === 'forumSettingsForm'){
-        const fd = Object.fromEntries(new FormData(form).entries());
-        await apiPost(CONFIG.FORUM_API_URL, { action:'adminUpdateConfig', token:state.token, key:'comments_require_approval', value:fd.comments_require_approval }, 'FORUM_API_URL');
-        setMsg('success','Ajuste de moderación guardado.');
-        loadForum();
-        return;
-      }
-
-      if(form.id === 'userActionForm'){
-        const clicked = submitter?.value;
-        const fd = Object.fromEntries(new FormData(form).entries());
-        if(clicked === 'setRole') await apiPost(CONFIG.USERS_API_URL, { action:'adminSetRole', token:state.token, user_id:fd.user_id, role:fd.role }, 'USERS_API_URL');
-        if(clicked === 'block') await apiPost(CONFIG.USERS_API_URL, { action:'adminBlockUser', token:state.token, user_id:fd.user_id, reason:fd.reason }, 'USERS_API_URL');
-        if(clicked === 'unblock') await apiPost(CONFIG.USERS_API_URL, { action:'adminUnblockUser', token:state.token, user_id:fd.user_id }, 'USERS_API_URL');
-        setMsg('success','Acción aplicada al usuario.');
-        loadUsers();
-        return;
-      }
-    } catch(err) {
+      if(formId === 'adSimpleForm') await saveAdForm(form);
+      else if(formId === 'serviceSimpleForm') await saveServiceForm(form);
+      else if(formId === 'courseSimpleForm') await saveCourseForm(form);
+      else if(formId === 'instagramSimpleForm') await saveInstagramForm(form);
+      else if(formId === 'whatsappSimpleForm') await saveWhatsAppForm(form);
+      else if(formId === 'contentQuickForm') await saveAdvancedForm(form);
+      else if(formId === 'forumSettingsForm') await saveForumSettingsForm(form);
+      else if(formId === 'userActionForm') await saveUserActionForm(form, button);
+      else throw new Error('Este formulario no existe en el panel admin actualizado.');
+    }catch(err){
       setMsg('error', err.message || String(err));
-    } finally {
+    }finally{
       form.dataset.saving = 'false';
-      if(submitBtn) {
-        submitBtn.disabled = false;
-        if(submitBtn.tagName === 'BUTTON') submitBtn.textContent = oldText || 'Guardar';
-      }
+      if(button){ button.disabled = false; if(button.tagName === 'BUTTON') button.textContent = oldText || 'Guardar'; }
     }
-  }
-
-
-  function bindAdminSaveButtons(){
-    $$('[data-admin-save]').forEach(btn => {
-      btn.type = 'button';
-      btn.onclick = (event) => window.WTAdminSave(btn.dataset.adminSave, btn, event);
-    });
   }
 
   window.WTAdminSave = function(formId, button, event){
@@ -648,44 +714,40 @@
       event.stopPropagation();
       if(event.stopImmediatePropagation) event.stopImmediatePropagation();
     }
-    const form = formId ? $('#' + formId) : button?.closest?.('form');
-    if(!form){
-      setMsg('error','No encontré el formulario para guardar. Actualiza admin.html y admin.js juntos.');
-      return false;
-    }
-    if(!ADMIN_FORMS.has(form.id)){
-      setMsg('error',`El formulario ${form.id || '(sin id)'} no está conectado al panel admin.`);
-      return false;
-    }
-    setMsg('info','Validando campos...');
-    Promise.resolve(handleAdminForm(form, button)).catch(err => setMsg('error', err.message || String(err)));
+    handleDirectAdminSave(formId || button?.closest?.('form')?.id, button);
     return false;
   };
 
-  bindAdminSaveButtons();
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindAdminSaveButtons);
-  window.addEventListener('pageshow', bindAdminSaveButtons);
+  function bindDirectAdminButtons(){
+    $$('[data-admin-save]').forEach(btn => {
+      btn.type = 'button';
+      const formId = btn.dataset.adminSave || btn.closest('form')?.id || '';
+      btn.onclick = (event) => window.WTAdminSave(formId, btn, event);
+    });
+  }
 
-  document.addEventListener('click', async (e)=>{
+  bindDirectAdminButtons();
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindDirectAdminButtons);
+  window.addEventListener('pageshow', bindDirectAdminButtons);
+
+  document.addEventListener('click', (e)=>{
     const btn = e.target?.closest?.('[data-admin-save]');
     if(!btn) return;
     e.preventDefault();
     e.stopPropagation();
-    const formId = btn.dataset.adminSave;
-    const form = formId ? $('#' + formId) : btn.closest('form');
-    setMsg('info','Validando campos...');
-    await handleAdminForm(form, btn).catch(err => setMsg('error', err.message || String(err)));
+    if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+    window.WTAdminSave(btn.dataset.adminSave || btn.closest('form')?.id, btn, e);
   }, true);
 
-  document.addEventListener('submit', async (e)=>{
+  document.addEventListener('submit', (e)=>{
+    const form = e.target;
     e.preventDefault();
     e.stopPropagation();
-    const form = e.target;
-    if(!form || !ADMIN_FORMS.has(form.id)) {
-      setMsg('error','Este formulario no está conectado correctamente. Actualiza admin.html y js/admin.js.');
-      return false;
+    if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+    if(form && ADMIN_FORMS.has(form.id)){
+      const btn = e.submitter || form.querySelector('[data-admin-save]');
+      window.WTAdminSave(form.id, btn, e);
     }
-    await handleAdminForm(form, e.submitter || document.activeElement);
     return false;
   }, true);
 
