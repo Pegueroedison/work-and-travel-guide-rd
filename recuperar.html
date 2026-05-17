@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./images/logo.png" type="image/png" />
   <link rel="stylesheet" href="./css/style.css" />
-  <link rel="stylesheet" href="./css/auth.css" />
+  <link rel="stylesheet" href="./css/auth.css?v=24" />
 </head>
 <body data-auth-page="recuperar">
   <nav class="nav" id="mainNav" role="navigation" aria-label="Navegación principal">
@@ -51,8 +51,9 @@
         <label>Correo electrónico<input type="email" name="email" required /></label>
         <button class="btn btn-outline" type="submit">Enviar código de recuperación</button>
       </form>
-      <form class="auth-panel active" id="resetPageForm" style="margin-top:1rem;">
-        <label>Correo electrónico<input type="email" name="email" required /></label>
+      <form class="auth-panel step-hidden" id="resetPageForm" style="margin-top:1rem;">
+        <input type="hidden" name="email" id="resetEmailHidden" />
+        <div class="verify-email-card" id="resetEmailCard" hidden><span class="verify-email-label">Código enviado a</span><strong id="resetEmailText"></strong></div>
         <label>Código recibido<input type="text" name="code" required /></label>
         <label>Nueva contraseña<input type="password" name="new_password" required minlength="8" /></label>
         <button class="btn btn-primary" type="submit">Cambiar contraseña</button>
@@ -72,7 +73,7 @@
   </div>
   <script src="./js/config.js"></script>
   <script src="./js/ui.js"></script>
-  <script src="./js/auth.js"></script>
+  <script src="./js/auth.js?v=24"></script>
 
   <script>
     document.addEventListener('click', (e) => {

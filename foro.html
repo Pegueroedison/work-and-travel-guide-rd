@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./images/logo.png" type="image/png" />
   <link rel="stylesheet" href="./css/style.css" />
-  <link rel="stylesheet" href="./css/foro.css?v=22" />
+  <link rel="stylesheet" href="./css/foro.css?v=24" />
 </head>
 <body>
   <div id="progressBar" class="progress-bar"></div>
@@ -51,7 +51,9 @@
       <a class="hero-social-btn" href="./registro.html?redirect=foro.html" id="forumRegisterTop">Crear cuenta</a>
       <a class="hero-social-btn" href="./perfil.html" id="forumProfileTop" style="display:none;">🪪 Mi perfil</a>
       <a class="hero-social-btn" href="./admin.html" id="forumAdminTop" style="display:none;">⚙️ Panel Admin</a>
+      <button class="hero-social-btn notif-bell" id="notifBell" type="button" style="display:none;">🔔 <span id="notifCount"></span></button>
     </div>
+    <div id="notifPanel" class="notif-panel"></div>
     <div class="hero-flag-stripe"></div>
   </section>
 
@@ -76,16 +78,42 @@
           <p class="mini-note">Los comentarios con enlaces, teléfonos, correos o spam pasan automáticamente a moderación.</p>
           <form id="forumPostForm">
             <label>Título<input type="text" name="title" required maxlength="120" /></label>
-            <label>Categoría<select name="category"><option>Dudas J1</option><option>Entrevista</option><option>Documentos</option><option>Housing</option><option>Trabajo</option><option>Internet USA</option></select></label>
+            <label>Categoría<select name="category" id="postCategory"><option>Dudas J1</option><option>Entrevista</option><option>Visa</option><option>Documentos</option><option>Housing</option><option>Trabajo</option><option>Taxes</option><option>Internet USA</option><option>Viaje</option><option>Otros</option></select></label>
+            <div class="category-extra" id="extraTrabajo" hidden>
+              <label>Nombre de la plaza / employer<input type="text" name="employer" maxlength="120" /></label>
+              <label>Estado<input type="text" name="state" maxlength="80" /></label>
+              <label>Ciudad<input type="text" name="city" maxlength="80" /></label>
+              <label>Posición<input type="text" name="position" maxlength="100" /></label>
+              <label>Sponsor<input type="text" name="sponsor" maxlength="100" /></label>
+            </div>
+            <div class="category-extra" id="extraHousing" hidden>
+              <label>Estado<input type="text" name="state" maxlength="80" /></label>
+              <label>Ciudad<input type="text" name="city" maxlength="80" /></label>
+              <label>Precio aproximado<input type="text" name="price" maxlength="80" /></label>
+              <label>Tipo de alojamiento<input type="text" name="housing_type" maxlength="100" /></label>
+            </div>
+            <div class="category-extra" id="extraVisa" hidden>
+              <label>Fecha de entrevista<input type="date" name="interview_date" /></label>
+              <label>Estado de visa<input type="text" name="visa_status" maxlength="80" /></label>
+              <label>Sponsor<input type="text" name="sponsor" maxlength="100" /></label>
+            </div>
             <label>Contenido<textarea name="body" required maxlength="1800" rows="6"></textarea></label>
             <button class="btn btn-red" type="submit">Publicar</button>
           </form>
         </aside>
 
         <div class="forum-feed">
-          <div class="forum-feed-header">
-            <h3>Publicaciones recientes</h3>
+          <div class="forum-feed-header forum-feed-header-v24">
+            <div>
+              <h3>Publicaciones recientes</h3>
+              <p class="mini-note">Filtra por categoría, popularidad o publicaciones pendientes de respuesta.</p>
+            </div>
             <button class="btn btn-outline btn-sm" id="refreshForumBtn" type="button">Actualizar</button>
+          </div>
+          <div class="forum-tools">
+            <input id="forumSearch" type="search" placeholder="Buscar en el foro..." />
+            <select id="forumCategoryFilter"><option value="">Todas las categorías</option><option>Dudas J1</option><option>Entrevista</option><option>Visa</option><option>Documentos</option><option>Housing</option><option>Trabajo</option><option>Taxes</option><option>Internet USA</option><option>Viaje</option><option>Otros</option></select>
+            <select id="forumSort"><option value="recent">Más recientes</option><option value="commented">Más comentadas</option><option value="popular">Más populares</option><option value="unanswered">Pendientes de respuesta</option></select>
           </div>
           <div id="forumPosts" class="forum-posts"><div class="empty-state">Cargando foro...</div></div>
         </div>
@@ -111,7 +139,7 @@
   </div>
   <script src="./js/config.js"></script>
   <script src="./js/ui.js"></script>
-  <script src="./js/foro.js?v=22"></script>
+  <script src="./js/foro.js?v=24"></script>
 
   <script>
     document.addEventListener('click', (e) => {

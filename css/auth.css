@@ -50,3 +50,20 @@
     margin-left: 0;
   }
 }
+
+/* v24: flujos por pasos en registro y recuperación */
+.step-hidden { display: none !important; }
+.verify-email-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem .65rem;
+  align-items: center;
+  background: #eef4ff;
+  border: 1px solid #dce7fb;
+  border-radius: 16px;
+  padding: .85rem 1rem;
+  margin-bottom: 1rem;
+}
+.verify-email-label { color: var(--text-light); font-size: .82rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; }
+.verify-email-change { border:0; background:transparent; color:var(--red); font-weight:900; cursor:pointer; }
+#profileNameForm { background:#f7f9ff; border-radius:18px; padding:1rem; }

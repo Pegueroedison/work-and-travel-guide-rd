@@ -135,52 +135,28 @@
     });
   }
 
-  function contentFormPost(payload={}, label='CONTENT_API_URL'){
-    if(!CONFIG.CONTENT_API_URL) return Promise.reject(new Error(`Falta configurar ${label} en js/config.js.`));
-    return new Promise((resolve, reject)=>{
-      const iframeName = 'wt_hidden_post_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-      const iframe = document.createElement('iframe');
-      iframe.name = iframeName;
-      iframe.style.display = 'none';
-      iframe.setAttribute('aria-hidden', 'true');
-
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = CONFIG.CONTENT_API_URL;
-      form.target = iframeName;
-      form.style.display = 'none';
-
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = 'payload';
-      input.value = JSON.stringify({ ...payload, usersApiUrl: CONFIG.USERS_API_URL || '' });
-      form.appendChild(input);
-
-      let loaded = false;
-      const timer = setTimeout(()=>{
-        cleanup();
-        reject(new Error(`${label} tardó demasiado. Revisa que la Web App de Contenido esté implementada como nueva versión y con acceso “Cualquiera”.`));
-      }, String(payload.action) === 'adminSaveRowWithImage' ? 90000 : 45000);
-
-      function cleanup(){
-        clearTimeout(timer);
-        setTimeout(()=>{
-          try { form.remove(); } catch(e) {}
-          try { iframe.remove(); } catch(e) {}
-        }, 300);
-      }
-
-      iframe.addEventListener('load', ()=>{
-        if(loaded) return;
-        loaded = true;
-        cleanup();
-        resolve({ ok:true });
+  async function contentNoCorsPost(payload={}, label='CONTENT_API_URL'){
+    if(!CONFIG.CONTENT_API_URL) throw new Error(`Falta configurar ${label} en js/config.js.`);
+    const finalPayload = { ...payload, usersApiUrl: CONFIG.USERS_API_URL || '' };
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), String(payload.action) === 'adminSaveRowWithImage' ? 120000 : 45000);
+    try {
+      // Apps Script no siempre permite leer la respuesta por CORS desde GitHub Pages.
+      // Con no-cors enviamos la solicitud sin recargar la página y evitamos que el panel se quede pegado.
+      await fetch(CONFIG.CONTENT_API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(finalPayload),
+        signal: controller.signal
       });
-
-      document.body.appendChild(iframe);
-      document.body.appendChild(form);
-      form.submit();
-    });
+      return { ok:true, opaque:true };
+    } catch (err) {
+      if (err.name === 'AbortError') throw new Error(`${label} tardó demasiado. Verifica la implementación de la Web App de Contenido.`);
+      throw new Error(`${label} no pudo recibir la solicitud. Revisa internet, URL de la Web App o permisos.`);
+    } finally {
+      clearTimeout(timer);
+    }
   }
   function imageFolderForSheet(sheetName){
     if(sheetName === 'Anuncios') return 'Anuncios';
@@ -211,12 +187,20 @@
       };
     }
 
-    setMsg('info', file ? 'Subiendo imagen y guardando...' : 'Guardando en Google Sheets...');
-    await contentFormPost(payload, 'CONTENT_API_URL');
-    setMsg('success','Guardado enviado correctamente. Actualizando datos...');
+    setMsg('info', file ? 'Subiendo imagen y guardando en Drive...' : 'Guardando en Google Sheets...');
+
+    if (file) {
+      await contentNoCorsPost(payload, 'CONTENT_API_URL');
+      setMsg('success','Solicitud enviada. La imagen puede tardar unos segundos en aparecer en Drive y en la tabla. Actualizando...');
+      setTimeout(()=>loadContent(), 3500);
+    } else {
+      await contentAdmin(payload);
+      setMsg('success','Guardado correctamente. Actualizando datos...');
+      setTimeout(()=>loadContent(), 600);
+    }
+
     form.reset();
     form.querySelectorAll('.admin-image-preview').forEach(p => { p.hidden = true; const img = p.querySelector('img'); if(img) img.removeAttribute('src'); });
-    setTimeout(()=>loadContent(), 900);
   }
 
   async function checkAccess(){

@@ -150,9 +150,8 @@
       <div class="auth-tabs">
         <button class="auth-tab active" data-auth-tab="login" type="button">Entrar</button>
         <button class="auth-tab" data-auth-tab="register" type="button">Registro</button>
-        <button class="auth-tab" data-auth-tab="verify" type="button">Verificar</button>
-        <button class="auth-tab" data-auth-tab="recover" type="button">Recuperar</button>
-        <button class="auth-tab" data-auth-tab="profile" type="button">Perfil</button>
+        <button class="auth-tab" data-auth-tab="recover" type="button">Recuperar contraseña</button>
+        <button class="auth-tab auth-profile-tab" data-auth-tab="profile" type="button" style="display:none;">Perfil</button>
       </div>
       <div class="auth-message" id="authMessage" aria-live="polite"></div>
 
@@ -171,14 +170,30 @@
       </form>
 
       <form class="auth-panel" id="verifyForm" data-auth-panel="verify">
-        <label>Correo electrónico<input type="email" name="email" required /></label>
-        <label>Código de verificación<input type="text" name="code" required maxlength="10" /></label>
+        <input type="hidden" name="email" id="modalVerifyEmailHidden" />
+        <div class="verify-email-card" id="modalVerifyEmailCard" hidden>
+          <span class="verify-email-label">Código enviado a</span>
+          <strong id="modalVerifyEmailText"></strong>
+        </div>
+        <label>Código de verificación<input type="text" name="code" required maxlength="10" autocomplete="one-time-code" inputmode="numeric" /></label>
         <button class="btn btn-gold" type="submit">Verificar cuenta</button>
       </form>
 
       <form class="auth-panel" id="recoverForm" data-auth-panel="recover">
-        <label>Correo electrónico<input type="email" name="email" required /></label>
-        <button class="btn btn-outline" type="submit">Enviar enlace / código de recuperación</button>
+        <div class="recover-step-one">
+          <label>Correo electrónico<input type="email" name="email" required /></label>
+          <button class="btn btn-outline" type="submit">Enviar código de recuperación</button>
+        </div>
+      </form>
+      <form class="auth-panel step-hidden" id="modalResetForm" data-auth-panel="recover-reset">
+        <input type="hidden" name="email" id="modalResetEmailHidden" />
+        <div class="verify-email-card" id="modalResetEmailCard" hidden>
+          <span class="verify-email-label">Código enviado a</span>
+          <strong id="modalResetEmailText"></strong>
+        </div>
+        <label>Código recibido<input type="text" name="code" required autocomplete="one-time-code" inputmode="numeric" /></label>
+        <label>Nueva contraseña<input type="password" name="new_password" required minlength="8" autocomplete="new-password" /></label>
+        <button class="btn btn-primary" type="submit">Cambiar contraseña</button>
       </form>
 
       <form class="auth-panel" id="profileForm" data-auth-panel="profile">
@@ -189,6 +204,8 @@
             <p id="profileEmail">Inicia sesión para actualizar tu perfil.</p>
           </div>
         </div>
+        <label>Nombre completo<input type="text" name="name" id="modalProfileNameInput" maxlength="90" /></label>
+        <button class="btn btn-outline" id="modalSaveNameBtn" type="button">Guardar nombre</button>
         <label>Foto de perfil <small>JPG, JPEG, PNG o WEBP · máximo 2 MB</small><input type="file" name="photo" accept="image/jpeg,image/png,image/webp" /></label>
         <button class="btn btn-primary" type="submit">Actualizar foto</button>
         <button class="btn btn-outline" id="logoutBtn" type="button">Cerrar sesión</button>
@@ -370,6 +387,6 @@
 
   <script src="./js/config.js"></script>
   <script src="./js/ui.js"></script>
-  <script src="./js/main.js"></script>
+  <script src="./js/main.js?v=24"></script>
 </body>
 </html>

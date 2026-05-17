@@ -615,6 +615,11 @@ if ('serviceWorker' in navigator) {
     const profileBtn = $('#openProfileBtn');
     if (loginBtn) loginBtn.style.display = logged ? 'none' : 'inline-flex';
     if (profileBtn) profileBtn.style.display = logged ? 'inline-flex' : 'none';
+    $$('.auth-tab').forEach(tab => {
+      const name = tab.dataset.authTab;
+      if (logged) tab.style.display = name === 'profile' ? 'inline-flex' : 'none';
+      else tab.style.display = ['login','register','recover'].includes(name) ? 'inline-flex' : 'none';
+    });
     ['#adminNavLink','#adminMobileLink','#heroAdminBtn'].forEach(sel => {
       const el = $(sel); if (el) el.style.display = adminAllowed ? 'inline-flex' : 'none';
     });
@@ -664,6 +669,7 @@ if ('serviceWorker' in navigator) {
     if (logged) {
       $('#profileName') && ($('#profileName').textContent = state.currentUser.name || 'Usuario');
       $('#profileEmail') && ($('#profileEmail').textContent = state.currentUser.email || '');
+      $('#modalProfileNameInput') && ($('#modalProfileNameInput').value = state.currentUser.name || '');
       const profileImg = $('#profilePreview');
       if (profileImg) profileImg.src = userPhotoUrl(state.currentUser);
     }
@@ -673,8 +679,9 @@ if ('serviceWorker' in navigator) {
     const modal = $('#authModal');
     if (!modal) return;
     modal.hidden = false;
-    switchAuthTab(tab);
     updateAuthUi();
+    const logged = Boolean(state.currentUser && state.sessionToken);
+    switchAuthTab(logged ? 'profile' : tab);
   }
 
   function closeAuth() { const modal = $('#authModal'); if (modal) modal.hidden = true; }
@@ -742,6 +749,18 @@ if ('serviceWorker' in navigator) {
         window.WTNotify?.toast('Reporte enviado a moderación.', 'success', { title: 'Reporte enviado' });
       } catch (err) { window.WTNotify?.toast(err.message, 'error'); }
     }
+    if (e.target?.id === 'modalSaveNameBtn') {
+      e.preventDefault();
+      if (!state.sessionToken) return showAuthMessage('error','Debes iniciar sesión primero.');
+      try {
+        const name = $('#modalProfileNameInput')?.value || '';
+        const data = await apiPost(CONFIG.USERS_API_URL, { action:'updateProfile', token:state.sessionToken, name });
+        state.currentUser = { ...(state.currentUser || {}), ...(data.user || data.data?.user || { name }) };
+        localStorage.setItem('wt_user', JSON.stringify(state.currentUser));
+        updateAuthUi();
+        showAuthMessage('success','Nombre actualizado correctamente.');
+      } catch (err) { showAuthMessage('error', err.message); }
+    }
     if (e.target?.id === 'refreshForumBtn') loadForum();
     if (e.target?.id === 'logoutBtn') {
       localStorage.removeItem('wt_user'); localStorage.removeItem('wt_session');
@@ -764,7 +783,7 @@ if ('serviceWorker' in navigator) {
     }
     if (form.id === 'registerForm') {
       e.preventDefault();
-      try { await apiPost(CONFIG.USERS_API_URL, { action: 'register', ...formDataObj(form) }); showAuthMessage('success', 'Cuenta creada. Revisa tu correo y coloca el código en la pestaña Verificar.'); switchAuthTab('verify'); }
+      try { const fd = formDataObj(form); await apiPost(CONFIG.USERS_API_URL, { action: 'register', ...fd }); $('#modalVerifyEmailHidden') && ($('#modalVerifyEmailHidden').value = fd.email); $('#modalVerifyEmailText') && ($('#modalVerifyEmailText').textContent = fd.email); const card = $('#modalVerifyEmailCard'); if(card){ card.hidden = false; card.style.display='flex'; } showAuthMessage('success', 'Te enviamos un código de verificación al correo. Revisa tu bandeja de entrada o spam.'); switchAuthTab('verify'); }
       catch (err) { showAuthMessage('error', err.message); }
     }
     if (form.id === 'verifyForm') {
@@ -774,10 +793,15 @@ if ('serviceWorker' in navigator) {
     }
     if (form.id === 'recoverForm') {
       e.preventDefault();
-      try { await apiPost(CONFIG.USERS_API_URL, { action: 'requestPasswordReset', ...formDataObj(form) }); showAuthMessage('success', 'Te enviamos instrucciones de recuperación al correo.'); }
+      try { const fd = formDataObj(form); await apiPost(CONFIG.USERS_API_URL, { action: 'requestPasswordReset', ...fd }); $('#modalResetEmailHidden') && ($('#modalResetEmailHidden').value = fd.email); $('#modalResetEmailText') && ($('#modalResetEmailText').textContent = fd.email); const card = $('#modalResetEmailCard'); if(card){ card.hidden=false; card.style.display='flex'; } const reset = $('#modalResetForm'); if(reset) reset.classList.remove('step-hidden'); showAuthMessage('success', 'Te enviamos un código de recuperación al correo. Revisa tu bandeja de entrada o spam.'); switchAuthTab('recover-reset'); }
       catch (err) { showAuthMessage('error', err.message); }
     }
-    if (form.id === 'profileForm') {
+    if (form.id === 'modalResetForm') {
+      e.preventDefault();
+      try { await apiPost(CONFIG.USERS_API_URL, { action:'resetPassword', ...formDataObj(form) }); showAuthMessage('success','Contraseña actualizada correctamente. Ya puedes iniciar sesión.'); switchAuthTab('login'); }
+      catch (err) { showAuthMessage('error', err.message); }
+    }
+        if (form.id === 'profileForm') {
       e.preventDefault();
       const file = form.photo.files[0];
       if (!state.sessionToken) return showAuthMessage('error', 'Debes iniciar sesión primero.');

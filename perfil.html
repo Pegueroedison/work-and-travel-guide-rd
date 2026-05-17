@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./images/logo.png" type="image/png" />
   <link rel="stylesheet" href="./css/style.css" />
-  <link rel="stylesheet" href="./css/auth.css" />
+  <link rel="stylesheet" href="./css/auth.css?v=24" />
 </head>
 <body data-auth-page="perfil">
   <nav class="nav" id="mainNav" role="navigation" aria-label="Navegación principal">
@@ -51,6 +51,10 @@
         <img id="profilePagePhoto" src="./images/logo.png" alt="Foto de perfil" />
         <div><strong id="profilePageName">Usuario</strong><p id="profilePageEmail">Debes iniciar sesión.</p></div>
       </div>
+      <form class="auth-panel active" id="profileNameForm" style="margin-top:1rem;">
+        <label>Nombre completo<input type="text" name="name" id="profileNameInput" required maxlength="90" /></label>
+        <button class="btn btn-primary" type="submit">Guardar nombre</button>
+      </form>
       <form class="auth-panel active" id="profilePageForm" style="margin-top:1rem;">
         <label>Foto de perfil<input type="file" name="photo" accept="image/jpeg,image/png,image/webp" /></label>
         <button class="btn btn-red" type="submit">Actualizar foto</button>
@@ -71,7 +75,7 @@
   </div>
   <script src="./js/config.js"></script>
   <script src="./js/ui.js"></script>
-  <script src="./js/auth.js"></script>
+  <script src="./js/auth.js?v=24"></script>
 
   <script>
     document.addEventListener('click', (e) => {

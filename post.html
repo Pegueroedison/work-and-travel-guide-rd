@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d1b3e" />
+  <title>Publicación | Work and Travel Guide RD</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./images/logo.png" type="image/png" />
+  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="stylesheet" href="./css/foro.css?v=24" />
+</head>
+<body data-page="post">
+  <div id="progressBar" class="progress-bar"></div>
+  <nav class="nav" id="mainNav" role="navigation" aria-label="Navegación principal">
+    <a href="./index.html#inicio" class="nav-brand"><img src="./images/logo.png" alt="Work and Travel Guide RD" /><span>W&T Guide RD</span></a>
+    <ul class="nav-menu" role="list">
+      <li><a href="./index.html#inicio"><span class="nav-icon">🏠</span> Inicio</a></li>
+      <li><a href="./index.html#servicios"><span class="nav-icon">🧰</span> Servicios J1</a></li>
+      <li><a href="./foro.html" class="active"><span class="nav-icon">🗣️</span> Foro</a></li>
+      <li><a href="./admin.html" id="adminNavLink" class="admin-only" style="display:none;"><span class="nav-icon">⚙️</span> Panel Admin</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="nav-mobile" id="mobileNav" role="dialog" aria-label="Menú móvil">
+    <a href="./index.html#inicio"><span class="nav-icon">🏠</span> Inicio</a>
+    <a href="./foro.html"><span class="nav-icon">🗣️</span> Foro</a>
+    <a href="./admin.html" id="adminMobileLink" class="admin-only" style="display:none;"><span class="nav-icon">⚙️</span> Panel Admin</a>
+  </div>
+  <section class="hero page-hero compact-hero">
+    <img src="./images/logo.png" alt="Work and Travel Guide RD" class="hero-logo" />
+    <h1 class="hero-title"><span class="accent">Publicación</span><br /><span class="red-text">del Foro</span></h1>
+    <p class="hero-subtitle">Lee la publicación completa y responde dentro de la comunidad.</p>
+    <div class="hero-actions"><a class="hero-social-btn" href="./foro.html">← Volver al foro</a><button class="hero-social-btn notif-bell" id="notifBell" type="button" style="display:none;">🔔 <span id="notifCount"></span></button></div>
+    <div id="notifPanel" class="notif-panel"></div>
+    <div class="hero-flag-stripe"></div>
+  </section>
+  <section class="section section-white" id="foro">
+    <div class="section-inner post-page-inner">
+      <div id="singlePost"><div class="empty-state">Cargando publicación...</div></div>
+      <aside class="forum-panel single-reply-panel" id="responder">
+        <h3>Responder</h3>
+        <p class="mini-note">Si la aprobación está activada, tu respuesta aparecerá después de moderarse.</p>
+        <form id="singleCommentForm"><label>Tu respuesta<textarea name="body" rows="5" maxlength="900" required></textarea></label><button class="btn btn-red" type="submit">Enviar respuesta</button></form>
+      </aside>
+    </div>
+  </section>
+  <footer class="footer"><img src="./images/logo.png" alt="Logo" class="footer-logo" /><p><strong>Work and Travel Guide RD</strong></p><div class="footer-links"><a href="./foro.html">Foro</a><a href="./index.html#inicio">Inicio</a></div></footer>
+  <script src="./js/config.js"></script>
+  <script src="./js/ui.js"></script>
+  <script src="./js/foro.js?v=24"></script>
+  <script>document.addEventListener('click',e=>{ if(e.target?.id==='hamburger'){ document.getElementById('hamburger').classList.toggle('open'); document.getElementById('mobileNav').classList.toggle('open'); }});</script>
+</body>
+</html>

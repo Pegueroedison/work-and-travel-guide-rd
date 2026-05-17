@@ -20,6 +20,7 @@
     if(!state.user) { updateAdminLinks(); return; }
     $('#profilePageName') && ($('#profilePageName').textContent = state.user.name || 'Usuario');
     $('#profilePageEmail') && ($('#profilePageEmail').textContent = state.user.email || '');
+    $('#profileNameInput') && ($('#profileNameInput').value = state.user.name || '');
     const photoEl = $('#profilePagePhoto');
     const photoUrl = state.user.photo_url || driveThumbUrl(state.user.photo_file_id);
     if(photoUrl && photoEl) {
@@ -94,7 +95,9 @@
       try{
         await apiPost({ action:'register', ...formData });
         setVerifyEmail(formData.email);
-        msg('success','Cuenta creada. Revisa tu correo y coloca el código de verificación.');
+        const verifyForm = $('#verifyPageForm');
+        if (verifyForm) verifyForm.classList.remove('step-hidden');
+        msg('success','Te enviamos un código de verificación al correo. Revisa tu bandeja de entrada o spam.');
         const codeInput = $('#verifyPageForm input[name="code"]');
         if(codeInput) codeInput.focus();
       }catch(err){ msg('error', err.message); }
@@ -109,10 +112,22 @@
       }catch(err){ msg('error', err.message); }
     }
     if(form.id === 'recoverPageForm'){
-      e.preventDefault(); try{ await apiPost({ action:'requestPasswordReset', ...data(form) }); msg('success','Si el correo existe, recibirás un código de recuperación.'); $('#resetPageForm input[name="email"]') && ($('#resetPageForm input[name="email"]').value = form.email.value); }catch(err){ msg('error', err.message); }
+      e.preventDefault(); try{ await apiPost({ action:'requestPasswordReset', ...data(form) }); const email = form.email.value.trim(); const reset = $('#resetPageForm'); if(reset) reset.classList.remove('step-hidden'); $('#resetEmailHidden') && ($('#resetEmailHidden').value = email); $('#resetEmailText') && ($('#resetEmailText').textContent = email); const card = $('#resetEmailCard'); if(card){ card.hidden = false; card.style.display='flex'; } msg('success','Te enviamos un código de recuperación al correo. Revisa tu bandeja de entrada o spam.'); const code = $('#resetPageForm input[name="code"]'); if(code) code.focus(); }catch(err){ msg('error', err.message); }
     }
     if(form.id === 'resetPageForm'){
       e.preventDefault(); try{ await apiPost({ action:'resetPassword', ...data(form) }); msg('success','Contraseña actualizada. Ya puedes iniciar sesión.'); }catch(err){ msg('error', err.message); }
+    }
+    if(form.id === 'profileNameForm'){
+      e.preventDefault();
+      if(!state.token) return msg('error','Debes iniciar sesión primero.');
+      try{
+        const r = await apiPost({ action:'updateProfile', token:state.token, ...data(form) });
+        const freshUser = r.user || r.data?.user || { ...(state.user || {}), name:data(form).name };
+        state.user = { ...(state.user || {}), ...freshUser };
+        localStorage.setItem('wt_user', JSON.stringify(state.user));
+        updateProfile();
+        msg('success','Nombre actualizado correctamente.');
+      }catch(err){ msg('error', err.message); }
     }
     if(form.id === 'profilePageForm'){
       e.preventDefault(); if(!state.token) return msg('error','Debes iniciar sesión primero.'); const file = form.photo.files[0]; if(!file) return msg('info','Selecciona una foto.'); if(file.size > (CONFIG.MAX_PROFILE_PHOTO_MB || 2)*1024*1024) return msg('error','La foto no puede pasar de 2 MB.'); if(!['image/jpeg','image/png','image/webp'].includes(file.type)) return msg('error','Solo se permite JPG, JPEG, PNG o WEBP.'); try{ const base64 = await fileToBase64(file); const r = await apiPost({ action:'uploadProfilePhoto', token:state.token, file_name:file.name, mime_type:file.type, size:file.size, base64 }); const newPhotoUrl = r.photo_url || r.data?.photo_url || driveThumbUrl(r.file_id || r.data?.file_id); state.user = { ...(state.user || {}), photo_url:newPhotoUrl, photo_file_id:r.file_id || r.data?.file_id || state.user?.photo_file_id }; localStorage.setItem('wt_user', JSON.stringify(state.user)); updateProfile(); form.reset(); msg('success','Foto actualizada correctamente.'); }catch(err){ msg('error', err.message); }
