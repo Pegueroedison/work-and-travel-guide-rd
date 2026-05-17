@@ -123,7 +123,7 @@
       const decision = e.target.dataset.moderate;
       const type = e.target.dataset.type;
       const id = e.target.dataset.id;
-      if(!confirm(`¿Aplicar ${decision} a ${type} ${id}?`)) return;
+      if(!(await window.WTNotify.confirm(`¿Aplicar ${decision} a ${type} ${id}?`, { title: 'Confirmar moderación', confirmText: 'Sí, aplicar', cancelText: 'Cancelar' }))) return;
       try{ await apiPost(CONFIG.FORUM_API_URL, { action:'adminModerateDirect', token:state.token, target_type:type, target_id:id, decision, note:'Desde admin.html' }, 'FORUM_API_URL'); setMsg('success','Moderación aplicada.'); loadForum(); }
       catch(err){ setMsg('error', err.message); }
     }

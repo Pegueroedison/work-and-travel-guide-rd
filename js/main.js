@@ -398,6 +398,8 @@ if ('serviceWorker' in navigator) {
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const escapeHtml = (value = '') => String(value).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
   const isActive = value => ['true', '1', 'si', 'sí', 'activo', 'active', true].includes(String(value).trim().toLowerCase());
+  const driveThumbUrl = fileId => fileId ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w400` : '';
+  const userPhotoUrl = user => user?.photo_url || driveThumbUrl(user?.photo_file_id) || './images/logo.png';
 
   function publicApiUrl(baseUrl, params = {}) {
     if (!baseUrl) return '';
@@ -616,10 +618,34 @@ if ('serviceWorker' in navigator) {
     ['#adminNavLink','#adminMobileLink','#heroAdminBtn'].forEach(sel => {
       const el = $(sel); if (el) el.style.display = adminAllowed ? 'inline-flex' : 'none';
     });
+
+    const forumPromo = $('#heroForumPromo');
+    if (forumPromo) forumPromo.classList.toggle('logged-in', logged);
+    if (logged) {
+      $('#heroForumIcon') && ($('#heroForumIcon').textContent = '👋');
+      $('#heroForumLabel') && ($('#heroForumLabel').textContent = `Bienvenido${adminAllowed ? ' · administrador' : ''}`);
+      $('#heroForumTitle') && ($('#heroForumTitle').textContent = `Hola, ${state.currentUser.name || 'estudiante'}`);
+      $('#heroForumDesc') && ($('#heroForumDesc').textContent = adminAllowed
+        ? 'Ya tienes sesión iniciada. Puedes entrar al foro, revisar publicaciones y abrir tu Panel Admin.'
+        : 'Ya tienes sesión iniciada. Entra al foro para publicar, responder y seguir compartiendo con la comunidad.');
+      $('#heroForumPrimaryBtn') && ($('#heroForumPrimaryBtn').textContent = 'Ir al Foro');
+      $('#heroForumSecondaryBtn') && ($('#heroForumSecondaryBtn').textContent = adminAllowed ? 'Panel Admin' : 'Mi perfil');
+      $('#heroForumSecondaryBtn') && ($('#heroForumSecondaryBtn').href = adminAllowed ? './admin.html' : './perfil.html');
+    } else {
+      $('#heroForumIcon') && ($('#heroForumIcon').textContent = '🗣️');
+      $('#heroForumLabel') && ($('#heroForumLabel').textContent = 'Comunidad activa');
+      $('#heroForumTitle') && ($('#heroForumTitle').textContent = 'Foro de Estudiantes Work and Travel RD');
+      $('#heroForumDesc') && ($('#heroForumDesc').textContent = 'Pregunta, responde y comparte experiencias sobre entrevista consular, visa, documentos, housing, taxes, viajes e internet en USA.');
+      $('#heroForumPrimaryBtn') && ($('#heroForumPrimaryBtn').textContent = 'Entrar al Foro');
+      $('#heroForumSecondaryBtn') && ($('#heroForumSecondaryBtn').textContent = 'Iniciar sesión');
+      $('#heroForumSecondaryBtn') && ($('#heroForumSecondaryBtn').href = './login.html?redirect=foro.html');
+    }
+
     if (logged) {
       $('#profileName') && ($('#profileName').textContent = state.currentUser.name || 'Usuario');
       $('#profileEmail') && ($('#profileEmail').textContent = state.currentUser.email || '');
-      if (state.currentUser.photo_url && $('#profilePreview')) $('#profilePreview').src = state.currentUser.photo_url;
+      const profileImg = $('#profilePreview');
+      if (profileImg) profileImg.src = userPhotoUrl(state.currentUser);
     }
   }
 
@@ -693,8 +719,8 @@ if ('serviceWorker' in navigator) {
       const post = e.target.closest('.forum-post');
       try {
         await apiPost(CONFIG.FORUM_API_URL, { action: 'reportPost', post_id: post.dataset.postId, token: state.sessionToken, reason: 'Reporte desde la web' });
-        alert('Reporte enviado a moderación.');
-      } catch (err) { alert(err.message); }
+        window.WTNotify?.toast('Reporte enviado a moderación.', 'success', { title: 'Reporte enviado' });
+      } catch (err) { window.WTNotify?.toast(err.message, 'error'); }
     }
     if (e.target?.id === 'refreshForumBtn') loadForum();
     if (e.target?.id === 'logoutBtn') {
@@ -741,22 +767,23 @@ if ('serviceWorker' in navigator) {
       try {
         const base64 = await fileToBase64(file);
         const data = await apiPost(CONFIG.USERS_API_URL, { action: 'uploadProfilePhoto', token: state.sessionToken, file_name: file.name, mime_type: file.type, size: file.size, base64 });
-        state.currentUser.photo_url = data.photo_url || data.data?.photo_url;
+        state.currentUser.photo_file_id = data.file_id || data.data?.file_id || state.currentUser.photo_file_id;
+        state.currentUser.photo_url = data.photo_url || data.data?.photo_url || driveThumbUrl(state.currentUser.photo_file_id);
         localStorage.setItem('wt_user', JSON.stringify(state.currentUser)); updateAuthUi(); showAuthMessage('success', 'Foto actualizada correctamente.');
       } catch (err) { showAuthMessage('error', err.message); }
     }
     if (form.id === 'forumPostForm') {
       e.preventDefault();
       if (!state.sessionToken) return openAuth('login');
-      try { await apiPost(CONFIG.FORUM_API_URL, { action: 'createPost', token: state.sessionToken, ...formDataObj(form) }); form.reset(); loadForum(); alert('Publicación enviada.'); }
-      catch (err) { alert(err.message); }
+      try { await apiPost(CONFIG.FORUM_API_URL, { action: 'createPost', token: state.sessionToken, ...formDataObj(form) }); form.reset(); loadForum(); window.WTNotify?.toast('Publicación enviada. Si requiere moderación, aparecerá después de aprobarse.', 'success', { title: 'Publicación enviada' }); }
+      catch (err) { window.WTNotify?.toast(err.message, 'error'); }
     }
     if (form.classList.contains('comment-box')) {
       e.preventDefault();
       if (!state.sessionToken) return openAuth('login');
       const post = form.closest('.forum-post');
-      try { await apiPost(CONFIG.FORUM_API_URL, { action: 'createComment', token: state.sessionToken, post_id: post.dataset.postId, ...formDataObj(form) }); form.reset(); form.classList.remove('active'); alert('Respuesta enviada. Puede pasar a moderación si contiene enlaces, teléfonos, correos o spam.'); }
-      catch (err) { alert(err.message); }
+      try { await apiPost(CONFIG.FORUM_API_URL, { action: 'createComment', token: state.sessionToken, post_id: post.dataset.postId, ...formDataObj(form) }); form.reset(); form.classList.remove('active'); window.WTNotify?.toast('Respuesta enviada. Puede pasar a moderación si contiene enlaces, teléfonos, correos o spam.', 'success', { title: 'Respuesta enviada' }); }
+      catch (err) { window.WTNotify?.toast(err.message, 'error'); }
     }
   });
 

@@ -88,16 +88,16 @@
       <a id="heroAdminBtn" class="hero-social-btn" href="./admin.html" style="display:none;">⚙️ Panel Admin</a>
     </div>
 
-    <div class="hero-forum-promo fade-in" aria-label="Promoción del Foro de Estudiantes">
-      <div class="hero-forum-icon">🗣️</div>
+    <div class="hero-forum-promo fade-in" id="heroForumPromo" aria-label="Promoción del Foro de Estudiantes">
+      <div class="hero-forum-icon" id="heroForumIcon">🗣️</div>
       <div class="hero-forum-text">
-        <span class="hero-forum-label">Comunidad activa</span>
-        <h2>Foro de Estudiantes Work and Travel RD</h2>
-        <p>Pregunta, responde y comparte experiencias sobre entrevista consular, visa, documentos, housing, taxes, viajes e internet en USA.</p>
+        <span class="hero-forum-label" id="heroForumLabel">Comunidad activa</span>
+        <h2 id="heroForumTitle">Foro de Estudiantes Work and Travel RD</h2>
+        <p id="heroForumDesc">Pregunta, responde y comparte experiencias sobre entrevista consular, visa, documentos, housing, taxes, viajes e internet en USA.</p>
       </div>
       <div class="hero-forum-actions">
-        <a href="./foro.html" class="hero-forum-btn primary">Entrar al Foro</a>
-        <a href="./login.html?redirect=foro.html" class="hero-forum-btn secondary">Iniciar sesión</a>
+        <a href="./foro.html" class="hero-forum-btn primary" id="heroForumPrimaryBtn">Entrar al Foro</a>
+        <a href="./login.html?redirect=foro.html" class="hero-forum-btn secondary" id="heroForumSecondaryBtn">Iniciar sesión</a>
       </div>
     </div>
 
@@ -366,6 +366,7 @@
   <button class="back-top" id="backTop" aria-label="Volver al inicio">↑</button>
 
   <script src="./js/config.js"></script>
+  <script src="./js/ui.js"></script>
   <script src="./js/main.js"></script>
 </body>
 </html>
