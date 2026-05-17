@@ -6,6 +6,12 @@
   const escapeHtml = (v='') => String(v ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
   const state = { token: localStorage.getItem('wt_session') || '', user: JSON.parse(localStorage.getItem('wt_user') || 'null'), content:null, users:[], forum:null };
 
+  // Evita recargas accidentales del panel admin, incluso si se presiona Enter dentro de un formulario.
+  window.addEventListener('submit', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  }, true);
+
   function setMsg(type, text){ const el=$('#adminMessage'); if(!el) return; el.className = 'admin-message ' + (type || 'info'); el.textContent = text; }
   function apiUrl(baseUrl, params={}){ const u = new URL(baseUrl); Object.entries(params).forEach(([k,v])=>u.searchParams.set(k,v)); return u.toString(); }
   async function apiGet(baseUrl, params={}, label='API'){ if(!baseUrl) throw new Error(`Falta configurar ${label} en js/config.js.`); const res=await fetch(apiUrl(baseUrl, params)); const data=await res.json(); if(data.ok===false) throw new Error(data.message || 'Error'); return data; }
@@ -270,18 +276,24 @@
     'userActionForm'
   ]);
 
-  document.addEventListener('submit', async (e)=>{
-    const form = e.target;
+  function validateRequired(form){
+    const required = Array.from(form.querySelectorAll('[required]'));
+    for (const field of required){
+      if(!String(field.value || '').trim()){
+        const label = field.closest('label')?.innerText?.split('\n')[0] || field.name || 'campo requerido';
+        field.focus();
+        throw new Error(`Completa el campo: ${label}`);
+      }
+    }
+  }
+
+  async function handleAdminForm(form, submitter){
     if(!form || !ADMIN_FORMS.has(form.id)) return;
-
-    // Importante: evita que el navegador recargue admin.html y parezca que se cerró la sesión.
-    e.preventDefault();
-    e.stopPropagation();
-
     if(form.dataset.saving === 'true') return;
 
-    const submitter = e.submitter || document.activeElement;
-    const submitBtn = submitter?.matches?.('button,input') ? submitter : form.querySelector('button[type="submit"], input[type="submit"]');
+    validateRequired(form);
+
+    const submitBtn = submitter?.matches?.('button,input') ? submitter : form.querySelector('[data-admin-save], button[type="submit"], input[type="submit"]');
     const oldText = submitBtn ? submitBtn.textContent : '';
 
     try {
@@ -424,6 +436,28 @@
         if(submitBtn.tagName === 'BUTTON') submitBtn.textContent = oldText || 'Guardar';
       }
     }
+  }
+
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target?.closest?.('[data-admin-save]');
+    if(!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const formId = btn.dataset.adminSave;
+    const form = formId ? $('#' + formId) : btn.closest('form');
+    await handleAdminForm(form, btn);
+  }, true);
+
+  document.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    const form = e.target;
+    if(!form || !ADMIN_FORMS.has(form.id)) {
+      setMsg('error','Este formulario no está conectado correctamente. Actualiza admin.html y js/admin.js.');
+      return false;
+    }
+    await handleAdminForm(form, e.submitter || document.activeElement);
+    return false;
   }, true);
 
   window.addEventListener('scroll', () => { const p = $('#progressBar'); if(p) p.style.width = ((window.scrollY/(document.body.scrollHeight-innerHeight))*100) + '%'; });

@@ -262,3 +262,7 @@
   .content-editor-card{ padding:1rem; border-radius:18px; }
   .admin-content-actions{ grid-template-columns:1fr; }
 }
+
+/* v15: evita apariencia confusa mientras se guarda contenido */
+[data-admin-save][disabled], .btn[disabled] { opacity: .65; cursor: wait; transform: none !important; }
+.admin-message.info { animation: none; }

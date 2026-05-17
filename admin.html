@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./images/logo.png" type="image/png" />
   <link rel="stylesheet" href="./css/style.css" />
-  <link rel="stylesheet" href="./css/admin.css" />
+  <link rel="stylesheet" href="./css/admin.css?v=15" />
 </head>
 <body>
   <div id="progressBar" class="progress-bar"></div>
@@ -111,7 +111,7 @@
 
         <div class="content-editor-card active" data-content-editor="ad">
           <div class="editor-card-header"><h3>Crear o editar anuncio</h3><p>Para banner principal, popup, anuncio destacado o anuncio entre secciones.</p></div>
-          <form id="adSimpleForm" class="admin-form-grid clean-form">
+          <form id="adSimpleForm" novalidate class="admin-form-grid clean-form">
             <label>ID del anuncio <input name="id" placeholder="Ejemplo: AD-005. Déjalo vacío para crear automático" /></label>
             <label>Tipo de anuncio
               <select name="tipo" required>
@@ -147,13 +147,13 @@
               <div class="admin-image-preview" id="adImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
               <p class="admin-note small">Máximo 3 MB. Formatos: JPG, JPEG, PNG o WEBP.</p>
             </div>
-            <button class="btn btn-primary full-row" type="submit">Guardar anuncio</button>
+            <button class="btn btn-primary full-row" type="button" data-admin-save="adSimpleForm">Guardar anuncio</button>
           </form>
         </div>
 
         <div class="content-editor-card" data-content-editor="service">
           <div class="editor-card-header"><h3>Crear o editar servicio J1</h3><p>Agrega servicios como taxes, asesoría, documentos, entrevista o internet USA.</p></div>
-          <form id="serviceSimpleForm" class="admin-form-grid clean-form">
+          <form id="serviceSimpleForm" novalidate class="admin-form-grid clean-form">
             <label>ID del servicio <input name="id" placeholder="Ejemplo: SVC-006. Déjalo vacío para crear automático" /></label>
             <label>Nombre <input name="nombre" required placeholder="Taxes Work and Travel" /></label>
             <label>Icono <input name="icono" placeholder="🧾" /></label>
@@ -168,13 +168,13 @@
               <label>O pegar URL de imagen <input name="imagen_url" placeholder="https://.../imagen.png" /></label>
               <div class="admin-image-preview" id="serviceImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
             </div>
-            <button class="btn btn-primary full-row" type="submit">Guardar servicio</button>
+            <button class="btn btn-primary full-row" type="button" data-admin-save="serviceSimpleForm">Guardar servicio</button>
           </form>
         </div>
 
         <div class="content-editor-card" data-content-editor="course">
           <div class="editor-card-header"><h3>Configurar curso de inglés</h3><p>Este curso se administra desde Sheets, pero aquí puedes editarlo más fácil.</p></div>
-          <form id="courseSimpleForm" class="admin-form-grid clean-form">
+          <form id="courseSimpleForm" novalidate class="admin-form-grid clean-form">
             <label>ID <input name="id" value="ENG-001" /></label>
             <label>Título <input name="titulo" required placeholder="Curso de inglés para entrevista J1" /></label>
             <label>Precio <input name="precio" placeholder="RD$0" /></label>
@@ -189,23 +189,23 @@
               <label>O pegar URL de imagen <input name="imagen_url" placeholder="https://.../imagen.png" /></label>
               <div class="admin-image-preview" id="courseImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
             </div>
-            <button class="btn btn-primary full-row" type="submit">Guardar curso</button>
+            <button class="btn btn-primary full-row" type="button" data-admin-save="courseSimpleForm">Guardar curso</button>
           </form>
         </div>
 
         <div class="content-editor-card" data-content-editor="community">
           <div class="editor-card-header"><h3>Comunidad: WhatsApp e Instagram</h3><p>Configura el Instagram y agrega grupos de WhatsApp sin usar formularios complicados.</p></div>
-          <form id="instagramSimpleForm" class="admin-form-grid clean-form">
+          <form id="instagramSimpleForm" novalidate class="admin-form-grid clean-form">
             <label>Instagram URL <input name="url" required placeholder="https://www.instagram.com/tuusuario" /></label>
             <label>Texto del botón <input name="texto_boton" placeholder="Síguenos en Instagram" /></label>
             <label>Mostrar en inicio <select name="mostrar_inicio"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
             <label>Mostrar en footer <select name="mostrar_footer"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
             <label>Mostrar en comunidad <select name="mostrar_comunidad"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
             <label>Activo <select name="activo"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
-            <button class="btn btn-primary full-row" type="submit">Guardar Instagram</button>
+            <button class="btn btn-primary full-row" type="button" data-admin-save="instagramSimpleForm">Guardar Instagram</button>
           </form>
           <hr class="admin-soft-line">
-          <form id="whatsappSimpleForm" class="admin-form-grid clean-form">
+          <form id="whatsappSimpleForm" novalidate class="admin-form-grid clean-form">
             <label>ID del grupo <input name="id" placeholder="WA-004. Déjalo vacío para crear automático" /></label>
             <label>Nombre del grupo <input name="nombre" required placeholder="Grupo Principal Work and Travel RD" /></label>
             <label>Estado / zona <input name="estado" placeholder="General, New York, New Jersey..." /></label>
@@ -215,13 +215,13 @@
             <label>Principal <select name="principal"><option value="FALSE">No</option><option value="TRUE">Sí</option></select></label>
             <label>Destacado <select name="destacado"><option value="FALSE">No</option><option value="TRUE">Sí</option></select></label>
             <label>Activo <select name="activo"><option value="TRUE">Sí</option><option value="FALSE">No</option></select></label>
-            <button class="btn btn-primary full-row" type="submit">Guardar grupo</button>
+            <button class="btn btn-primary full-row" type="button" data-admin-save="whatsappSimpleForm">Guardar grupo</button>
           </form>
         </div>
 
         <div class="content-editor-card" data-content-editor="advanced">
           <div class="editor-card-header"><h3>Modo avanzado</h3><p>Úsalo solo si necesitas editar una hoja manualmente por ID o clave.</p></div>
-          <form id="contentQuickForm" class="admin-form-grid clean-form">
+          <form id="contentQuickForm" novalidate class="admin-form-grid clean-form">
             <label>Hoja
               <select name="sheetName" required>
                 <option value="Anuncios">Anuncios</option>
@@ -241,7 +241,7 @@
             <label>Orden<input name="orden" type="number" min="0" placeholder="1" /></label>
             <label>Activo<select name="activo"><option value="TRUE">TRUE</option><option value="FALSE">FALSE</option></select></label>
             <label>Destacado<select name="destacado"><option value="FALSE">FALSE</option><option value="TRUE">TRUE</option></select></label>
-            <button class="btn btn-primary full-row" type="submit">Guardar registro avanzado</button>
+            <button class="btn btn-primary full-row" type="button" data-admin-save="contentQuickForm">Guardar registro avanzado</button>
           </form>
         </div>
 
@@ -260,13 +260,13 @@
         </div>
         <div class="admin-card">
           <h3>Acciones rápidas</h3>
-          <form id="userActionForm" class="admin-form-grid compact">
+          <form id="userActionForm" novalidate class="admin-form-grid compact">
             <label>ID del usuario<input name="user_id" required placeholder="USR-..." /></label>
             <label>Rol<select name="role"><option value="user">user</option><option value="moderator">moderator</option><option value="admin">admin</option><option value="superadmin">superadmin</option></select></label>
             <label>Motivo de bloqueo<textarea name="reason" rows="2" placeholder="Ejemplo: spam, comportamiento indebido..."></textarea></label>
-            <button class="btn btn-primary" name="actionType" value="setRole" type="submit">Cambiar rol</button>
-            <button class="btn btn-red" name="actionType" value="block" type="submit">Bloquear</button>
-            <button class="btn btn-outline" name="actionType" value="unblock" type="submit">Desbloquear</button>
+            <button class="btn btn-primary" name="actionType" value="setRole" type="button" data-admin-save="userActionForm">Cambiar rol</button>
+            <button class="btn btn-red" name="actionType" value="block" type="button" data-admin-save="userActionForm">Bloquear</button>
+            <button class="btn btn-outline" name="actionType" value="unblock" type="button" data-admin-save="userActionForm">Desbloquear</button>
           </form>
         </div>
         <div class="admin-card"><h3>Lista de usuarios</h3><div id="tableUsers" class="admin-table-wrap"></div></div>
@@ -279,14 +279,14 @@
         </div>
         <div class="admin-card">
           <h3>Ajustes de moderación</h3>
-          <form id="forumSettingsForm" class="admin-form-grid forum-settings">
+          <form id="forumSettingsForm" novalidate class="admin-form-grid forum-settings">
             <label>Comentarios
               <select name="comments_require_approval" id="commentsRequireApproval">
                 <option value="FALSE">Aprobar automáticamente si no tiene spam</option>
                 <option value="TRUE">Todos los comentarios requieren aprobación</option>
               </select>
             </label>
-            <button class="btn btn-primary" type="submit">Guardar ajuste</button>
+            <button class="btn btn-primary" type="button" data-admin-save="forumSettingsForm">Guardar ajuste</button>
             <p class="admin-setting-help">Si activas esta opción, todo comentario nuevo quedará en estado <strong>pending</strong> hasta que un moderador, admin o superadmin lo apruebe.</p>
           </form>
         </div>
@@ -318,6 +318,6 @@
 
   <script src="./js/config.js"></script>
   <script src="./js/ui.js"></script>
-  <script src="./js/admin.js"></script>
+  <script src="./js/admin.js?v=15"></script>
 </body>
 </html>
