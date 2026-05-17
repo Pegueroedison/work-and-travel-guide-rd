@@ -294,12 +294,3 @@
 
 button[data-admin-save] { position: relative; }
 button[data-admin-save]:disabled { opacity: .68; cursor: wait; }
-
-
-/* v32: uploader simplificado sin campo de URL manual */
-.admin-image-uploader {
-  grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) !important;
-}
-.admin-image-uploader .admin-note {
-  grid-column: 1 / -1;
-}

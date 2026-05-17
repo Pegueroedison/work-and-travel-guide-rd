@@ -1,4 +1,4 @@
-/* === PANEL ADMIN WEB — GitHub Pages + Web Apps — v32 === */
+/* === PANEL ADMIN WEB — GitHub Pages + Web Apps — v33 === */
 (function(){
   const CONFIG = window.WT_CONFIG || {};
   const $ = (s,r=document)=>r.querySelector(s);
@@ -61,9 +61,6 @@
     const finalPayload = { ...payload };
     if(baseUrl === CONFIG.CONTENT_API_URL && String(finalPayload.action || '').toLowerCase().startsWith('admin')) {
       finalPayload.usersApiUrl = CONFIG.USERS_API_URL || '';
-      finalPayload.adminEmail = state.user?.email || state.user?.correo || '';
-      finalPayload.adminName = state.user?.name || state.user?.nombre || '';
-      finalPayload.adminRole = state.user?.role || '';
     }
     const t = withTimeout(String(finalPayload.action) === 'adminUploadImage' ? 60000 : 30000, label);
     try{
@@ -242,7 +239,7 @@
       need('titulo', 'El título del anuncio');
       need('descripcion', 'La descripción del anuncio');
       if(!file && !hasAnyValue(row, ['enlace','imagen_url','image_file_id'])){
-        throw new Error('El anuncio necesita un enlace destino o una imagen.');
+        throw new Error('El anuncio necesita un enlace o una imagen.');
       }
     }
 
@@ -553,7 +550,7 @@
     requireValue(form, row.posicion, 'posicion', 'Debes seleccionar la posición del anuncio.');
     requireValue(form, row.titulo, 'titulo', 'El título del anuncio es obligatorio.');
     requireValue(form, row.descripcion, 'descripcion', 'La descripción del anuncio es obligatoria.');
-    requireLinkOrImage(form, row, 'El anuncio necesita un enlace destino o una imagen.');
+    requireLinkOrImage(form, row, 'El anuncio necesita un enlace o una imagen.');
     await saveContentRow('Anuncios', row, form);
   }
 
