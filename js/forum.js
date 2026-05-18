@@ -29,6 +29,17 @@
     }).format(new Date(value));
   }
 
+  function statusLabel(status){
+    const s = String(status || '').toLowerCase();
+    const map = {
+      pending: 'Pendiente de aprobación',
+      approved: 'Aprobado',
+      rejected: 'Rechazado',
+      deleted: 'Eliminado'
+    };
+    return map[s] || status || '';
+  }
+
   function photo(profile){
     return profile?.photo_url || './images/logo.png';
   }
@@ -150,7 +161,7 @@
       <div class="post-stats">
         <button type="button" class="like-btn ${liked ? 'liked' : ''}" data-id="${escapeHtml(post.id)}">❤️ <span>${Number(post.likes_count || 0)}</span></button>
         <span>💬 ${Number(post.comments_count || 0)} respuestas</span>
-        ${post.status !== 'approved' ? `<span class="status-pill pending">${escapeHtml(post.status)}</span>` : ''}
+        ${post.status !== 'approved' ? `<span class="status-pill pending">${escapeHtml(statusLabel(post.status))}</span>` : ''}
       </div>
       <div class="post-actions">
         <a class="btn btn-primary btn-sm" href="./post.html?id=${encodeURIComponent(post.id)}">Ver respuestas</a>
@@ -181,6 +192,19 @@
       .eq('target_type','post')
       .in('post_id', ids);
     return new Set((data || []).map(x => x.post_id));
+  }
+
+  async function loadVisibleCommentCounts(ids){
+    const counts = new Map();
+    if(!ids.length) return counts;
+    const { data, error } = await db()
+      .from('forum_comments')
+      .select('post_id,status')
+      .in('post_id', ids)
+      .neq('status', 'deleted');
+    if(error) return counts;
+    (data || []).forEach(row => counts.set(row.post_id, (counts.get(row.post_id) || 0) + 1));
+    return counts;
   }
 
   async function loadPosts(reset=false){
@@ -214,8 +238,10 @@
       return;
     }
 
-    const liked = await loadLikedPostIds((data || []).map(p => p.id));
-    const rows = (data || []).map(p => ({...p, liked_by_me: liked.has(p.id)}));
+    const ids = (data || []).map(p => p.id);
+    const liked = await loadLikedPostIds(ids);
+    const visibleCounts = await loadVisibleCommentCounts(ids);
+    const rows = (data || []).map(p => ({...p, liked_by_me: liked.has(p.id), comments_count: visibleCounts.has(p.id) ? visibleCounts.get(p.id) : p.comments_count}));
 
     state.posts = reset ? rows : state.posts.concat(rows);
     state.offset = state.posts.length;
