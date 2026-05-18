@@ -23,6 +23,9 @@
   }
 
   async function loadPublicContent() {
+    if (window.WTSupabase && window.WTSupabase.ready && window.WTSupabase.ready()) {
+      return await window.WTSupabase.loadPublicContent();
+    }
     if (!CONFIG.CONTENT_API_URL) throw new Error('Falta CONTENT_API_URL en js/config.js.');
     const url = new URL(CONFIG.CONTENT_API_URL);
     url.searchParams.set('action', 'public');

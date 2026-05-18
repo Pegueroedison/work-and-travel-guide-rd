@@ -459,7 +459,15 @@ if ('serviceWorker' in navigator) {
     return data;
   }
 
-  function adHtml(ad, mode = 'banner') {
+  
+  async function loadPublicDataSmart() {
+    if (window.WTSupabase && window.WTSupabase.ready && window.WTSupabase.ready()) {
+      return await window.WTSupabase.loadPublicContent();
+    }
+    return await loadPublicDataFromSheets();
+  }
+
+function adHtml(ad, mode = 'banner') {
     if (!ad || !isActive(ad.active ?? ad.activo)) return '';
     const title = escapeHtml(ad.title || ad.titulo || 'Anuncio');
     const desc = escapeHtml(ad.description || ad.descripcion || '');
@@ -914,7 +922,7 @@ if ('serviceWorker' in navigator) {
   $('#groupSearch')?.addEventListener('input', paintGroupCards);
   $('#groupFilter')?.addEventListener('change', paintGroupCards);
 
-  loadDynamicContent();
+  if (!(window.WTDB && window.WTDB.enabled && window.WTDB.enabled())) loadDynamicContent();
   loadForum();
   updateAuthUi();
   document.addEventListener('click', event => {

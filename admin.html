@@ -7,8 +7,8 @@
   <title>Panel Admin | Work and Travel Guide RD</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./images/logo.png" type="image/png" />
-  <link rel="stylesheet" href="./css/style.css?v=44" />
-  <link rel="stylesheet" href="./css/admin.css?v=45?v=27" />
+  <link rel="stylesheet" href="./css/style.css?v=47" />
+  <link rel="stylesheet" href="./css/admin.css?v=47?v=27" />
 </head>
 <body>
   <div id="progressBar" class="progress-bar"></div>
@@ -152,6 +152,12 @@
                   <option value="right">Derecha</option>
                 </select>
               </label>
+              <label>Ajuste de imagen
+                <select name="image_fit">
+                  <option value="cover">Cubrir tarjeta</option>
+                  <option value="contain">Mostrar completa</option>
+                </select>
+              </label>
               <div class="admin-image-preview" id="adImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
               <p class="admin-note small">Máximo 3 MB. Formatos: JPG, JPEG, PNG o WEBP.</p>
             </div>
@@ -200,6 +206,12 @@
                   <option value="bottom">Abajo</option>
                   <option value="left">Izquierda</option>
                   <option value="right">Derecha</option>
+                </select>
+              </label>
+              <label>Ajuste de imagen
+                <select name="image_fit">
+                  <option value="cover">Cubrir tarjeta</option>
+                  <option value="contain">Mostrar completa</option>
                 </select>
               </label>
               <div class="admin-image-preview" id="courseImagePreview" hidden><img src="" alt="Vista previa"><button type="button" class="clear-image-btn">Quitar imagen</button></div>
@@ -393,10 +405,15 @@
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./js/supabase-config.js?v=47"></script>
+  <script src="./js/supabase-client.js?v=47"></script>
+  <script src="./js/content.js?v=47"></script>
   <script src="./js/config.js"></script>
   <script src="./js/ui.js"></script>
-  <script src="./js/admin.js?v=45"></script>
-  <script src="./js/admin-content-direct.js?v=45"></script>
-  <script src="./js/admin-content-editor.js?v=45"></script>
+  <script src="./js/admin.js?v=47"></script>
+  <script src="./js/admin-content.js?v=47"></script>
+  
+  
 </body>
 </html>

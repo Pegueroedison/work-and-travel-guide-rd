@@ -11,3 +11,10 @@ window.WT_CONFIG = {
   DEFAULT_INSTAGRAM_URL: 'https://www.instagram.com/',
   MAX_PROFILE_PHOTO_MB: 2
 };
+
+
+/* === Data provider opcional ===
+   sheets = usa Web Apps actuales.
+   supabase = usa Supabase cuando WT_SUPABASE_CONFIG.USE_SUPABASE sea true.
+*/
+window.WT_DATA_PROVIDER = "sheets";
