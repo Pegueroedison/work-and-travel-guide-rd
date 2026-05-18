@@ -44,13 +44,24 @@
     const logged = !!state.user;
     $('#forumUserPhoto') && ($('#forumUserPhoto').src = logged ? photo(state.profile) : './images/logo.png');
     $('#forumUserText') && ($('#forumUserText').textContent = logged ? `${state.profile?.full_name || state.user.email} (${state.profile?.role || 'user'})` : 'No has iniciado sesión en Supabase.');
-    $('#forumLoginBtn') && ($('#forumLoginBtn').style.display = logged ? 'none' : 'inline-flex');
-    $('#forumRegisterBtn') && ($('#forumRegisterBtn').style.display = logged ? 'none' : 'inline-flex');
-    $('#forumLogoutBtn') && ($('#forumLogoutBtn').style.display = logged ? 'inline-flex' : 'none');
     $('#forumProfileTop') && ($('#forumProfileTop').style.display = logged ? 'inline-flex' : 'none');
     $('#forumLoginTop') && ($('#forumLoginTop').style.display = logged ? 'none' : 'inline-flex');
     $('#forumRegisterTop') && ($('#forumRegisterTop').style.display = logged ? 'none' : 'inline-flex');
     $('#notifBell') && ($('#notifBell').style.display = logged ? 'inline-flex' : 'none');
+
+    const actions = $('.forum-entry-actions');
+    if(actions) {
+      if(logged) {
+        actions.innerHTML = `<button class="btn btn-outline" id="forumLogoutBtn" type="button">Cerrar sesión</button>`;
+      } else {
+        actions.innerHTML = `
+          <input class="forum-auth-input" id="forumAuthEmailTop" type="email" placeholder="Correo" value="edisonpeguero61@gmail.com" autocomplete="email">
+          <input class="forum-auth-input" id="forumAuthPasswordTop" type="password" placeholder="Contraseña Supabase" autocomplete="current-password">
+          <button class="btn btn-primary" type="button" id="forumSupabaseLoginTopBtn">Entrar Supabase</button>
+          <button class="btn btn-red" type="button" id="forumSupabaseRegisterTopBtn">Crear cuenta</button>
+        `;
+      }
+    }
 
     const box = $('#loginRequiredBox');
     if(box && !logged) {
@@ -58,14 +69,15 @@
         Puedes leer publicaciones públicas, pero para publicar, responder, dar like o reportar debes iniciar sesión en Supabase.
         <div class="forum-login-inline">
           <input id="forumAuthEmail" type="email" placeholder="Correo electrónico" value="edisonpeguero61@gmail.com">
-          <input id="forumAuthPassword" type="password" placeholder="Contraseña">
-          <button class="btn btn-primary" type="button" id="forumSupabaseLoginBtn">Entrar</button>
+          <input id="forumAuthPassword" type="password" placeholder="Contraseña Supabase">
+          <button class="btn btn-primary" type="button" id="forumSupabaseLoginBtn">Entrar Supabase</button>
           <button class="btn btn-outline" type="button" id="forumSupabaseRegisterBtn">Crear cuenta</button>
         </div>`;
     } else if(box) {
       box.innerHTML = `<strong>Sesión Supabase activa.</strong><br>Ya puedes publicar, responder, dar like y recibir notificaciones internas.`;
     }
   }
+
 
   function requireLogin(){
     if(state.user) return true;
@@ -91,8 +103,8 @@
   }
 
   async function signIn(){
-    const email = ($('#forumAuthEmail')?.value || '').trim();
-    const password = ($('#forumAuthPassword')?.value || '').trim();
+    const email = ($('#forumAuthEmail')?.value || $('#forumAuthEmailTop')?.value || '').trim();
+    const password = ($('#forumAuthPassword')?.value || $('#forumAuthPasswordTop')?.value || '').trim();
     if(!email || !password) return alert('Escribe correo y contraseña.');
     const { error } = await db().auth.signInWithPassword({ email, password });
     if(error) return alert(error.message);
@@ -102,8 +114,8 @@
   }
 
   async function signUp(){
-    const email = ($('#forumAuthEmail')?.value || '').trim();
-    const password = ($('#forumAuthPassword')?.value || '').trim();
+    const email = ($('#forumAuthEmail')?.value || $('#forumAuthEmailTop')?.value || '').trim();
+    const password = ($('#forumAuthPassword')?.value || $('#forumAuthPasswordTop')?.value || '').trim();
     if(!email || !password) return alert('Escribe correo y contraseña.');
     const { error } = await db().auth.signUp({
       email,
@@ -393,10 +405,24 @@
 
   document.addEventListener('click', async e => {
     try {
-      if(e.target?.id === 'forumLoginBtn' || e.target?.id === 'forumLoginTop') { showSupabaseLoginBox('login'); return; }
-      if(e.target?.id === 'forumRegisterBtn' || e.target?.id === 'forumRegisterTop') { showSupabaseLoginBox('register'); return; }
-      if(e.target?.id === 'forumSupabaseLoginBtn') await signIn();
-      if(e.target?.id === 'forumSupabaseRegisterBtn') await signUp();
+      const loginTrigger = e.target.closest && e.target.closest('#forumLoginBtn, #forumLoginTop');
+      const registerTrigger = e.target.closest && e.target.closest('#forumRegisterBtn, #forumRegisterTop');
+      if(loginTrigger) {
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+        showSupabaseLoginBox('login');
+        return;
+      }
+      if(registerTrigger) {
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+        showSupabaseLoginBox('register');
+        return;
+      }
+      if(e.target?.id === 'forumSupabaseLoginBtn' || e.target?.id === 'forumSupabaseLoginTopBtn') await signIn();
+      if(e.target?.id === 'forumSupabaseRegisterBtn' || e.target?.id === 'forumSupabaseRegisterTopBtn') await signUp();
       if(e.target?.id === 'forumLogoutBtn') await logout();
       if(e.target?.id === 'refreshForumBtn') await loadPosts(true);
       if(e.target?.id === 'loadMorePostsBtn') await loadPosts(false);
@@ -417,7 +443,7 @@
     } catch(err) {
       alert(err.message || String(err));
     }
-  });
+  }, true);
 
   document.addEventListener('submit', async e => {
     const form = e.target;

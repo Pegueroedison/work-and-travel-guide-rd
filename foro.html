@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./images/logo.png" type="image/png" />
   <link rel="stylesheet" href="./css/style.css?v=51" />
-  <link rel="stylesheet" href="./css/foro.css?v=52" />
+  <link rel="stylesheet" href="./css/foro.css?v=55" />
 </head>
 <body>
   <div id="progressBar" class="progress-bar"></div>
@@ -47,8 +47,8 @@
     <p class="hero-subtitle">Pregunta, responde y comparte experiencias con la comunidad Work and Travel RD.</p>
     <div class="hero-actions">
       <a class="hero-social-btn" href="./index.html#inicio">← Volver al inicio</a>
-      <a class="hero-social-btn is-instagram" href="./login.html?redirect=foro.html" id="forumLoginTop">👤 Iniciar sesión</a>
-      <a class="hero-social-btn" href="./registro.html?redirect=foro.html" id="forumRegisterTop">Crear cuenta</a>
+      <a class="hero-social-btn is-instagram" href="#supabase-login" id="forumLoginTop">👤 Iniciar sesión</a>
+      <a class="hero-social-btn" href="#supabase-login" id="forumRegisterTop">Crear cuenta</a>
       <a class="hero-social-btn" href="./perfil.html" id="forumProfileTop" style="display:none;">🪪 Mi perfil</a>
       <a class="hero-social-btn" href="./admin.html" id="forumAdminTop" style="display:none;">⚙️ Panel Admin</a>
       <button class="hero-social-btn notif-bell" id="notifBell" type="button" style="display:none;">🔔 <span id="notifCount"></span></button>
@@ -62,8 +62,8 @@
       <div class="forum-auth-bar">
         <div class="forum-auth-user"><img id="forumUserPhoto" src="./images/logo.png" alt="Usuario" /><span id="forumUserText">No has iniciado sesión.</span></div>
         <div class="forum-entry-actions">
-          <a href="./login.html?redirect=foro.html" class="btn btn-primary" id="forumLoginBtn">Iniciar sesión</a>
-          <a href="./registro.html?redirect=foro.html" class="btn btn-red" id="forumRegisterBtn">Crear cuenta</a>
+          <a href="#supabase-login" class="btn btn-primary" id="forumLoginBtn">Iniciar sesión</a>
+          <a href="#supabase-login" class="btn btn-red" id="forumRegisterBtn">Crear cuenta</a>
           <button class="btn btn-outline" id="forumLogoutBtn" type="button" style="display:none;">Cerrar sesión</button>
         </div>
       </div>
@@ -142,11 +142,11 @@
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./js/supabase-config.js?v=52"></script>
-  <script src="./js/supabase-client.js?v=52"></script>
+  <script src="./js/supabase-config.js?v=55"></script>
+  <script src="./js/supabase-client.js?v=55"></script>
   <script src="./js/config.js"></script>
   <script src="./js/ui.js"></script>
-  <script src="./js/forum.js?v=52"></script>
+  <script src="./js/forum.js?v=55"></script>
 
   <script>
     document.addEventListener('click', (e) => {
