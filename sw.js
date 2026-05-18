@@ -1,6 +1,6 @@
 /* === WORK AND TRAVEL GUIDE RD — SERVICE WORKER === */
 
-const CACHE_NAME = 'wt-guide-rd-v63';
+const CACHE_NAME = 'wt-guide-rd-v64';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -23,6 +23,7 @@ const ASSETS_TO_CACHE = [
   './css/auth.css',
   './css/admin.css',
   './js/config.js',
+  './js/auth-hybrid-bridge.js',
   './js/auth-global-supabase.js',
   './supabase/sql/006_admin_limpio_foro_perfiles_fix.sql',
   './supabase/sql/005_fase2_foro_delete_rejected_admin_auto_approve.sql',
