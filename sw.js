@@ -1,6 +1,6 @@
 /* === WORK AND TRAVEL GUIDE RD — SERVICE WORKER === */
 
-const CACHE_NAME = 'wt-guide-rd-v50';
+const CACHE_NAME = 'wt-guide-rd-v51';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -23,6 +23,9 @@ const ASSETS_TO_CACHE = [
   './css/auth.css',
   './css/admin.css',
   './js/config.js',
+  './supabase/sql/003_fase2_foro_schema.sql',
+  './js/admin-forum.js',
+  './js/forum.js',
   './js/admin-content.js',
   './js/courses.js',
   './js/content.js',
@@ -33,7 +36,7 @@ const ASSETS_TO_CACHE = [
   './js/ui.js',
   './js/main.js',
   './js/courses.js',
-  './js/foro.js',
+  './js/forum.js',
   './js/auth.js',
   './js/admin.js',
   './js/admin-content-direct.js',

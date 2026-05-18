@@ -332,3 +332,28 @@ body {
   margin: 0;
   text-align: center;
 }
+
+/* v51: supabase forum auth */
+.forum-login-inline {
+  display:grid;
+  grid-template-columns: minmax(180px,1fr) minmax(180px,1fr) auto auto;
+  gap:.6rem;
+  margin-top:.8rem;
+  align-items:center;
+}
+.forum-login-inline input {
+  width:100%;
+  padding:12px 14px;
+  border:1px solid #d9e2f3;
+  border-radius:14px;
+  font:inherit;
+}
+.post-actions {
+  display:flex;
+  gap:.6rem;
+  flex-wrap:wrap;
+  margin-top:.7rem;
+}
+@media (max-width: 760px) {
+  .forum-login-inline { grid-template-columns:1fr; }
+}
