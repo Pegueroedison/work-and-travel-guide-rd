@@ -530,3 +530,15 @@ body {
 }
 
 /* v62: JS syntax fixed so Supabase login can render */
+
+/* v63: distintivo bonito en comentarios/publicaciones */
+.post-author em {
+  display: none !important;
+}
+.forum-role-badge {
+  margin-left: 6px;
+  transform: translateY(-1px);
+}
+.post-author strong + .forum-role-badge {
+  display: inline-flex;
+}

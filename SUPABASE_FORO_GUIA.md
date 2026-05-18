@@ -152,3 +152,13 @@ Corrección:
 - Se reconstruyó `loadSinglePost()`.
 - `forum.js` pasa validación de sintaxis.
 - Al abrir `foro.html?v=62`, debe aparecer el login visible de Supabase.
+
+
+## v63 - Login global Supabase y UI mejorada
+
+Cambios:
+- El botón “Entrar / Registrarme” del inicio ahora usa Supabase Auth.
+- El modal de inicio crea sesión real de Supabase y no sesión vieja.
+- Se agregaron avisos emergentes bonitos tipo toast.
+- El distintivo de Super Admin/Admin se ve como badge visual.
+- El foro usa los mismos avisos bonitos.

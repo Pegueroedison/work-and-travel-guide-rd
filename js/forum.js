@@ -5,6 +5,35 @@
   const escapeHtml = (v='') => String(v ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
   const formDataObj = form => Object.fromEntries(new FormData(form).entries());
 
+  function roleLabel(role){
+    const r = String(role || '').toLowerCase();
+    if(r === 'superadmin') return 'Super Admin';
+    if(r === 'admin') return 'Admin';
+    return 'Usuario';
+  }
+
+  function roleBadge(role){
+    const r = String(role || 'user').toLowerCase();
+    return `<span class="forum-role-badge role-${escapeHtml(r)}">${escapeHtml(roleLabel(r))}</span>`;
+  }
+
+  function toast(type, title, message=''){
+    if(window.WTGlobalSupabaseAuth?.toast) return window.WTGlobalSupabaseAuth.toast(type, title, message);
+    let wrap = document.getElementById('wtToastWrap');
+    if(!wrap){
+      wrap = document.createElement('div');
+      wrap.id = 'wtToastWrap';
+      wrap.className = 'wt-toast-wrap';
+      document.body.appendChild(wrap);
+    }
+    const item = document.createElement('div');
+    item.className = `wt-toast ${type || 'info'}`;
+    item.innerHTML = `<strong>${escapeHtml(title)}</strong>${message ? `<span>${escapeHtml(message)}</span>` : ''}`;
+    wrap.appendChild(item);
+    setTimeout(() => item.classList.add('show'), 20);
+    setTimeout(() => { item.classList.remove('show'); setTimeout(() => item.remove(), 260); }, 3600);
+  }
+
   const state = {
     user:null,
     profile:null,
@@ -103,7 +132,7 @@
 
   function requireLogin(){
     if(state.user) return true;
-    alert('Debes iniciar sesión en Supabase para hacer esto.');
+    toast('info', 'Inicia sesión', 'Debes iniciar sesión en Supabase para hacer esto.');
     $('#forumAuthPassword')?.focus();
     return false;
   }
@@ -127,9 +156,9 @@
   async function signIn(){
     const email = ($('#forumAuthEmailTop')?.value || $('#forumAuthEmail')?.value || '').trim();
     const password = ($('#forumAuthPasswordTop')?.value || $('#forumAuthPassword')?.value || '').trim();
-    if(!email || !password) return alert('Escribe correo y contraseña.');
+    if(!email || !password) return toast('error', 'Faltan datos', 'Escribe correo y contraseña.');
     const { error } = await db().auth.signInWithPassword({ email, password });
-    if(error) return alert(error.message);
+    if(error) return toast('error', 'Error', error.message);
     await loadSession();
     await loadPosts(true);
     await loadNotifications();
@@ -138,14 +167,14 @@
   async function signUp(){
     const email = ($('#forumAuthEmailTop')?.value || $('#forumAuthEmail')?.value || '').trim();
     const password = ($('#forumAuthPasswordTop')?.value || $('#forumAuthPassword')?.value || '').trim();
-    if(!email || !password) return alert('Escribe correo y contraseña.');
+    if(!email || !password) return toast('error', 'Faltan datos', 'Escribe correo y contraseña.');
     const { error } = await db().auth.signUp({
       email,
       password,
       options:{ data:{ full_name: email.split('@')[0] } }
     });
-    if(error) return alert(error.message);
-    alert('Cuenta creada. Si Supabase requiere verificación, revisa tu correo. Si está confirmada, intenta iniciar sesión.');
+    if(error) return toast('error', 'Error', error.message);
+    toast('success', 'Cuenta creada', 'Si requiere verificación, revisa tu correo.');
   }
 
   async function logout(){
@@ -163,7 +192,7 @@
       <div class="post-author">
         <img src="${escapeHtml(photo(author))}" alt="${escapeHtml(author.full_name || 'Usuario')}" data-fallback>
         <span><strong>${escapeHtml(author.full_name || 'Usuario')}</strong>
-        ${author.role ? `<em>${escapeHtml(String(author.role).toUpperCase())}</em>` : ''}
+        ${author.role ? roleBadge(author.role) : ''}
         <small>${escapeHtml(post.category || 'Dudas J1')} · ${escapeHtml(rdDate(post.created_at))}</small></span>
       </div>
       <h3><a href="./post.html?id=${encodeURIComponent(post.id)}">${escapeHtml(post.title)}</a></h3>
@@ -319,7 +348,7 @@
 
     const { error } = await db().from('forum_posts').insert(payload);
     if(error) throw error;
-    alert('Publicación enviada. Si requiere moderación, aparecerá después de aprobarse.');
+    toast('success', 'Publicación enviada', 'Si requiere moderación, aparecerá después de aprobarse.');
     form.reset();
     toggleExtraFields();
     await loadPosts(true);
@@ -360,8 +389,8 @@
       reporter_id:state.user.id,
       reason: reason || 'Reporte desde foro'
     });
-    if(error) return alert(error.message);
-    alert('Reporte enviado a moderación.');
+    if(error) return toast('error', 'Error', error.message);
+    toast('success', 'Reporte enviado', 'Un moderador lo revisará.');
   }
 
   async function loadSinglePost(){
@@ -405,7 +434,7 @@
         <img src="${escapeHtml(photo(post.author))}" alt="Usuario" data-fallback>
         <span>
           <strong>${escapeHtml(post.author?.full_name || 'Usuario')}</strong>
-          ${post.author?.role ? `<em>${escapeHtml(String(post.author.role).toUpperCase())}</em>` : ''}
+          ${post.author?.role ? roleBadge(post.author.role) : ''}
           <small>${escapeHtml(post.category || 'Dudas J1')} · ${escapeHtml(rdDate(post.created_at))}</small>
         </span>
       </div>
@@ -454,7 +483,7 @@
 
     const { error } = await db().from('forum_comments').insert(payload);
     if(error) throw error;
-    alert('Respuesta enviada. Puede requerir aprobación.');
+    toast('success', 'Respuesta enviada', 'Puede requerir aprobación.');
     form.reset();
     await loadSinglePost();
   }
@@ -469,8 +498,8 @@
       reporter_id:state.user.id,
       reason: reason || 'Reporte de respuesta'
     });
-    if(error) return alert(error.message);
-    alert('Respuesta reportada.');
+    if(error) return toast('error', 'Error', error.message);
+    toast('success', 'Respuesta reportada');
   }
 
   async function loadNotifications(){
@@ -557,7 +586,7 @@
         await reportComment(c.dataset.commentId);
       }
     } catch(err) {
-      alert(err.message || String(err));
+      toast('error', 'Error', err.message || String(err));
     }
   }, true);
 
@@ -573,7 +602,7 @@
         await createComment(form);
       }
     } catch(err) {
-      alert(err.message || String(err));
+      toast('error', 'Error', err.message || String(err));
     }
   });
 
