@@ -74,6 +74,22 @@
     return false;
   }
 
+  function showSupabaseLoginBox(mode='login') {
+    updateAuthUI();
+    const box = $('#loginRequiredBox');
+    if(box) {
+      box.scrollIntoView({ behavior:'smooth', block:'center' });
+      setTimeout(() => {
+        if(mode === 'register') $('#forumSupabaseRegisterBtn')?.classList.add('pulse-once');
+        const email = $('#forumAuthEmail');
+        const pass = $('#forumAuthPassword');
+        if(email && !email.value) email.value = 'edisonpeguero61@gmail.com';
+        if(mode === 'login') pass?.focus();
+        else email?.focus();
+      }, 250);
+    }
+  }
+
   async function signIn(){
     const email = ($('#forumAuthEmail')?.value || '').trim();
     const password = ($('#forumAuthPassword')?.value || '').trim();
@@ -377,6 +393,8 @@
 
   document.addEventListener('click', async e => {
     try {
+      if(e.target?.id === 'forumLoginBtn' || e.target?.id === 'forumLoginTop') { showSupabaseLoginBox('login'); return; }
+      if(e.target?.id === 'forumRegisterBtn' || e.target?.id === 'forumRegisterTop') { showSupabaseLoginBox('register'); return; }
       if(e.target?.id === 'forumSupabaseLoginBtn') await signIn();
       if(e.target?.id === 'forumSupabaseRegisterBtn') await signUp();
       if(e.target?.id === 'forumLogoutBtn') await logout();
