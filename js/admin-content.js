@@ -21,11 +21,63 @@
     }
   }
 
+  function renderSupabaseAdminLogin(reason='') {
+    const wrap = $('#contentEditCards');
+    if(!wrap) return;
+    wrap.innerHTML = `
+      <div class="supabase-admin-login">
+        <h3>Conectar admin de Supabase</h3>
+        <p>${escapeHtml(reason || 'Para editar contenido creado necesitas una sesión real de Supabase.')}</p>
+        <label>Correo electrónico
+          <input id="supabaseAdminEmail" type="email" value="edisonpeguero61@gmail.com" autocomplete="email">
+        </label>
+        <label>Contraseña
+          <input id="supabaseAdminPassword" type="password" autocomplete="current-password">
+        </label>
+        <div class="mini-actions">
+          <button class="mini-btn approve" type="button" id="supabaseAdminLoginBtn">Iniciar sesión Supabase</button>
+          <button class="mini-btn" type="button" id="supabaseAdminWhoBtn">Ver estado</button>
+        </div>
+        <small>Esto es aparte del login viejo de Google Sheets. La migración limpia necesita Supabase Auth.</small>
+      </div>
+    `;
+  }
+
+  async function supabaseAdminLogin() {
+    try {
+      const email = ($('#supabaseAdminEmail')?.value || '').trim();
+      const password = ($('#supabaseAdminPassword')?.value || '').trim();
+      if(!email) throw new Error('Escribe el correo.');
+      if(!password) throw new Error('Escribe la contraseña.');
+      const { error } = await window.WTDB.client().auth.signInWithPassword({ email, password });
+      if(error) throw error;
+      msg('success','Sesión Supabase iniciada. Cargando contenido...');
+      await loadAdminContent();
+    } catch(err) {
+      msg('error', err.message || String(err));
+      renderSupabaseAdminLogin(err.message || String(err));
+    }
+  }
+
+  async function showSupabaseAdminStatus() {
+    try {
+      const user = await window.WTDB.getUser();
+      const profile = await window.WTDB.getProfile();
+      msg('info', user ? `Supabase conectado: ${user.email}. Rol: ${profile?.role || 'sin perfil'}. Estado: ${profile?.status || 'sin estado'}.` : 'No hay sesión activa de Supabase.');
+    } catch(err) {
+      msg('error', err.message || String(err));
+    }
+  }
+
   async function requireAdmin() {
     if(!window.WTDB || !window.WTDB.enabled()) throw new Error('Supabase no está activo.');
-    const ok = await window.WTDB.isAdmin();
-    if(!ok) throw new Error('Debes iniciar sesión como admin o superadmin.');
-    return await window.WTDB.getUser();
+    const user = await window.WTDB.getUser();
+    if(!user) throw new Error('Debes iniciar sesión en Supabase como admin o superadmin.');
+    const profile = await window.WTDB.getProfile();
+    if(!profile || !['admin','superadmin'].includes(profile.role) || profile.status !== 'active') {
+      throw new Error('Tu usuario de Supabase no tiene rol admin/superadmin. Ejecuta el SQL 002 con tu correo.');
+    }
+    return user;
   }
 
   function fdObj(form) {
@@ -307,8 +359,13 @@
 
       renderEditorCards();
     } catch(err) {
-      const box = $('#contentEditCards') || $('#tableAnuncios');
-      if(box) box.innerHTML = `<div class="empty-state">${escapeHtml(err.message || err)}</div>`;
+      const message = err.message || String(err);
+      if(message.includes('iniciar sesión') || message.includes('rol admin') || message.includes('superadmin')) {
+        renderSupabaseAdminLogin(message);
+      } else {
+        const box = $('#contentEditCards') || $('#tableAnuncios');
+        if(box) box.innerHTML = `<div class="empty-state">${escapeHtml(message)}</div>`;
+      }
     }
   }
 
@@ -470,6 +527,15 @@
   }
 
   document.addEventListener('click', event => {
+    if(event.target?.id === 'supabaseAdminLoginBtn') {
+      supabaseAdminLogin();
+      return;
+    }
+    if(event.target?.id === 'supabaseAdminWhoBtn') {
+      showSupabaseAdminStatus();
+      return;
+    }
+
     const edit = event.target.closest && event.target.closest('[data-edit-content]');
     if(edit) {
       const wrap = $('#contentEditCards');

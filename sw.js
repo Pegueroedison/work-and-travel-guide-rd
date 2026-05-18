@@ -1,6 +1,6 @@
 /* === WORK AND TRAVEL GUIDE RD — SERVICE WORKER === */
 
-const CACHE_NAME = 'wt-guide-rd-v47';
+const CACHE_NAME = 'wt-guide-rd-v48';
 
 const ASSETS_TO_CACHE = [
   './',

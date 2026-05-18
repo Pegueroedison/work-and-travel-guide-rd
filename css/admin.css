@@ -528,3 +528,40 @@ button[data-admin-save]:disabled { opacity: .68; cursor: wait; }
 .content-edit-body p { color:#3a4a6b; font-size:.86rem; line-height:1.4; overflow-wrap:anywhere; }
 .content-edit-warning { display:block; color:#9a3412; font-weight:900; margin:.35rem 0; }
 @media (max-width:900px){ .content-edit-head{flex-direction:column;} .content-edit-filters{grid-template-columns:1fr;width:100%;} .content-edit-item{grid-template-columns:72px 1fr;} .content-edit-preview{width:72px;height:72px;} }
+
+/* v48: supabase admin login box */
+.supabase-admin-login {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 1rem;
+  border: 1px dashed #6b7fa3;
+  border-radius: 18px;
+  background: #f8fbff;
+}
+.supabase-admin-login h3 {
+  color: var(--navy);
+  margin-bottom: .4rem;
+}
+.supabase-admin-login p {
+  color: var(--text-mid);
+  margin-bottom: .8rem;
+}
+.supabase-admin-login label {
+  display: block;
+  font-weight: 900;
+  color: var(--navy);
+  margin: .7rem 0;
+}
+.supabase-admin-login input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d9e2f3;
+  border-radius: 14px;
+  margin-top: .3rem;
+  font: inherit;
+}
+.supabase-admin-login small {
+  display: block;
+  color: #6b7fa3;
+  margin-top: .7rem;
+}
