@@ -57,8 +57,12 @@
 
   function updateAuthUI(){
     const logged = !!state.user;
+
     $('#forumUserPhoto') && ($('#forumUserPhoto').src = logged ? photo(state.profile) : './images/logo.png');
-    $('#forumUserText') && ($('#forumUserText').textContent = logged ? `${state.profile?.full_name || state.user.email} (${state.profile?.role || 'user'})` : 'No has iniciado sesión en Supabase.');
+    $('#forumUserText') && ($('#forumUserText').textContent = logged
+      ? `${state.profile?.full_name || state.user.email} (${String(state.profile?.role || 'user').toUpperCase()})`
+      : 'No has iniciado sesión en Supabase.');
+
     $('#forumProfileTop') && ($('#forumProfileTop').style.display = logged ? 'inline-flex' : 'none');
     $('#forumLoginTop') && ($('#forumLoginTop').style.display = logged ? 'none' : 'inline-flex');
     $('#forumRegisterTop') && ($('#forumRegisterTop').style.display = logged ? 'none' : 'inline-flex');
@@ -215,10 +219,16 @@
     const ids = [...new Set((authorIds || []).filter(Boolean))];
     const map = new Map();
     if(!ids.length) return map;
-    const { data } = await db()
+    const { data, error } = await db()
       .from('forum_public_profiles')
       .select('id,full_name,role,photo_url')
       .in('id', ids);
+
+    if(error) {
+      console.warn('Falta la vista forum_public_profiles. Ejecuta el SQL 006.', error);
+      return map;
+    }
+
     (data || []).forEach(p => map.set(p.id, p));
     return map;
   }
@@ -257,7 +267,7 @@
 
     const { data, error } = await query;
     if(error) {
-      root.innerHTML = `<div class="empty-state">${escapeHtml(error.message)}</div>`;
+      root.innerHTML = `<div class="empty-state">Error cargando foro: ${escapeHtml(error.message)}. Si acabas de actualizar, ejecuta los SQL 003, 004, 005 y 006.</div>`;
       return;
     }
 

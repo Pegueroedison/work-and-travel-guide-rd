@@ -473,3 +473,28 @@ body {
 .mini-btn.delete {
   font-weight: 900;
 }
+
+/* v60: login Supabase visible restaurado */
+.forum-entry-actions {
+  display:flex;
+  gap:.6rem;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:flex-end;
+}
+.forum-auth-input {
+  min-width: 180px;
+  padding: 11px 13px;
+  border: 1px solid #d9e2f3;
+  border-radius: 999px;
+  font: inherit;
+}
+@media (max-width: 900px) {
+  .forum-entry-actions {
+    justify-content: stretch;
+  }
+  .forum-auth-input,
+  .forum-entry-actions .btn {
+    width: 100%;
+  }
+}
