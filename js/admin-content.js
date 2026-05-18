@@ -577,6 +577,33 @@
     }
   });
 
+
+  // v49: Captura los botones de Contenido antes que el código legacy.
+  // Esto evita que el anuncio se guarde en la App Web vieja en vez de Supabase.
+  document.addEventListener('click', event => {
+    const btn = event.target.closest && event.target.closest('[data-admin-save]');
+    if(!btn) return;
+    const formId = btn.dataset.adminSave || btn.closest('form')?.id || '';
+    if(!['adSimpleForm','serviceSimpleForm','courseSimpleForm','instagramSimpleForm','whatsappSimpleForm'].includes(formId)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if(event.stopImmediatePropagation) event.stopImmediatePropagation();
+    saveForm(formId, btn);
+    return false;
+  }, true);
+
+  document.addEventListener('submit', event => {
+    const form = event.target;
+    if(!form || !['adSimpleForm','serviceSimpleForm','courseSimpleForm','instagramSimpleForm','whatsappSimpleForm'].includes(form.id)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if(event.stopImmediatePropagation) event.stopImmediatePropagation();
+    const btn = event.submitter || form.querySelector('[data-admin-save]');
+    saveForm(form.id, btn);
+    return false;
+  }, true);
+
+
   window.WTAdminContentClean = {
     loadAdminContent,
     saveForm
