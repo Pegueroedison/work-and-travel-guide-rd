@@ -498,3 +498,35 @@ body {
     width: 100%;
   }
 }
+
+/* v61: botones viejos sustituidos por login Supabase visible */
+.forum-entry-actions {
+  display:flex !important;
+  gap:.6rem;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:flex-end;
+}
+.forum-auth-input {
+  min-width: 190px;
+  padding: 12px 14px;
+  border: 1px solid #d9e2f3;
+  border-radius: 999px;
+  font: inherit;
+  background: #fff;
+}
+.forum-auth-bar[data-supabase-ready="true"] #forumLoginBtn,
+.forum-auth-bar[data-supabase-ready="true"] #forumRegisterBtn {
+  display: none !important;
+}
+@media (max-width: 900px) {
+  .forum-entry-actions {
+    justify-content: stretch;
+  }
+  .forum-auth-input,
+  .forum-entry-actions .btn {
+    width: 100%;
+  }
+}
+
+/* v62: JS syntax fixed so Supabase login can render */

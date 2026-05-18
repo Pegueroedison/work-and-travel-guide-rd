@@ -58,6 +58,9 @@
   function updateAuthUI(){
     const logged = !!state.user;
 
+    const authBar = document.querySelector('.forum-auth-bar');
+    if(authBar) authBar.dataset.supabaseReady = 'true';
+
     $('#forumUserPhoto') && ($('#forumUserPhoto').src = logged ? photo(state.profile) : './images/logo.png');
     $('#forumUserText') && ($('#forumUserText').textContent = logged
       ? `${state.profile?.full_name || state.user.email} (${String(state.profile?.role || 'user').toUpperCase()})`
@@ -122,8 +125,8 @@
   }
 
   async function signIn(){
-    const email = ($('#forumAuthEmail')?.value || $('#forumAuthEmailTop')?.value || '').trim();
-    const password = ($('#forumAuthPassword')?.value || $('#forumAuthPasswordTop')?.value || '').trim();
+    const email = ($('#forumAuthEmailTop')?.value || $('#forumAuthEmail')?.value || '').trim();
+    const password = ($('#forumAuthPasswordTop')?.value || $('#forumAuthPassword')?.value || '').trim();
     if(!email || !password) return alert('Escribe correo y contraseña.');
     const { error } = await db().auth.signInWithPassword({ email, password });
     if(error) return alert(error.message);
@@ -133,8 +136,8 @@
   }
 
   async function signUp(){
-    const email = ($('#forumAuthEmail')?.value || $('#forumAuthEmailTop')?.value || '').trim();
-    const password = ($('#forumAuthPassword')?.value || $('#forumAuthPasswordTop')?.value || '').trim();
+    const email = ($('#forumAuthEmailTop')?.value || $('#forumAuthEmail')?.value || '').trim();
+    const password = ($('#forumAuthPasswordTop')?.value || $('#forumAuthPassword')?.value || '').trim();
     if(!email || !password) return alert('Escribe correo y contraseña.');
     const { error } = await db().auth.signUp({
       email,
@@ -370,24 +373,26 @@
       return;
     }
 
-    const { data: post, error } = await db().from('forum_posts')
+    const { data: postRaw, error } = await db().from('forum_posts')
       .select('*')
       .eq('id', id)
       .single();
 
     if(error) {
-      root.innerHTML = `<div class="empty-state">${escapeHtml(error.message)}</div>`;
+      root.innerHTML = `<div class="empty-state">Error cargando publicación: ${escapeHtml(error.message)}</div>`;
       return;
     }
 
     const liked = await loadLikedPostIds([id]);
-    const { data: comments, error: cErr } = await db().from('forum_comments')
-      .select('*, author:user_profiles!forum_comments_author_id_fkey(full_name,email,role,photo_url)')
+
+    const { data: commentsRaw, error: cErr } = await db().from('forum_comments')
+      .select('*')
       .eq('post_id', id)
+      .neq('status', 'deleted')
       .order('created_at', { ascending:true });
 
     if(cErr) {
-      root.innerHTML = `<div class="empty-state">${escapeHtml(cErr.message)}</div>`;
+      root.innerHTML = `<div class="empty-state">Error cargando respuestas: ${escapeHtml(cErr.message)}</div>`;
       return;
     }
 
@@ -396,17 +401,32 @@
     const comments = attachAuthors(commentsRaw || [], profileMap);
 
     root.innerHTML = `<article class="forum-post post-detail" data-post-id="${escapeHtml(post.id)}">
-      <div class="post-author"><img src="${escapeHtml(photo(post.author))}" alt="Usuario" data-fallback><span><strong>${escapeHtml(post.author?.full_name || 'Usuario')}</strong><small>${escapeHtml(post.category || 'Dudas J1')} · ${escapeHtml(rdDate(post.created_at))}</small></span></div>
+      <div class="post-author">
+        <img src="${escapeHtml(photo(post.author))}" alt="Usuario" data-fallback>
+        <span>
+          <strong>${escapeHtml(post.author?.full_name || 'Usuario')}</strong>
+          ${post.author?.role ? `<em>${escapeHtml(String(post.author.role).toUpperCase())}</em>` : ''}
+          <small>${escapeHtml(post.category || 'Dudas J1')} · ${escapeHtml(rdDate(post.created_at))}</small>
+        </span>
+      </div>
       <h2>${escapeHtml(post.title)}</h2>
       ${metaExtras(post)}
       <p>${escapeHtml(post.body || '')}</p>
-      <div class="post-stats"><button type="button" class="like-btn ${liked.has(post.id) ? 'liked' : ''}" data-id="${escapeHtml(post.id)}">❤️ <span>${Number(post.likes_count||0)}</span></button><span>💬 ${Number(post.comments_count||0)} respuestas</span></div>
+      <div class="post-stats">
+        <button type="button" class="like-btn ${liked.has(post.id) ? 'liked' : ''}" data-id="${escapeHtml(post.id)}">❤️ <span>${Number(post.likes_count||0)}</span></button>
+        <span>💬 ${Number(post.comments_count||0)} respuestas</span>
+        ${post.status !== 'approved' ? `<span class="status-pill pending">${escapeHtml(statusLabel(post.status))}</span>` : ''}
+      </div>
       <button type="button" class="report-btn">Reportar publicación</button>
     </article>
-    <section class="forum-feed comments-section"><h3>Respuestas</h3><div id="postComments">${comments?.length ? comments.map(renderComment).join('') : '<div class="empty-state">Todavía no hay respuestas.</div>'}</div></section>`;
+    <section class="forum-feed comments-section">
+      <h3>Respuestas</h3>
+      <div id="postComments">${comments?.length ? comments.map(renderComment).join('') : '<div class="empty-state">Todavía no hay respuestas.</div>'}</div>
+    </section>`;
 
     root.querySelectorAll('img[data-fallback]').forEach(img => { img.onerror = () => { img.src = './images/logo.png'; }; });
   }
+
 
   function renderComment(c){
     const a = c.author || {};
@@ -484,22 +504,41 @@
     try {
       const loginTrigger = e.target.closest && e.target.closest('#forumLoginBtn, #forumLoginTop');
       const registerTrigger = e.target.closest && e.target.closest('#forumRegisterBtn, #forumRegisterTop');
+
       if(loginTrigger) {
         e.preventDefault();
         e.stopPropagation();
         if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-        showSupabaseLoginBox('login');
-        return;
+        updateAuthUI();
+        $('#forumAuthPasswordTop')?.focus();
+        return false;
       }
+
       if(registerTrigger) {
         e.preventDefault();
         e.stopPropagation();
         if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-        showSupabaseLoginBox('register');
-        return;
+        updateAuthUI();
+        $('#forumAuthEmailTop')?.focus();
+        return false;
       }
-      if(e.target?.id === 'forumSupabaseLoginBtn' || e.target?.id === 'forumSupabaseLoginTopBtn') await signIn();
-      if(e.target?.id === 'forumSupabaseRegisterBtn' || e.target?.id === 'forumSupabaseRegisterTopBtn') await signUp();
+
+      if(e.target?.id === 'forumSupabaseLoginBtn' || e.target?.id === 'forumSupabaseLoginTopBtn') {
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+        await signIn();
+        return false;
+      }
+
+      if(e.target?.id === 'forumSupabaseRegisterBtn' || e.target?.id === 'forumSupabaseRegisterTopBtn') {
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+        await signUp();
+        return false;
+      }
+
       if(e.target?.id === 'forumLogoutBtn') await logout();
       if(e.target?.id === 'refreshForumBtn') await loadPosts(true);
       if(e.target?.id === 'loadMorePostsBtn') await loadPosts(false);
@@ -551,16 +590,32 @@
   });
 
   async function init(){
-    if(!window.WTDB?.enabled()) {
-      const root = $('#forumPosts') || $('#singlePost');
-      if(root) root.innerHTML = '<div class="empty-state">Supabase no está activo.</div>';
-      return;
+    const root = $('#forumPosts') || $('#singlePost');
+
+    window.__forumInitWatchdog = setTimeout(() => {
+      const feed = $('#forumPosts');
+      if(feed && /Cargando foro/i.test(feed.textContent || '')) {
+        feed.innerHTML = '<div class="empty-state">El foro tardó demasiado en cargar. Revisa que hayas subido js/forum.js?v=61 y ejecutado los SQL 003, 004, 005 y 006 en Supabase.</div>';
+      }
+    }, 9000);
+
+    try {
+      if(!window.WTDB?.enabled()) {
+        if(root) root.innerHTML = '<div class="empty-state">Supabase no está activo. Revisa js/supabase-config.js.</div>';
+        return;
+      }
+
+      await loadSession();
+      toggleExtraFields();
+      await loadNotifications();
+      await loadPosts(true);
+      await loadSinglePost();
+    } catch(err) {
+      if(root) root.innerHTML = `<div class="empty-state">Error cargando foro: ${escapeHtml(err.message || err)}. Revisa SQL 003, 004, 005 y 006.</div>`;
+      console.error('Forum init error:', err);
+    } finally {
+      clearTimeout(window.__forumInitWatchdog);
     }
-    await loadSession();
-    toggleExtraFields();
-    await loadNotifications();
-    await loadPosts(true);
-    await loadSinglePost();
   }
 
   init();
