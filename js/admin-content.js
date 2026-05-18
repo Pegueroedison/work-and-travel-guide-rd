@@ -165,6 +165,22 @@
     });
   }
 
+  function setExistingImage(form, url='', path='') {
+    form.dataset.existingImageUrl = url || '';
+    form.dataset.existingImagePath = path || '';
+  }
+
+  function getExistingImage(form) {
+    return {
+      url: form.dataset.existingImageUrl || '',
+      path: form.dataset.existingImagePath || ''
+    };
+  }
+
+  function resetImageState(form) {
+    setExistingImage(form, '', '');
+  }
+
   async function saveAnnouncement(form) {
     const user = await requireAdmin();
     const fd = fdObj(form);
@@ -183,8 +199,8 @@
       position: fd.posicion,
       title: fd.titulo,
       description: fd.descripcion,
-      image_url: image.url || fd.imagen_url || null,
-      image_path: image.path || null,
+      image_url: image.url || getExistingImage(form).url || fd.imagen_url || null,
+      image_path: image.path || getExistingImage(form).path || null,
       image_position: fd.image_position || 'center',
       image_fit: fd.image_fit || 'cover',
       link_url: fd.enlace || null,
@@ -214,8 +230,8 @@
       name: fd.nombre,
       description: fd.descripcion,
       icon: fd.icono || '🧰',
-      image_url: image.url || null,
-      image_path: image.path || null,
+      image_url: image.url || getExistingImage(form).url || null,
+      image_path: image.path || getExistingImage(form).path || null,
       image_position: fd.image_position || 'center',
       image_fit: fd.image_fit || 'cover',
       link_url: fd.enlace || null,
@@ -244,8 +260,8 @@
       title: fd.titulo,
       description: fd.descripcion,
       price: fd.precio || '',
-      image_url: image.url || null,
-      image_path: image.path || null,
+      image_url: image.url || getExistingImage(form).url || null,
+      image_path: image.path || getExistingImage(form).path || null,
       image_position: fd.image_position || 'center',
       image_fit: fd.image_fit || 'cover',
       link_url: fd.enlace || './foro.html',
@@ -322,6 +338,7 @@
       msg('success', 'Guardado correctamente en Supabase.');
       form.reset();
       clearPreview(form);
+      resetImageState(form);
       await loadAdminContent();
     } catch(err) {
       msg('error', err.message || String(err));
@@ -498,6 +515,7 @@
     });
 
     const preview = form.querySelector('.admin-image-preview');
+    setExistingImage(form, r.image_url || '', r.image_path || '');
     if(preview) {
       const img = preview.querySelector('img');
       if(r.image_url && img) {
@@ -578,7 +596,7 @@
   });
 
 
-  // v49: Captura los botones de Contenido antes que el código legacy.
+  // v50: Captura los botones de Contenido antes que el código legacy.
   // Esto evita que el anuncio se guarde en la App Web vieja en vez de Supabase.
   document.addEventListener('click', event => {
     const btn = event.target.closest && event.target.closest('[data-admin-save]');
