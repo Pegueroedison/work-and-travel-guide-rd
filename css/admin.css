@@ -565,3 +565,10 @@ button[data-admin-save]:disabled { opacity: .68; cursor: wait; }
   color: #6b7fa3;
   margin-top: .7rem;
 }
+
+/* v59: panel limpio sin tablas legacy */
+.admin-clean-note {
+  background: #f8fbff;
+  border: 1px dashed #6b7fa3;
+  color: #0d1b3e;
+}

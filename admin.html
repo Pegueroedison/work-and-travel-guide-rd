@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" href="./images/logo.png" type="image/png" />
   <link rel="stylesheet" href="./css/style.css?v=47" />
-  <link rel="stylesheet" href="./css/admin.css?v=50" />
+  <link rel="stylesheet" href="./css/admin.css?v=59" />
 </head>
 <body>
   <div id="progressBar" class="progress-bar"></div>
@@ -345,7 +345,7 @@
                 <option value="TRUE">Todo requiere aprobación</option>
               </select>
             </label>
-            <button onclick="window.WTAdminSave && window.WTAdminSave('forumSettingsForm', this, event); return false;" class="btn btn-primary" type="button" data-admin-save="forumSettingsForm">Guardar ajuste</button>
+            <button class="btn btn-primary" type="button" id="saveForumSettingsBtn">Guardar ajuste</button>
             <p class="admin-setting-help">Si activas esta opción, toda publicación y todo comentario nuevo quedará en estado <strong>pending</strong> hasta que un moderador, admin o superadmin lo apruebe.</p>
           </form>
         </div>
@@ -363,7 +363,7 @@
                 <option value="reports">Reportados</option>
                 <option value="open_queue">Cola abierta</option>
                 <option value="approved">Aprobados</option>
-                <option value="rejected">Rechazados</option>
+                <option value="rejected">Rechazados (ya se borran)</option>
                 <option value="all">Todo</option>
               </select>
               <select id="forumReviewType">
@@ -379,13 +379,7 @@
           </div>
           <div id="forumReviewCards" class="forum-review-list"></div>
         </div>
-
-        <div class="admin-grid-2 legacy-forum-tables">
-          <div class="admin-card"><h3>Cola de moderación vieja / App Web</h3><div id="tableModerationQueue" class="admin-table-wrap"></div></div>
-          <div class="admin-card"><h3>Reportes viejos / App Web</h3><div id="tableReports" class="admin-table-wrap"></div></div>
-          <div class="admin-card"><h3>Publicaciones viejas / App Web</h3><div id="tablePosts" class="admin-table-wrap"></div></div>
-          <div class="admin-card"><h3>Comentarios viejos / App Web</h3><div id="tableComments" class="admin-table-wrap"></div></div>
-        </div>
+        <div class="admin-card admin-clean-note"><strong>Panel limpio:</strong> Las tablas viejas de App Web fueron retiradas de esta vista para no cargar datos que ya no se usan.</div>
       </section>
 
       <section class="admin-panel" data-admin-panel="config">
@@ -406,14 +400,14 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./js/supabase-config.js?v=57"></script>
-  <script src="./js/supabase-client.js?v=57"></script>
+  <script src="./js/supabase-config.js?v=59"></script>
+  <script src="./js/supabase-client.js?v=59"></script>
   <script src="./js/content.js?v=47"></script>
   <script src="./js/config.js"></script>
   <script src="./js/ui.js"></script>
-  <script src="./js/admin.js?v=51"></script>
-  <script src="./js/admin-content.js?v=51"></script>
-  <script src="./js/admin-forum.js?v=57"></script>
+  <script src="./js/admin.js?v=59"></script>
+  <script src="./js/admin-content.js?v=59"></script>
+  <script src="./js/admin-forum.js?v=59"></script>
   
   
 </body>

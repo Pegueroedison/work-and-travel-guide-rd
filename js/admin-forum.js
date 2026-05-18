@@ -1,4 +1,4 @@
-/* === Admin Forum Clean — Supabase v57 === */
+/* === Admin Forum Clean — Supabase v59 === */
 (function(){
   const $ = (s, r=document) => r.querySelector(s);
   const escapeHtml = (v='') => String(v ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
@@ -42,7 +42,12 @@
       is_public:false
     }, { onConflict:'key' });
     if(error) throw error;
-    alert(value === 'true' ? 'Moderación activada: todo quedará pendiente.' : 'Moderación automática activada: solo spam/enlaces queda pendiente.');
+    const msg = value === 'true' ? 'Moderación activada: todo quedará pendiente.' : 'Moderación automática activada: solo spam/enlaces queda pendiente.';
+    alert(msg);
+    const helper = document.querySelector('.admin-setting-help');
+    if(helper) helper.innerHTML = value === 'true'
+      ? 'Ajuste guardado en Supabase: toda publicación y comentario nuevo quedará en <strong>pendiente</strong>.'
+      : 'Ajuste guardado en Supabase: se aprueba automáticamente, excepto spam/enlaces/teléfonos/correos.';
   }
 
   async function load(){
@@ -129,8 +134,8 @@
         <div class="mini-actions">
           ${link !== '#' ? `<a class="mini-btn" href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">Vista previa</a>` : ''}
           ${it.type !== 'report' ? `<button class="mini-btn approve" data-forum-action="approved" data-index="${realIndex}">Aprobar</button>
-          <button class="mini-btn reject" data-forum-action="rejected" data-index="${realIndex}">Rechazar</button>
-          <button class="mini-btn delete" data-forum-action="deleted" data-index="${realIndex}">Eliminar</button>` : `<button class="mini-btn approve" data-forum-action="reviewed" data-index="${realIndex}">Marcar revisado</button>`}
+          <button class="mini-btn reject" data-forum-action="rejected" data-index="${realIndex}">Rechazar y borrar</button>
+          <button class="mini-btn delete" data-forum-action="deleted" data-index="${realIndex}">Eliminar definitivo</button>` : `<button class="mini-btn approve" data-forum-action="reviewed" data-index="${realIndex}">Marcar revisado</button>`}
         </div>
       </article>`;
     }).join('');
@@ -143,11 +148,23 @@
     const db = window.WTDB.client();
 
     if(item.type === 'post') {
-      const { error } = await db.from('forum_posts').update({ status: action, moderation_reason: action === 'approved' ? null : 'Revisado por admin' }).eq('id', item.row.id);
-      if(error) throw error;
+      if(action === 'approved') {
+        const { error } = await db.from('forum_posts').update({ status: 'approved', moderation_reason: null }).eq('id', item.row.id);
+        if(error) throw error;
+      } else {
+        if(!confirm('Esta publicación se borrará definitivamente de la base de datos. ¿Continuar?')) return;
+        const { error } = await db.from('forum_posts').delete().eq('id', item.row.id);
+        if(error) throw error;
+      }
     } else if(item.type === 'comment') {
-      const { error } = await db.from('forum_comments').update({ status: action, moderation_reason: action === 'approved' ? null : 'Revisado por admin' }).eq('id', item.row.id);
-      if(error) throw error;
+      if(action === 'approved') {
+        const { error } = await db.from('forum_comments').update({ status: 'approved', moderation_reason: null }).eq('id', item.row.id);
+        if(error) throw error;
+      } else {
+        if(!confirm('Esta respuesta se borrará definitivamente de la base de datos. ¿Continuar?')) return;
+        const { error } = await db.from('forum_comments').delete().eq('id', item.row.id);
+        if(error) throw error;
+      }
     } else if(item.type === 'report') {
       const { error } = await db.from('forum_reports').update({ status:'reviewed', reviewed_at:new Date().toISOString(), reviewed_by: profile?.id || null }).eq('id', item.row.id);
       if(error) throw error;

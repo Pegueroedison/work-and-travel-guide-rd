@@ -467,3 +467,9 @@ body {
   font-weight: 900;
   font-size: .75rem;
 }
+
+/* v58: botones de borrado definitivo en moderación */
+.mini-btn.reject,
+.mini-btn.delete {
+  font-weight: 900;
+}

@@ -697,6 +697,8 @@
 
 
   const SUPABASE_CONTENT_FORMS = new Set(['adSimpleForm','serviceSimpleForm','courseSimpleForm','instagramSimpleForm','whatsappSimpleForm','contentQuickForm']);
+
+  const SUPABASE_FORUM_FORMS = new Set(['forumSettingsForm']);
   function formById(formId){
     const form = formId ? document.getElementById(formId) : null;
     if(!form){
@@ -951,7 +953,7 @@
       if(window.WTContentDirectSave) window.WTContentDirectSave(form.id, btn);
       return false;
     }
-    if(form && typeof SUPABASE_CONTENT_FORMS !== 'undefined' && SUPABASE_CONTENT_FORMS.has(form.id)) return false;
+    if(form && ((typeof SUPABASE_CONTENT_FORMS !== 'undefined' && SUPABASE_CONTENT_FORMS.has(form.id)) || (typeof SUPABASE_FORUM_FORMS !== 'undefined' && SUPABASE_FORUM_FORMS.has(form.id)))) return false;
     if(form && ADMIN_FORMS.has(form.id)){
       const btn = e.submitter || form.querySelector('[data-admin-save]');
       window.WTAdminSave(form.id, btn, e);

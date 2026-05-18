@@ -40,6 +40,10 @@
     return map[s] || status || '';
   }
 
+  function isAdminProfile(){
+    return !!(state.profile && ['admin','superadmin'].includes(state.profile.role) && state.profile.status === 'active');
+  }
+
   function photo(profile){
     return profile?.photo_url || './images/logo.png';
   }
@@ -150,8 +154,8 @@
     const liked = !!post.liked_by_me;
     return `<article class="forum-post" data-post-id="${escapeHtml(post.id)}">
       <div class="post-author">
-        <img src="${escapeHtml(photo(author))}" alt="${escapeHtml(author.full_name || author.email || 'Usuario')}" data-fallback>
-        <span><strong>${escapeHtml(author.full_name || author.email || 'Usuario')}</strong>
+        <img src="${escapeHtml(photo(author))}" alt="${escapeHtml(author.full_name || 'Usuario')}" data-fallback>
+        <span><strong>${escapeHtml(author.full_name || 'Usuario')}</strong>
         ${author.role ? `<em>${escapeHtml(String(author.role).toUpperCase())}</em>` : ''}
         <small>${escapeHtml(post.category || 'Dudas J1')} · ${escapeHtml(rdDate(post.created_at))}</small></span>
       </div>
@@ -207,6 +211,25 @@
     return counts;
   }
 
+  async function loadProfileMap(authorIds){
+    const ids = [...new Set((authorIds || []).filter(Boolean))];
+    const map = new Map();
+    if(!ids.length) return map;
+    const { data } = await db()
+      .from('forum_public_profiles')
+      .select('id,full_name,role,photo_url')
+      .in('id', ids);
+    (data || []).forEach(p => map.set(p.id, p));
+    return map;
+  }
+
+  function attachAuthors(rows, profileMap){
+    return (rows || []).map(row => ({
+      ...row,
+      author: row.author || profileMap.get(row.author_id) || { full_name:'Usuario', role:'user', photo_url:null }
+    }));
+  }
+
   async function loadPosts(reset=false){
     const root = $('#forumPosts');
     if(!root) return;
@@ -221,7 +244,7 @@
     const sort = $('#forumSort')?.value || 'recent';
 
     let query = db().from('forum_posts')
-      .select('*, author:user_profiles!forum_posts_author_id_fkey(full_name,email,role,photo_url)')
+      .select('*')
       .range(state.offset, state.offset + state.limit - 1);
 
     if(category) query = query.eq('category', category);
@@ -239,9 +262,11 @@
     }
 
     const ids = (data || []).map(p => p.id);
+    const profileMap = await loadProfileMap((data || []).map(p => p.author_id));
+    const withAuthors = attachAuthors(data || [], profileMap);
     const liked = await loadLikedPostIds(ids);
     const visibleCounts = await loadVisibleCommentCounts(ids);
-    const rows = (data || []).map(p => ({...p, liked_by_me: liked.has(p.id), comments_count: visibleCounts.has(p.id) ? visibleCounts.get(p.id) : p.comments_count}));
+    const rows = withAuthors.map(p => ({...p, liked_by_me: liked.has(p.id), comments_count: visibleCounts.has(p.id) ? visibleCounts.get(p.id) : p.comments_count}));
 
     state.posts = reset ? rows : state.posts.concat(rows);
     state.offset = state.posts.length;
@@ -273,6 +298,11 @@
       interview_date: raw.interview_date || null,
       visa_status: raw.visa_status || null
     };
+
+    if(isAdminProfile()) {
+      payload.status = 'approved';
+      payload.moderation_reason = null;
+    }
 
     const { error } = await db().from('forum_posts').insert(payload);
     if(error) throw error;
@@ -331,7 +361,7 @@
     }
 
     const { data: post, error } = await db().from('forum_posts')
-      .select('*, author:user_profiles!forum_posts_author_id_fkey(full_name,email,role,photo_url)')
+      .select('*')
       .eq('id', id)
       .single();
 
@@ -351,8 +381,12 @@
       return;
     }
 
+    const profileMap = await loadProfileMap([postRaw.author_id, ...(commentsRaw || []).map(c => c.author_id)]);
+    const post = attachAuthors([postRaw], profileMap)[0];
+    const comments = attachAuthors(commentsRaw || [], profileMap);
+
     root.innerHTML = `<article class="forum-post post-detail" data-post-id="${escapeHtml(post.id)}">
-      <div class="post-author"><img src="${escapeHtml(photo(post.author))}" alt="Usuario" data-fallback><span><strong>${escapeHtml(post.author?.full_name || post.author?.email || 'Usuario')}</strong><small>${escapeHtml(post.category || 'Dudas J1')} · ${escapeHtml(rdDate(post.created_at))}</small></span></div>
+      <div class="post-author"><img src="${escapeHtml(photo(post.author))}" alt="Usuario" data-fallback><span><strong>${escapeHtml(post.author?.full_name || 'Usuario')}</strong><small>${escapeHtml(post.category || 'Dudas J1')} · ${escapeHtml(rdDate(post.created_at))}</small></span></div>
       <h2>${escapeHtml(post.title)}</h2>
       ${metaExtras(post)}
       <p>${escapeHtml(post.body || '')}</p>
@@ -367,7 +401,7 @@
   function renderComment(c){
     const a = c.author || {};
     return `<article class="comment-item" data-comment-id="${escapeHtml(c.id)}">
-      <div class="post-author"><img src="${escapeHtml(photo(a))}" alt="Usuario" data-fallback><span><strong>${escapeHtml(a.full_name || a.email || 'Usuario')}</strong><small>${escapeHtml(rdDate(c.created_at))}</small></span></div>
+      <div class="post-author"><img src="${escapeHtml(photo(a))}" alt="Usuario" data-fallback><span><strong>${escapeHtml(a.full_name || 'Usuario')}</strong><small>${escapeHtml(rdDate(c.created_at))}</small></span></div>
       <p>${escapeHtml(c.body || '')}</p>
       <div class="comment-actions"><button type="button" class="comment-report-btn">Reportar respuesta</button></div>
     </article>`;
@@ -377,11 +411,18 @@
     if(!requireLogin()) return;
     const id = new URLSearchParams(location.search).get('id');
     const raw = formDataObj(form);
-    const { error } = await db().from('forum_comments').insert({
+    const payload = {
       post_id:id,
       body: raw.body,
       author_id: state.user.id
-    });
+    };
+
+    if(isAdminProfile()) {
+      payload.status = 'approved';
+      payload.moderation_reason = null;
+    }
+
+    const { error } = await db().from('forum_comments').insert(payload);
     if(error) throw error;
     alert('Respuesta enviada. Puede requerir aprobación.');
     form.reset();
